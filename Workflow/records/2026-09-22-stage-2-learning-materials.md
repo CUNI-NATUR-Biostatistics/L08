@@ -5,7 +5,7 @@
 - Week: L08
 - Date: 2026-09-22
 - Author: AI assistant
-- Reviewer: Ondřej Mottl (original and revised story maps approved 2026-09-22)
+- Reviewer: Ondřej Mottl (story maps and current completed learning materials approved 2026-09-22)
 
 ## Git checkpoint
 
@@ -142,7 +142,7 @@ Read each row as the state **before and after** its matching story-map block. A 
 - Heading-strip, visible-copy, and first-use audits completed: [x]
 - Lesson-vision review completed: [x]
 - Glossary-coverage review completed: [x]
-- Human review completed: [ ]
+- Human review completed: [x] (Ondřej Mottl explicitly approved the current learning-materials version on 2026-09-22)
 - Credible findings resolved: [x] (the independent complete-artifact flow review and focused follow-up found no remaining issues)
 - HTML/PDF rendered and checked: [x] (the final source rendered to HTML and a 22-page PDF; the highlighted 30-mm result and formula callback on pages 8-9 and the paired categorical figures on pages 15-16 were visually checked, with no text outside page bounds)
 - Reviewer decision: earlier flow and equation findings were resolved. After the latest result-emphasis, formula-callback, and figure-reuse edits, a fresh independent complete-source review found no issues in headings, first use, signs, equations, object dependencies, or the reused plot. The reviewer did not run R or inspect the PDF; the author rendered both formats and visually inspected the affected pages.
@@ -152,6 +152,7 @@ Read each row as the state **before and after** its matching story-map block. A 
 - [x] Written materials are review-ready for human review
 - [x] Story-map status is `complete`
 - [x] Human story-map approval is `approved` and recorded
+- [x] Current written materials approved by Ondřej Mottl on 2026-09-22
 - [x] Diff contains only Stages 2-3 sources, their locked dependencies, records, and corresponding outputs
 - [ ] Written-materials PR ready to merge
-- Notes: Ondřej Mottl approved the original 13-block map, the expanded 18-block map, and the reference-order map with their ledgers on 2026-09-22. His feedback removed the 30 mm shift and then narrowed the illustration to one 30-mm comparison: the current draft follows data → one original-scale model → one same-length prediction pair and retains both optional `emmeans` examples. Final HTML/PDF render passed; targeted R checks confirmed that `predict()`, the coefficient expression, and conditional `emmeans` give the same 30-mm male-minus-female contrast. The latest independent complete-source review found no remaining issues after the highlighted result, formula callback, and reused-figure revisions. Human review of the completed lesson remains pending. The shared glossary fix is an uncommitted change in `_brand` as well as its generated L08 copy.
+- Notes: Ondřej Mottl approved the original 13-block map, the expanded 18-block map, and the reference-order map with their ledgers on 2026-09-22. His feedback removed the 30 mm shift and then narrowed the illustration to one 30-mm comparison: the current draft follows data → one original-scale model → one same-length prediction pair and retains both optional `emmeans` examples. Final HTML/PDF render passed; targeted R checks confirmed that `predict()`, the coefficient expression, and conditional `emmeans` give the same 30-mm male-minus-female contrast. The latest independent complete-source review found no remaining issues after the highlighted result, formula callback, and reused-figure revisions. Human review is complete: Ondřej Mottl explicitly approved the current learning-materials version on 2026-09-22. The shared glossary fix is an uncommitted change in `_brand` as well as its generated L08 copy.
