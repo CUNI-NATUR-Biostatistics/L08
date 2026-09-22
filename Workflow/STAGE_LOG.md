@@ -14,3 +14,4 @@ Use this file as the running history for lesson-production decisions and stage t
 |---|---|---|---|---|---|---|
 | 2026-09-22 | Stage 0 | done | Approved the L08 interaction scope and L07 additive-model bridge. | `Workflow/records/2026-09-22-stage-0-scope.md` | `lesson/l08-scope-data` / no PR | Ondřej Mottl |
 | 2026-09-22 | Stage 1 | done | Approved blue-form rock crabs after comparing nine examples and probing three finalists. | `Workflow/records/2026-09-22-stage-1-dataset.md` | `lesson/l08-scope-data` / no PR | Ondřej Mottl |
+| 2026-09-22 | Stage 2 | in review | Revised 18-block map approved; two-example written lesson rendered and independently reviewed. | `Workflow/records/2026-09-22-stage-2-learning-materials.md` | `lesson/l08-skripta` / no PR | Ondřej Mottl |
