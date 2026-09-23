@@ -1,5 +1,5 @@
 ---
-format: 
+format:
   revealjs:
     slide-number: true
     theme: [default, ../theme/presentation_theme.scss, ../theme/presentation_components.scss]
@@ -17,1233 +17,973 @@ filters:
 ```{r}
 #| label: setup
 #| include: false
+#| warning: false
+#| message: false
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(
-  fig.width = 7,
-  fig.height = 5,
-  fig.align = "center",
-  out.width = "100%"
-)
-
-if (!require("here")) install.packages("here")
-
-library(here)
-
+knitr::opts_chunk$set(fig.width = 10, fig.height = 5.6, fig.align = "center", out.width = "100%", warning = FALSE, message = FALSE)
 here::i_am("Presentation/presentation.qmd")
-
-if (!require("tidyverse")) install.packages("tidyverse")
-if (!require("ggbeeswarm")) install.packages("ggbeeswarm")
-if (!require("ggview")) install.packages("ggview")
-if (!require("magick")) install.packages("magick")
-if (!require("cowplot")) install.packages("cowplot")
-if (!require("remotes")) install.packages("remotes")
-if (!require("waffle")) remotes::install_github("hrbrmstr/waffle")
-
-library(tidyverse)
-library(ggbeeswarm)
-library(ggview)
-library(magick)
-library(cowplot)
-library(waffle)
-
-path_materials <-
-  "Presentation/Materials"
-
+source(here::here("R", "set_r_theme.R"))
+path_materials <- "Presentation/Materials"
 include_local_figure <- function(data_source) {
   knitr::include_graphics(
-    path = here::here(
-      path_materials,
-      data_source
-    ),
+    path = here::here(path_materials, data_source),
     error = TRUE
   )
 }
+showtext::showtext_auto(enable = FALSE)
+vec_barvy <- c(samice = "#9A3F87", samec = "#167B88")
+theme_l08 <- theme_biostat(base_size = 19) + ggplot2::theme(
+  text = ggplot2::element_text(family = ""),
+  axis.title = ggplot2::element_text(family = ""),
+  panel.grid.minor = ggplot2::element_blank(),
+  legend.position = "bottom"
+)
+source(here::here("R", "Functions", "format_cz.R"))
+
 ```
 
 ```{r}
 #| label: dynamic link generation
 #| include: false
-project_name <-
-  basename(here::here())
-
-display_name <-
-  paste("Biostatistika", "-", project_name)
-
-github_url <-
-  paste0(
-    "https://github.com/CUNI-NATUR-Biostatistics/",
-    project_name
-  )
-
-slides_url <-
-  paste0(
-    "https://CUNI-NATUR-Biostatistics.github.io/",
-    project_name, "/"
-  )
+project_name <- basename(here::here())
+display_name <- stringr::str_glue("Biostatistika - {project_name}")
+github_url <- stringr::str_glue(
+  "https://github.com/CUNI-NATUR-Biostatistics/{project_name}"
+)
+slides_url <- stringr::str_glue(
+  "https://CUNI-NATUR-Biostatistics.github.io/{project_name}/"
+)
 ```
 
-## Co nám může říct měření tučňáků? {.course-title .bg-indigo}
+## Liší se vztah délky a zadní šířky krunýře mezi samicemi a samci? {.course-title .bg-indigo}
 
 ::: {.course-title-mark}
 ![Logo kurzu Biostatistika](../theme/course-logo-reversed.svg) BIOSTATISTIKA
 :::
-
 ::: {.course-title-number}
-LXX
+L08
 :::
-
 ::: {.course-title-formal}
-Vztahy dvou proměnných
+Interakce prediktorů
 :::
-
 ::: {.course-title-link}
 [cuni-natur-biostatistics.github.io/materialy.html](https://cuni-natur-biostatistics.github.io/materialy.html)
 :::
 
-::: {.notes}
-V každé nové lekci nahraďte ukázkovou otázku, název a označení lekce vlastními údaji. Otázka na titulním snímku musí vycházet ze schválené datové linky lekce.
+## Co vlastně na krabovi měříme?
+
+```{r}
+#| label: zobrazit-krabi-mereni
+#| echo: false
+#| out-width: "82%"
+#| fig-alt: "Skupina modrých krabů u pobřežního měřicího stanoviště; dva krabi obsluhují posuvná měřítka kolem krunýře svého kolegy."
+#| fig-cap: "Ilustrační obraz vytvořen AI."
+include_local_figure("krabi_mereni.png")
+```
+
+**Délka krunýře** a **zadní šířka krunýře** jsou dvě měření téhož kraba.
+
+## Co naznačují naměření krabi?
+
+```{r}
+#| label: uvodni-data
+#| include: false
+data_krabi <- MASS::crabs[MASS::crabs$sp == "B", c("sex", "CL", "RW")]
+names(data_krabi) <- c("pohlavi", "delka_krunyre_mm", "zadni_sirka_mm")
+data_krabi$pohlavi <- factor(data_krabi$pohlavi, levels = c("F", "M"), labels = c("samice", "samec"))
+graf_body <- ggplot2::ggplot(data_krabi, ggplot2::aes(delka_krunyre_mm, zadni_sirka_mm, colour = pohlavi)) +
+  ggplot2::geom_point(alpha = 0.58, size = 2.2) +
+  ggplot2::scale_colour_manual(values = vec_barvy) +
+  ggplot2::labs(x = "Délka krunýře (mm)", y = "Zadní šířka krunýře (mm)", colour = "Pohlaví") +
+  theme_l08
+```
+
+```{r}
+#| label: uvodni-graf
+#| echo: false
+#| fig-alt: "Bodový graf délky a zadní šířky krunýře modrých krabů; samice a samci jsou odlišeni barvou."
+graf_body
+```
+
+::: {.panel-question}
+[Když se délka zvětšuje, mění se zadní šířka u obou pohlaví stejně?]{.text-size-heading .text-bold}
 :::
 
-## Co vidíme v měření tučňáků?
-
-TODO: Ukažte jeden konkrétní obrázek, měření nebo jiný háček k úvodní otázce. Nechte studenty nejprve popsat, co vidí.
-
-::: {.notes}
-Tento ukázkový snímek nahraďte prvním datovým nebo biologickým háčkem vlastní lekce; ponechte vazbu na otázku z titulního snímku.
-:::
+{{< include ../pollslive/generated/active.qmd >}}
 
 ## Výsledky učení
 
-Po absolvování této přednášky budete schopni:
+Po lekci dokážete:
 
-- TODO: výsledek učení 1
-- TODO: výsledek učení 2
-- TODO: výsledek učení 3
+::: incremental
+- rozpoznat otázku, ve které vztah jednoho prediktoru [závisí na druhém]{.text-hgl-indigo_velvet};
+- fitovat a zobrazit model s [interakcí]{.text-hgl-orange};
+- interpretovat předpovědi a [podmíněné koeficienty]{.text-hgl-indigo_velvet};
+- vysvětlit interakci číselného a skupinového prediktoru i [dvou skupinových prediktorů]{.text-hgl-orange}.
+:::
 
-# Obsah přednášky
+# Když rovnoběžné přímky nestačí
 
-## Snímek 1
+## Jeden bod představuje jednoho kraba
 
-TODO: obsah snímku
+::: columns
+::: {.column width="48%"}
+```{r}
+#| label: data-preview
+#| echo: true
+data_krabi <- MASS::crabs[
+  MASS::crabs$sp == "B",
+  c("sex", "CL", "RW")
+]
+names(data_krabi) <- c("pohlavi", "delka_krunyre_mm", "zadni_sirka_mm")
+data_krabi$pohlavi <- factor(
+  x = data_krabi$pohlavi,
+  levels = c("F", "M"),
+  labels = c("samice", "samec")
+)
+head(x = data_krabi, n = 4)
+```
+:::
+::: {.column width="48%"}
+::: {.panel-data}
+[100 krabů]{.card-title}
+
+- modrá barevná forma
+- 50 samic · 50 samců
+- délka krunýře v mm
+- zadní šířka v mm
+:::
+
+[Campbell & Mahon (1974) · `MASS::crabs`]{.footer}
+:::
+:::
+
+## Jak spolu souvisejí délka a zadní šířka?
 
 ```{r}
-#| label: demo-plot
+#| label: raw-prompt
+#| echo: false
+#| fig-alt: "Body krabů ukazují rostoucí vztah délky a zadní šířky u obou pohlaví."
+graf_body
+```
+
+::: {.panel-question}
+1. Jaký je směr vztahu?
+2. Kde se skupiny překrývají?
+3. Vypadají oba sklony stejně?
+:::
+
+## Aditivní model kreslí rovnoběžné přímky
+
+```{r}
+#| label: additive-model
 #| echo: true
-# TODO: ukázka kódu v R
+mod_rovnobezne <- lm(
+  formula = zadni_sirka_mm ~ delka_krunyre_mm + pohlavi,
+  data = data_krabi
+)
 ```
 
-## Shrnutí
+```{r}
+#| label: additive-plot
+#| echo: false
+rozsahy <- split(data_krabi$delka_krunyre_mm, data_krabi$pohlavi)
+data_primky <- names(rozsahy) |>
+  purrr::map(
+    .f = ~ data.frame(
+      pohlavi = factor(.x, levels = levels(x = data_krabi$pohlavi)),
+      delka_krunyre_mm = seq(
+        from = min(rozsahy[[.x]]),
+        to = max(rozsahy[[.x]]),
+        length.out = 100
+      )
+    )
+  ) |>
+  purrr::list_rbind()
+data_primky$odhad_add <- predict(object = mod_rovnobezne, newdata = data_primky)
+graf_aditivni <- graf_body + ggplot2::geom_line(
+  data = data_primky, ggplot2::aes(y = odhad_add), linewidth = 1.3
+)
+graf_aditivni
+```
 
-- TODO: klíčové body přednášky
+[`+` dovoluje posun mezi skupinami, ale ukládá jim společný sklon.]{.footer}
 
-# Slide Creator's Guide {.center}
-
-[Slides in this section are intended for lecture authors, not students. Delete this section and the `# Tools Overview` section before using as an actual lecture.]{.text-size-smaller .text-color-grey_olive}
-
-# Golden Rules {.center}
-
-## Rule 1 — Data story first {.bg-parchment}
+## Zůstává rozdíl mezi pohlavími při každé délce stejný?
 
 ::: columns
-::: {.column width="48%"}
-::: {.card-warning}
-[Wrong]{.card-title}
-**Pearson correlation**
-
-Pearson's correlation coefficient measures the strength of the linear relationship between two variables...
-
-[formula]
+::: {.column width="64%"}
+```{r}
+#| label: additive-prompt
+#| echo: false
+#| fig-alt: "Dvě rovnoběžné modelové přímky mají v celém rozsahu stejnou svislou vzdálenost."
+graf_aditivni
+```
 :::
-:::
-::: {.column width="48%"}
-::: {.card-insight}
-[Right]{.card-title}
-**How do we turn the shape of a cloud into a number?**
-
-[scatter plot the students have seen for several slides already]
-
-*What properties would such a number need to have?*
-
-→ **Correlation coefficient** [the name arrives as the answer]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-:::
-
-[A statistical term never opens a concept as a heading. Data first → observation → question → only then the name.]{.text-size-smaller .text-color-grey_olive}
-
-## Rule 2 — One idea per slide
-
-**Every slide communicates one thing.**
-
-If you need to say two things, use two slides.
-
-If you need to say three things, add an interaction between them.
-
-::: {.takeaway-strip}
-**One message. One slide. Contribute to understanding — not to overload.**
-:::
-
-[Test: cover the heading — is the main idea of the slide still clear from the visual or a single sentence?]{.text-size-smaller .text-color-grey_olive}
-
-## Rule 3 — Interaction every 10–15 minutes
-
-::: {.panel-note}
-[Six interaction types]{.panel-title}
-
-| Type | When to use |
-|---|---|
-| Prediction question | Before revealing a result, graph, or test output |
-| Conceptual MCQ | To surface a common misconception; ideally with a polling tool |
-| Think–Pair–Share | After a new concept; 30 s thinking + 1–2 min pair discussion |
-| Silent write | Before discussion or reveal; each student writes one sentence |
-| Interpretation task | After showing a graph, model output, or table |
-| Data exploration | To open a topic — what patterns / hypotheses do you see? |
-:::
-
+::: {.column width="32%"}
 ::: {.panel-question}
-[Example — prediction question]{.panel-title}
+[Ve dvojici:]{.card-title}
 
-*How does the confidence interval change if we double the sample size?*
+Porovnejte svislou vzdálenost přímek u kratších a delších krabů.
 
-**A)** Narrows   **B)** Stays the same   **C)** Widens
-:::
-
-## Rule 4 — Always frame biologically
-
-Every statistical method must be grounded in a concrete biological question.
-
-::: {.blockquote}
-**Four steps of the biological frame:**
-
-1. **Biological question** — "we want to find out whether…"
-2. **Data** — description, type, source
-3. **Statistical method** — what and why
-4. **Interpretation in biological context** — what the result says about the world, not about numbers
-:::
-
-[Never start with "today we'll learn the t-test". Always start with "we want to know whether…"]{.text-size-smaller .text-color-grey_olive}
-
-## Rule 5 — Alternate visual patterns (3-of-5 rule)
-
-**At most 3 of 5 consecutive slides may use a named component as the primary visual element.**
-
-A plain slide — a bold question on an empty background, a full-width graph, a single prominent number — carries more weight precisely because the surrounding slides are more structured.
-
-::: {.strip-orange}
-**3 of 5 — the law of slide visual contrast** · review the block before finalising
-:::
-
-[Components: `.card-*`, `.panel-*`, `.blockquote`, `.takeaway-strip`. If you reach 4+ in a row, convert one slide to a plain visual or an unframed question.]{.text-size-smaller .text-color-grey_olive}
-
-# Five Slide Families {.center}
-
-## Five slide families
-
-::: columns
-::: {.column width="62%"}
-
-| Family | Goal | Typical component |
-|---|---|---|
-| **Interaction** | Prediction / MCQ / TPS | bold question, `.panel-question` |
-| **Data reveal** | New data or output | full-width graph, plain slide |
-| **Interpretation** | Read the result | `.panel-result`, `.takeaway-strip` |
-| **Rule / warning** | Heuristic, error | `.card-warning`, `.panel-warning` |
-| **Transition / summary** | Reset, conclusion | `.blockquote` in two columns |
-
-:::
-::: {.column width="35%"}
-::: {.card-olive}
-[Variety of families]{.card-title}
-In one lecture, cycle through all five families.
-
-No block of 5+ slides should belong to only one family.
+Je stejná?
 :::
 :::
 :::
 
-[Students should be able to recognise the role of a slide before reading the text — from the colour key, layout, or position in the structure.]{.text-size-smaller .text-color-grey_olive}
+## Data naznačují různé sklony
 
-# Model output for authors {.center}
-
-## Build model tables from the fit
-
-Use this pattern only after a lesson has introduced the model and its base-R output. Keep the model fit and preparation in hidden chunks near the first table; show only the selected Czech-labelled table. Adjust terms, quantities, rounding, and units to the actual teaching question.
-
-```r
-# Hidden authoring code after fitting mod_priklad locally:
-koeficienty <-
-  broom::tidy(mod_priklad, conf.int = TRUE)
-
-tabulka <-
-  data.frame(
-    Parametr = koeficienty$term,
-    Odhad = koeficienty$estimate,
-    `Standardní chyba` = koeficienty$std.error,
-    check.names = FALSE
-  )
-
-tinytable::tt(tabulka, digits = 2)
+```{r}
+#| label: different-slopes
+#| echo: false
+#| fig-alt: "Samostatné přímky vedené body samic a samců mají rozdílné sklony."
+graf_ruzne <- graf_body + ggplot2::geom_smooth(method = "lm", formula = y ~ x, se = FALSE, linewidth = 1.3)
+graf_ruzne
 ```
-
-Do not copy coefficient values into a hand-written table. Compare the generated values with `coef(mod_priklad)` and `summary(mod_priklad)` and inspect the rendered HTML and PDF before reusing this example.
-
-# Tools Overview {.center}
-
-## `.box-*` aliases — when to use what
-
-| Alias | Maps to | Weight | Colour | When to use |
-|-------|-----------|------|-------|------------|
-| `.box-question` | `.panel-question` | panel (lighter) | orange left border | MCQ, reflection question |
-| `.box-result` | `.panel-result` | panel (lighter) | indigo left border | main conclusion, analysis result |
-| `.box-data` | `.panel-data` | panel (lighter) | olive left border | dataset description, data context |
-| `.box-rule` | `.card-rule` | card (heavier) | amethyst top strip + shadow | rule, heuristic |
-| `.box-warning` | `.card-warning` | card (heavier) | red top strip + shadow | methodological warning |
-
-[Panel aliases (lighter): coloured left border, no shadow. Card aliases (heavier): coloured top strip + shadow. Inner heading: `[text]{.panel-title}` for panels · `[text]{.card-title}` for cards.]{.text-size-smaller .text-color-grey_olive}
-
-## `.box-question` — interaction, MCQ
-
-::: columns
-::: {.column width="55%"}
-::: {.box-question}
-[Question for reflection]{.panel-title}
-
-What percentage of penguin body-mass variability is explained by bill length?
-
-**A)** less than 30 % &nbsp;&nbsp; **B)** 30–60 % &nbsp;&nbsp; **C)** more than 60 %
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-question}
-[Question for reflection]{.panel-title}
-
-Question text + choices A / B / C.
-:::
-```
-
-[= `.panel-question` · orange left border · heading `{.panel-title}`]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## `.box-result` — main result
-
-::: columns
-::: {.column width="55%"}
-::: {.box-result}
-[What we see]{.panel-title}
-
-Each millimetre of bill length corresponds on average to **+8.7 g** body mass
-(95% CI: 6.2–11.2 g). The model explains 45 % of body-mass variability.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-result}
-[What we see]{.panel-title}
-
-Main conclusion or analysis result.
-:::
-```
-
-[= `.panel-result` · indigo left border · heading `{.panel-title}` or `{.panel-lead}`]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## `.box-data` — dataset description
-
-::: columns
-::: {.column width="55%"}
-::: {.box-data}
-[Palmer Penguins]{.panel-title}
-
-344 penguins from three islands · 3 species *(Adelie, Chinstrap, Gentoo)*
-
-Variables: bill length and depth (mm), flipper length (mm), body mass (g), sex, year
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-data}
-[Dataset name]{.panel-title}
-
-Brief description: number of
-observations, variables, source.
-:::
-```
-
-[= `.panel-data` · olive left border · heading `{.panel-title}`]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## `.box-warning` — methodological warning
-
-::: columns
-::: {.column width="55%"}
-::: {.box-warning}
-[Caution — correlation ≠ causation]{.card-title}
-
-A longer bill does not imply that *the bill causes* greater body mass — both traits
-may reflect overall body size.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-warning}
-[Warning heading]{.card-title}
-
-Methodological error, misinterpretation,
-data limitation.
-:::
-```
-
-[= `.card-warning` · **card** · red top strip + shadow · heading `{.card-title}`]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## `.box-rule` — rule, heuristic
-
-::: columns
-::: {.column width="55%"}
-::: {.box-rule}
-[Mean or median?]{.card-title}
-
-If the data are symmetric → mean.
-
-If the data are skewed or contain outliers → median.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-rule}
-[Rule heading]{.card-title}
-
-Condition → recommendation.
-Or a verbal heuristic.
-:::
-```
-
-[= `.card-rule` · **card** · amethyst top strip + shadow · heading `{.card-title}`]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## Combination: `.box-question` + `.takeaway-strip`
-
-::: columns
-::: {.column width="55%"}
-::: {.box-question}
-[Question for reflection]{.panel-title}
-
-Why does bill length differ between penguin species and within a single species?
-:::
-
-::: {.takeaway-strip}
-**Morphology as adaptation.** Bill length reflects life strategy — Gentoo penguins forage differently from Adelie.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.box-question}
-[Question]{.panel-title}
-Question...
-:::
-
-::: {.takeaway-strip}
-**Conclusion.** Closing the conclusion.
-:::
-```
-
-[`.takeaway-strip` after `.box-question` closes a slide sequence. One slide = one question + one conclusion.]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## Fragment: incremental reveal of `.box-result`
-
-::: columns
-::: {.column width="55%"}
-Let's look at the linear model output.
 
 ::: {.fragment}
-::: {.box-result}
-[Result]{.panel-title}
+[Svislá vzdálenost mezi přímkami se s délkou mění.]{.text-size-heading .text-bold .text-color-orange}
+:::
 
-Bill length coefficient: **+8.7 g/mm** (95% CI: 6.2–11.2 g).
-The effect is statistically and biologically significant.
+## Když se rozdíl mění, mluvíme o interakci
+
+::: columns
+::: {.column width="48%"}
+::: {.panel-warning}
+[Aditivní model]{.card-title}
+
+$$\text{rozdíl mezi pohlavími}=\text{stálý}$$
+
+Rovnoběžné přímky
+:::
+:::
+::: {.column width="48%"}
+::: {.panel-insight}
+[Model s interakcí]{.card-title}
+
+$$\text{rozdíl mezi pohlavími}=f(\text{délky})$$
+
+Různé sklony
 :::
 :::
 :::
-::: {.column width="42%"}
-```markdown
-Sentence before the pause.
 
 ::: {.fragment}
-::: {.box-result}
-[Result]{.panel-title}
-Text that is revealed.
+**Interakce:** vztah délky a zadní šířky [závisí na pohlaví]{.text-hgl-indigo_velvet}.
 :::
+
+## `delka * pohlavi` přidá člen `delka:pohlavi`
+
+::: incremental
+1. `zadni_sirka_mm ~ delka_krunyre_mm + pohlavi`
+2. `zadni_sirka_mm ~ delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi`
+3. `zadni_sirka_mm ~ delka_krunyre_mm * pohlavi`
 :::
+
+::: {.fragment .panel-insight}
+$$x * y = x + y + x:y$$
+:::
+
+## Model s interakcí dovoluje dvěma pohlavím různé sklony
+
+```{r}
+#| label: interaction-model
+#| echo: true
+mod_interakce <- lm(
+  formula = zadni_sirka_mm ~ delka_krunyre_mm * pohlavi,
+  data = data_krabi
+)
 ```
 
-[`::: {.fragment}` wraps any `.box-*` block. Students see the sentence → click → result.]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## Tool: plain question without a frame {.center}
-
-<br>
-
-::: {.text-center .text-size-large .text-bold}
-How does the confidence interval change if we double the sample size?
-:::
-
-<br>
-
-::: {.text-center}
-**A)** Narrows &nbsp;&nbsp;&nbsp; **B)** Stays the same &nbsp;&nbsp;&nbsp; **C)** Widens
-:::
-
-<br>
-
-[Plain slide: bold question + choices without a frame. Maximum visual contrast against slides with `.box-*` components.]{.text-size-smaller .text-color-grey_olive}
-
-## Roughnotation — use sparingly
-
-Each millimetre of penguin bill length corresponds on average to
-[+8.7 g body mass]{.rn-underline-indigo} — the effect is
-[biologically significant]{.rn-box-orange}.
-
-<br>
-
-::: columns
-::: {.column width="48%"}
-```markdown
-[text]{.rn-underline-indigo}
-[text]{.rn-box-orange}
-[text]{.rn-circle-amethyst}
-[text]{.rn-bracket-indigo}
-```
-:::
-::: {.column width="48%"}
-```markdown
-[text]{.rn-highlight-orange}
-[text]{.rn-cross-graphite}
+```{r}
+#| label: interaction-plot
+#| echo: false
+data_primky$odhad_interakce <- predict(object = mod_interakce, newdata = data_primky)
+graf_interakce <- graf_body + ggplot2::geom_line(
+  data = data_primky, ggplot2::aes(y = odhad_interakce), linewidth = 1.3
+)
+graf_interakce
 ```
 
-Colours: `indigo`, `orange`, `amethyst`,
-`olive`, `graphite`, `red`
-:::
-:::
+[Každou přímku kreslíme jen přes délky zastoupené v její skupině.]{.footer}
 
-[**Sparingly:** max 1–2 effects per slide, 3–5 per lecture. Types: `underline`, `box`, `circle`, `bracket`, `highlight`, `cross`. Not as decoration — only for one key moment in a concept.]{.text-size-smaller .text-color-grey_olive}
+## Co model odhaduje pro dva kraby dlouhé 30 mm?
 
-# Reference Slides: SCSS Components {.center}
-
-# Cards {.center}
-
-## Card: basic structure
-
-::: {.card-indigo}
-[Card heading]{.card-title}
-
-Card body — one or two short paragraphs. The font is intentionally smaller than the base
-slide size (0.82 em) to fit more content.
-
-- Cards can also contain a list
-- Each item on its own line
-:::
-
-[Syntax: `::: {.card-indigo}` + `[text]{.card-title}` for the coloured top strip — without the old `.slide-card` + variant combination.]{.text-size-smaller .text-color-grey_olive}
-
-## Card: .card-title
-
-::: columns
-::: {.column width="60%"}
-::: {.card-insight}
-[This is .card-title]{.card-title}
-
-`[text]{.card-title}` must be the **first thing** inside the card — it creates the coloured top strip.
-:::
-:::
-
-::: {.column width="38%"}
-```markdown
-::: {.card-insight}
-[Section name]{.card-title}
-
-Card body.
-:::
+```{r}
+#| label: prediction-prompt
+#| echo: false
+#| fig-alt: "Interakční přímky nad body krabů a svislá čára při délce 30 milimetrů."
+graf_interakce + ggplot2::geom_vline(xintercept = 30, linetype = "dashed", colour = biostat_cols[["grey_olive"]])
 ```
-:::
+
+::: {.panel-question}
+[Která přímka je při 30 mm výše? O kolik přibližně?]{.text-size-heading .text-bold}
 :::
 
-## Card: compact variant
+## Dva odhady při délce 30 mm
 
-::: columns
-::: {.column width="48%"}
-::: {.card-orange}
-[Standard]{.card-title}
+```{r}
+#| label: predictions-at-30
+#| echo: true
+data_30_mm <- data.frame(
+  delka_krunyre_mm = c(30, 30),
+  pohlavi = factor(c("samice", "samec"), levels = levels(x = data_krabi$pohlavi))
+)
+data_30_mm <- cbind(
+  data_30_mm,
+  predict(object = mod_interakce, newdata = data_30_mm, interval = "confidence")
+)
+```
 
-`.card-orange` — padding `0.7rem 1rem`. Suitable for longer content.
-:::
-:::
+```{r}
+#| label: predictions-at-30-plot
+#| echo: false
+#| fig-alt: "Dva zvýrazněné modelové odhady při délce 30 milimetrů leží na přímkách samic a samců."
+graf_30 <- graf_interakce +
+  ggplot2::geom_vline(xintercept = 30, linetype = "dotted", colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::geom_errorbar(
+    data = data_30_mm,
+    ggplot2::aes(x = delka_krunyre_mm, ymin = lwr, ymax = upr),
+    inherit.aes = FALSE,
+    width = 0.2, linewidth = 1, position = ggplot2::position_dodge(width = 0.5)
+  ) +
+  ggplot2::geom_point(
+    data = data_30_mm,
+    ggplot2::aes(x = delka_krunyre_mm, y = fit, fill = pohlavi),
+    inherit.aes = FALSE,
+    shape = 21, size = 5, colour = "white", stroke = 1.4,
+    position = ggplot2::position_dodge(width = 0.5)
+  ) +
+  ggplot2::scale_fill_manual(values = vec_barvy, guide = "none")
+graf_30
+```
 
-::: {.column width="48%"}
-::: {.card-orange .card-compact}
-[Compact]{.card-title}
+## Samec má při 30 mm odhadovanou zadní šířku o 1,76 mm menší
 
-`.card-orange .card-compact` — reduced padding (`0.45rem 0.75rem`). For denser layouts.
-:::
-:::
-:::
+```{r}
+#| label: difference-at-30
+#| include: false
+odhad_samice_30 <- data_30_mm$fit[data_30_mm$pohlavi == "samice"]
+odhad_samec_30 <- data_30_mm$fit[data_30_mm$pohlavi == "samec"]
+rozdil_30 <- odhad_samec_30 - odhad_samice_30
+```
 
-## Card: overview of variants
-
-::: columns
-::: {.column width="18%"}
-::: {.card-indigo}
-[indigo]{.card-title}
-`.card-indigo`
-:::
-:::
-::: {.column width="18%"}
-::: {.card-orange}
-[orange]{.card-title}
-`.card-orange`
-:::
-:::
-::: {.column width="18%"}
-::: {.card-amethyst}
-[amethyst]{.card-title}
-`.card-amethyst`
-:::
-:::
-::: {.column width="18%"}
-::: {.card-olive}
-[olive]{.card-title}
-`.card-olive`
-:::
-:::
-::: {.column width="18%"}
-::: {.card-red}
-[red]{.card-title}
-`.card-red`
-:::
-:::
-:::
-
-::: columns
-::: {.column width="16%"}
-::: {.card-question}
-[question]{.card-title}
-`.card-question`
-:::
-:::
-::: {.column width="16%"}
-::: {.card-insight}
-[insight]{.card-title}
-`.card-insight`
-:::
-:::
-::: {.column width="16%"}
-::: {.card-warning}
-[warning]{.card-title}
-`.card-warning`
-:::
-:::
-::: {.column width="16%"}
-::: {.card-data}
-[data]{.card-title}
-`.card-data`
-:::
-:::
-::: {.column width="16%"}
-::: {.card-result}
-[result]{.card-title}
-`.card-result`
-:::
-:::
-::: {.column width="16%"}
-::: {.card-rule}
-[rule]{.card-title}
-`.card-rule`
-:::
-:::
-:::
-
-[Semantic variants are aliases: `.card-question` = orange, `.card-insight` = `.card-result` = indigo, `.card-warning` = red, `.card-data` = olive, `.card-rule` = amethyst. Shorthand: `.box-question`, `.box-result`, `.box-data`, `.box-warning`, `.box-rule`.]{.text-size-smaller .text-color-grey_olive}
-
-# Panels {.center}
-
-## Panel: `.panel-result`
-
-::: columns
-::: {.column width="55%"}
 ::: {.panel-result}
-[Key insight]{.panel-title}
-
-Purple left border. For the main message of a block — conclusion, analysis result, or key number.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.panel-result}
-[Heading]{.panel-title}
-Panel text.
-:::
-```
-
-[`.panel-title` is `display: block`; gives the heading h3 appearance without `###`.]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## Panel: `.panel-question`
+[Hlavní výsledek]{.card-title}
 
 ::: columns
-::: {.column width="55%"}
-::: {.panel-question}
-[Conclusion or option]{.panel-title}
+::: {.column width="31%"}
+**Samice**
 
-Orange left border. For conclusions, comparison results, or offering multiple answer choices.
+[`r format_cz(odhad_samice_30)` mm]{.text-size-heading .text-bold}
+:::
+::: {.column width="31%"}
+**Samec**
+
+[`r format_cz(odhad_samec_30)` mm]{.text-size-heading .text-bold}
+:::
+::: {.column width="34%"}
+**Samec − samice**
+
+[`r format_cz(rozdil_30, signed = TRUE)` mm]{.text-size-heading .text-bold .text-color-orange}
 :::
 :::
-::: {.column width="42%"}
-```markdown
-::: {.panel-question}
-[Conclusion or option]{.panel-title}
-Panel text.
 :::
+
+## Co už můžeme říci o stejně dlouhých krabech?
+
+::: {.panel-insight}
+U modrých krabů model odhaduje:
+
+- rostoucí vztah délky a zadní šířky u obou pohlaví;
+- [pomalejší sklon u samců]{.text-hgl-orange};
+- při 30 mm zadní šířku samce o [`r format_cz(abs(rozdil_30))` mm menší]{.text-hgl-indigo_velvet}.
+:::
+
+::: {.fragment}
+**Ještě nevíme:** jak přesně čtyři koeficienty tento obraz skládají.
+:::
+
+
+# Čtyři koeficienty, jedna dvojice přímek
+
+## Kde jsou v `summary()` čtyři části interakce?
+
+```{r}
+#| label: interaction-summary
+#| echo: true
+souhrn_interakce <- summary(
+  object = mod_interakce
+)
+
+round(
+  x = souhrn_interakce$coefficients,
+  digits = 3
+)
 ```
-:::
+
+::: {.fragment}
+Čteme nejprve sloupec **Estimate**. Každý řádek dostane význam až s referenční skupinou a hodnotou druhého prediktoru.
 :::
 
-## Panel: `.panel-question` + `.panel-lead`
+## První dva koeficienty popisují referenční samice
 
-::: columns
-::: {.column width="55%"}
-::: {.panel-question}
-[Computation result]{.panel-lead}
-
-Large highlighted result — replaces the old `.answer-title`. Use at most once per slide.
-:::
-:::
-::: {.column width="42%"}
-```markdown
-::: {.panel-question}
-[Computation result]{.panel-lead}
-
-Text below the result.
-:::
+```{r}
+#| label: store-interaction-coefficients
+#| include: false
+b <- coef(mod_interakce)
 ```
-
-[`.panel-lead` is large and bold. Suitable for a key number or conclusion.]{.text-size-smaller .text-color-grey_olive}
-:::
-:::
-
-## Panel: `.panel-note` and `.panel-warning`
 
 ::: columns
 ::: {.column width="48%"}
-::: {.panel-note}
-[Instructions or output]{.panel-title}
+::: {.panel-warning}
+[`(Intercept)`]{.card-title}
 
-Neutral olive border. For instructions, workflow steps, or model output.
+[`r format_cz(b[["(Intercept)"]], digits = 3)` mm]{.text-size-heading .text-bold}
+
+Odhad pro samici při délce **0 mm**.
+
+Takového kraba jsme neměřili.
+:::
+:::
+::: {.column width="48%"}
+::: {.panel-insight}
+[`delka_krunyre_mm`]{.card-title}
+
+[`r format_cz(b[["delka_krunyre_mm"]], digits = 3, signed = TRUE)` mm/mm]{.text-size-heading .text-bold}
+
+Sklon samičí přímky.
+:::
+:::
+:::
+
+## Koeficient pohlaví porovnává skupiny při délce 0 mm
+
+[`pohlavisamec` = `r format_cz(b[["pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-size-heading .text-bold .text-hgl-orange}
+
+Rozdíl **samec − samice**, když `delka_krunyre_mm = 0`.
+
+::: {.fragment}
+Není to:
+
+- rozdíl při každé délce;
+- rozdíl při 30 mm;
+- průměrný rozdíl mezi všemi samci a samicemi.
+:::
+
+::: {.fragment}
+**Biologicky smysluplné srovnání získáme z předpovědí uvnitř dat.**
+:::
+
+## Interakční koeficient mění sklon samců vůči samicím
+
+```{r}
+#| label: interaction-slope-interval
+#| include: false
+ci_interakce <- confint(mod_interakce)
+```
+
+::: columns
+::: {.column width="48%"}
+::: {.panel-insight}
+[Sklon samice]{.card-title}
+
+[`r format_cz(b[["delka_krunyre_mm"]], digits = 3)` mm/mm]{.text-size-heading .text-bold}
 :::
 :::
 ::: {.column width="48%"}
 ::: {.panel-warning}
-[Caution!]{.panel-title}
+[Samec − samice]{.card-title}
 
-Red left border. For warnings, common errors, or deliberate alerts.
+[`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3, signed = TRUE)` mm/mm]{.text-size-heading .text-bold}
 :::
 :::
 :::
-
-## Panel: overview of colour variants
-
-::: columns
-::: {.column width="18%"}
-::: {.panel-indigo}
-[indigo]{.panel-title}
-`.panel-indigo`
-:::
-:::
-::: {.column width="18%"}
-::: {.panel-orange}
-[orange]{.panel-title}
-`.panel-orange`
-:::
-:::
-::: {.column width="18%"}
-::: {.panel-amethyst}
-[amethyst]{.panel-title}
-`.panel-amethyst`
-:::
-:::
-::: {.column width="18%"}
-::: {.panel-olive}
-[olive]{.panel-title}
-`.panel-olive`
-:::
-:::
-::: {.column width="18%"}
-::: {.panel-red}
-[red]{.panel-title}
-`.panel-red`
-:::
-:::
-:::
-
-[Semantic variants are aliases: `.panel-result` = indigo, `.panel-question` = orange, `.panel-warning` = red, `.panel-note` = amethyst, `.panel-data` = olive. Shorthand (`.box-*`) wraps the matching panel.]{.text-size-smaller .text-color-grey_olive}
-
-# Takeaway strip {.center}
-
-## Takeaway strip: standard
-
-Sentence that leads into the conclusion — contextual paragraph above the strip.
-
-::: {.takeaway-strip}
-**Main slide conclusion.** `.takeaway-strip` — indigo-to-orange gradient background,
-indigo left border. One per slide, placed at the bottom.
-:::
-
-[`::: {.takeaway-strip}` — the gradient is built in, no extra class needed.]{.text-size-smaller .text-color-grey_olive}
-
-## Takeaway strip: compact variant
-
-Sentence above the strip as usual.
-
-::: {.takeaway-strip}
-Main conclusion — standard strip.
-:::
-
-::: {.takeaway-strip .strip-compact}
-Supplementary conclusion — `.strip-compact` reduces `margin-top`. Useful for two conclusions together.
-:::
-
-## Strip: colour variants
-
-::: columns
-::: {.column width="18%"}
-::: {.strip-indigo}
-`.strip-indigo`
-:::
-:::
-::: {.column width="18%"}
-::: {.strip-orange}
-`.strip-orange`
-:::
-:::
-::: {.column width="18%"}
-::: {.strip-amethyst}
-`.strip-amethyst`
-:::
-:::
-::: {.column width="18%"}
-::: {.strip-olive}
-`.strip-olive`
-:::
-:::
-::: {.column width="18%"}
-::: {.strip-red}
-`.strip-red`
-:::
-:::
-:::
-
-# Blockquote {.center}
-
-## Blockquote div: `.blockquote`
-
-::: {.blockquote}
-**Definition or quotation.** `.blockquote` — light purple background, indigo left border (6px),
-rounded corners. Font 0.82 em.
-
-- Can contain a list
-- Each item on its own line
-:::
-
-[Use `::: {.blockquote}`, not Markdown `>`. The div variant gets correct styling;
-Markdown blockquote gets different styles from `presentation_theme.scss`.]{.text-size-smaller .text-color-grey_olive}
-
-# Slide backgrounds {.center}
-
-## Backgrounds: dark variants {.bg-indigo}
-
-This slide has the class `{.bg-indigo}`. Text and headings are automatically white.
-
-::: columns
-::: {.column width="48%"}
-Syntax — add the class to the slide heading:
-
-```markdown
-## Slide title {.bg-indigo}
-```
-:::
-::: {.column width="48%"}
-Available dark variants:
-
-- `{.bg-indigo}` — primary indigo
-- `{.bg-amethyst}` — lighter purple
-- `{.bg-olive}` — grey-green
-- `{.bg-red}` — red
-- `{.bg-graphite}` — dark grey
-:::
-:::
-
-## Backgrounds: light variants {.bg-parchment}
-
-This slide has the class `{.bg-parchment}`. Text is automatically graphite.
-
-::: columns
-::: {.column width="48%"}
-Available light variants:
-
-- `{.bg-orange}` — orange
-- `{.bg-parchment}` — cream
-- `{.bg-white}` — pure white
-:::
-::: {.column width="48%"}
-Text and heading colour adapts automatically — no need to add `.text-color-*`.
-:::
-:::
-
-# Inline highlights {.center}
-
-## Inline highlight: `.text-hgl-{color}`
-
-The model intercept is −153.4 and the length coefficient is
-[4.05 g/mm]{.text-hgl-indigo_velvet} — each millimetre of length corresponds on average
-to four grams of body mass.
-
-Caution — this procedure works [only when the normality assumption is met]{.text-hgl-orange}.
-
-[Syntax: `[text]{.text-hgl-indigo_velvet}` — coloured chip with contrasting text. Available colours: `indigo_velvet`, `orange`, `amethyst`, `grey_olive`, `graphite`, `white`, `light_gray`, `parchment`.]{.text-size-smaller .text-color-grey_olive}
-
-## Inline highlight: `.text-bg-{color}` and `.text-color-{color}`
-
-::: columns
-::: {.column width="48%"}
-[`.text-hgl-indigo_velvet`]{.text-hgl-indigo_velvet} — chip with contrasting text
-
-[`.text-bg-indigo_velvet`]{.text-bg-indigo_velvet} — chip without text colour change
-
-[`.text-color-indigo_velvet`]{.text-color-indigo_velvet} — text colour only
-
-[`.text-color-indigo_velvet .text-bold`]{.text-color-indigo_velvet .text-bold} — colour + bold
-:::
-::: {.column width="48%"}
-```markdown
-[text]{.text-hgl-indigo_velvet}
-[text]{.text-bg-indigo_velvet}
-[text]{.text-color-indigo_velvet}
-[text]{.text-color-indigo_velvet .text-bold}
-```
-:::
-:::
-
-# Roughnotation {.center}
-
-## Roughnotation: shorthand syntax
-
-Shorthand `{.rn-{type}-{colour}}` expands via `rn-shorthand.lua`:
-
-::: columns
-::: {.column width="48%"}
-**Short form (new):**
-
-Each millimetre of length corresponds to approximately
-[four grams of body mass]{.rn-underline-indigo}.
-
-```markdown
-[text]{.rn-underline-indigo}
-```
-:::
-::: {.column width="48%"}
-**Long form (still functional):**
-
-```markdown
-[text]{.rn-fragment rn-type=underline
-  rn-color="#5D2890"}
-```
-:::
-:::
-
-[Available types: `underline`, `box`, `circle`, `highlight`, `cross`, `bracket`. Colours: `indigo`, `orange`, `amethyst`, `olive`, `graphite`, `red`.]{.text-size-smaller .text-color-grey_olive}
-
-## Roughnotation: `box`, `circle`, `bracket`
-
-::: columns
-::: {.column width="32%"}
-**box**
-
-**R² = [0.76]{.rn-box-indigo}**
-
-```markdown
-[0.76]{.rn-box-indigo}
-```
-:::
-::: {.column width="32%"}
-**circle**
-
-The relationship is [strong]{.rn-circle-orange}.
-
-```markdown
-[strong]{.rn-circle-orange}
-```
-:::
-::: {.column width="32%"}
-**bracket**
-
-**ŷ = β₀ + [β₁x]{.rn-bracket-indigo}**
-
-```markdown
-[β₁x]{.rn-bracket-indigo}
-```
-:::
-:::
-
-[Animation fires on fragment arrival. Do not use both colours on the same slide.]{.text-size-smaller .text-color-grey_olive}
-
-# Fragments and progressive disclosure {.center}
-
-## Fragment: `.fragment` block
-
-A sentence that is on the slide from the start.
 
 ::: {.fragment}
-::: {.panel-result}
-[Conclusion arrives after pause]{.panel-title}
-
-This entire block appears as a single fragment — the student sees the sentence above
-and only after clicking does the panel with the conclusion reveal itself.
-:::
-:::
-
-[Syntax: `::: {.fragment}` wraps any block. Works with panels, blockquotes, strips, and cards.]{.text-size-smaller .text-color-grey_olive}
-
-## Fragment: `.incremental` list
-
-Which properties must a good correlation coefficient satisfy?
-
-::: {.incremental}
-- It must be symmetric: correlation of X with Y = correlation of Y with X.
-- It must be dimensionless: independent of the scale of variables.
-- It must be in the interval −1 to +1.
-- +1 = perfect positive dependence, −1 = perfect negative dependence.
+$$
+\text{sklon samce}
+=
+`r format_cz(b[["delka_krunyre_mm"]], digits = 3)`
++
+(`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3)`)
+=
+`r format_cz(sum(b[c("delka_krunyre_mm", "delka_krunyre_mm:pohlavisamec")]), digits = 3)`
+$$
 :::
 
-[Each item appears on click.]{.text-size-smaller .text-color-grey_olive}
-
-# Typography {.center}
-
-## Typography: sizes
-
-::: columns
-::: {.column width="55%"}
-[`.text-size-heading` — 140 % of base]{.text-size-heading}
-
-[`.text-size-large` — 130 % of base]{.text-size-large}
-
-Normal text (100 %, base 30 px)
-
-[`.text-size-smaller` — 82 % of base]{.text-size-smaller}
-
-[`.text-size-tiny` — 65 % of base]{.text-size-tiny}
+::: {.fragment}
+95% interval rozdílu sklonů: [`r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 1], digits = 3)`; `r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 2], digits = 3)`] mm/mm
 :::
-::: {.column width="42%"}
-```markdown
-[text]{.text-size-heading}
-[text]{.text-size-large}
-[text]{.text-size-smaller}
-[text]{.text-size-tiny}
+
+## Koeficienty dávají rozdíl −1,76 mm při 30 mm
+
+Rozdíl **samec − samice** při délce $x$:
+
+::: incremental
+$$
+\Delta(x)=\beta_{\text{samec}}+x\,\beta_{\text{délka:samec}}
+$$
+
+$$
+\Delta(30)
+=
+`r format_cz(b[["pohlavisamec"]], digits = 3)`
++
+30 \times (`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3)`)
+$$
+
+$$
+\Delta(30)=\mathbf{`r format_cz(rozdil_30, digits = 3, signed = TRUE)`\ \text{mm}}
+$$
+:::
+
+[Je to stejný rozdíl, který jsme už odečetli z předpovědí.]{.footer}
+
+## Platí koeficient `pohlavisamec` při každé délce?
+
+::: {.panel-question}
+Hlasujte a přidejte jednověté zdůvodnění:
+
+1. Ano, při každé délce.
+2. Ne, pouze při délce 30 mm.
+3. Ne, pouze při délce 0 mm.
+:::
+
+::: {.fragment}
+[Správně: pouze při délce 0 mm.]{.text-hgl-indigo_velvet}
+
+Při jiné délce musíme přidat příspěvek [interakčního koeficientu]{.text-hgl-orange}.
+:::
+
+## Jak dobře přímky popisují naměřené kraby?
+
+```{r}
+#| label: interaction-diagnostics
+#| echo: false
+#| fig-alt: "Graf reziduí proti odhadnutým hodnotám pro samice a samce."
+data_diagnostika <- data.frame(
+  odhad = fitted(mod_interakce),
+  residuum = residuals(mod_interakce),
+  pohlavi = data_krabi$pohlavi
+)
+ggplot2::ggplot(data_diagnostika, ggplot2::aes(odhad, residuum, colour = pohlavi)) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::geom_point(alpha = 0.65, size = 2.2) +
+  ggplot2::geom_smooth(method = "loess", se = FALSE, colour = biostat_cols[["graphite"]], linewidth = 1) +
+  ggplot2::scale_colour_manual(values = vec_barvy) +
+  ggplot2::labs(x = "Odhadnutá zadní šířka (mm)", y = "Reziduum (mm)", colour = "Pohlaví") +
+  theme_l08
 ```
 
-[`.text-size-body` = 100 % (explicit reset). Old `.text-larger`/`.text-smaller`/`.text-tiny` are removed.]{.text-size-smaller .text-color-grey_olive}
+[Graf neukazuje výrazný systematický vzorec. To neprokazuje kauzalitu ani platnost mimo pozorované délky.]{.footer}
+
+## U modrých krabů se rozdíl mezi pohlavími mění s délkou
+
+::: {.panel-result}
+- Samice: sklon [`r format_cz(b[["delka_krunyre_mm"]], digits = 3)` mm/mm]{.text-hgl-indigo_velvet}
+- Samci: sklon [`r format_cz(sum(b[c("delka_krunyre_mm", "delka_krunyre_mm:pohlavisamec")]), digits = 3)` mm/mm]{.text-hgl-indigo_velvet}
+- Změna rozdílu na 1 mm délky: [`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
+- Rozdíl při 30 mm: [`r format_cz(rozdil_30, signed = TRUE)` mm]{.text-hgl-orange}
+:::
+
+::: {.fragment}
+Pozorovací data popisují asociaci v tomto souboru. Nevysvětlují příčinu rozdílu.
+:::
+
+# Když jsou oba prediktory skupiny
+
+## Liší se rozdíl mezi pohlavími u modré a oranžové formy?
+
+```{r}
+#| label: all-form-data
+#| include: false
+data_formy <- MASS::crabs[, c("sp", "sex", "CL")]
+names(data_formy) <- c("forma", "pohlavi", "delka_krunyre_mm")
+data_formy$forma <- factor(data_formy$forma, levels = c("B", "O"), labels = c("modrá", "oranžová"))
+data_formy$pohlavi <- factor(data_formy$pohlavi, levels = c("F", "M"), labels = c("samice", "samec"))
+```
+
+::: columns
+::: {.column width="48%"}
+::: {.panel-data}
+[Odezva]{.card-title}
+
+Délka krunýře (mm)
+:::
+:::
+::: {.column width="48%"}
+::: {.panel-data}
+[Dva prediktory]{.card-title}
+
+Barevná forma · pohlaví
+:::
 :::
 :::
 
-## Typography: weight, alignment, font
-
-::: {.text-center}
-`.text-center` — horizontal centre
+::: {.panel-question}
+Mění se rozdíl **samec − samice** mezi barevnými formami?
 :::
 
-::: {.text-right}
-`.text-right` — right alignment
+## Jaké délky vidíme ve čtyřech skupinách?
+
+```{r}
+#| label: raw-four-groups
+#| echo: false
+#| fig-alt: "Houslové grafy a jednotlivé body ukazují délku krunýře samic a samců v modré a oranžové formě."
+graf_ctyri_body <- ggplot2::ggplot(
+  data_formy,
+  ggplot2::aes(pohlavi, delka_krunyre_mm, fill = pohlavi, colour = pohlavi)
+) +
+  ggplot2::geom_violin(alpha = 0.22, width = 0.78, colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::geom_point(
+    position = ggplot2::position_jitter(width = 0.10, height = 0, seed = 900723),
+    alpha = 0.55, size = 1.8
+  ) +
+  ggplot2::facet_wrap(ggplot2::vars(forma)) +
+  ggplot2::scale_colour_manual(values = vec_barvy) +
+  ggplot2::scale_fill_manual(values = vec_barvy) +
+  ggplot2::labs(x = "Pohlaví", y = "Délka krunýře (mm)") +
+  theme_l08 +
+  ggplot2::theme(legend.position = "none")
+graf_ctyri_body
+```
+
+[Každý bod je jeden krab. Šířka houslí ukazuje, kde jsou hodnoty častější.]{.footer}
+
+## Je rozdíl mezi samci a samicemi u obou forem stejný?
+
+```{r}
+#| label: silent-write
+#| echo: false
+#| fig-alt: "Stejný graf čtyř skupin bez zobrazených průměrů."
+graf_ctyri_body
+```
+
+::: {.panel-question}
+[Jedna minuta bez hovoru:]{.card-title}
+
+Napište pro každou formu:
+
+- kdo má vyšší průměr;
+- zda čekáte podobně velký rozdíl;
+- jednu větu, kterou zatím z bodů říci nemůžeme.
+:::
+
+## Průměry ukazují dva různé rozdíly
+
+```{r}
+#| label: means-four-groups
+#| echo: false
+#| fig-alt: "Stejný graf jednotlivých krabů doplněný o čtyři průměry a dvě spojnice."
+data_prumery <- data_formy |>
+  dplyr::group_by(forma, pohlavi) |>
+  dplyr::summarise(prumer = mean(delka_krunyre_mm), .groups = "drop")
+graf_ctyri_prumery <- graf_ctyri_body +
+  ggplot2::geom_line(
+    data = data_prumery,
+    ggplot2::aes(pohlavi, prumer, group = forma),
+    inherit.aes = FALSE, colour = biostat_cols[["graphite"]], linewidth = 1.2
+  ) +
+  ggplot2::geom_point(
+    data = data_prumery,
+    ggplot2::aes(pohlavi, prumer, fill = pohlavi),
+    inherit.aes = FALSE, shape = 23, size = 5, colour = "white", stroke = 1.4
+  ) +
+  ggplot2::scale_fill_manual(values = vec_barvy)
+graf_ctyri_prumery
+```
+
+[Body, osy i náhodné posunutí jsou stejné. Přibyly pouze průměry a spojnice.]{.footer}
+
+## Jak velký je rozdíl samec minus samice v každé formě?
+
+```{r}
+#| label: contrasts-by-form
+#| include: false
+tab_prumery <- xtabs(prumer ~ forma + pohlavi, data_prumery)
+rozdil_modra <- tab_prumery["modrá", "samec"] - tab_prumery["modrá", "samice"]
+rozdil_oranzova <- tab_prumery["oranžová", "samec"] - tab_prumery["oranžová", "samice"]
+rozdil_rozdilu <- rozdil_oranzova - rozdil_modra
+```
+
+::: columns
+::: {.column width="48%"}
+::: {.panel-insight}
+[Modrá forma]{.card-title}
+
+$$
+`r format_cz(tab_prumery["modrá", "samec"])`
+-
+`r format_cz(tab_prumery["modrá", "samice"])`
+=
+\mathbf{`r format_cz(rozdil_modra, signed = TRUE)`\ \text{mm}}
+$$
+:::
+:::
+::: {.column width="48%"}
+::: {.panel-warning}
+[Oranžová forma]{.card-title}
+
+$$
+`r format_cz(tab_prumery["oranžová", "samec"])`
+-
+`r format_cz(tab_prumery["oranžová", "samice"])`
+=
+\mathbf{`r format_cz(rozdil_oranzova, signed = TRUE)`\ \text{mm}}
+$$
+:::
+:::
+:::
+
+## Interakce je rozdíl dvou rozdílů
+
+$$
+\Delta
+=
+(\text{samec} - \text{samice})_{\text{oranžová}}
+-
+(\text{samec} - \text{samice})_{\text{modrá}}
+$$
+
+::: {.fragment}
+$$
+\Delta
+=
+(`r format_cz(rozdil_oranzova, signed = TRUE)`)
+-
+(`r format_cz(rozdil_modra, signed = TRUE)`)
+=
+\mathbf{`r format_cz(rozdil_rozdilu, signed = TRUE)`\ \text{mm}}
+$$
+:::
+
+::: {.fragment .panel-result}
+Rozdíl mezi pohlavími se při přechodu od modré k oranžové formě změní o [`r format_cz(abs(rozdil_rozdilu))` mm]{.text-size-heading .text-bold .text-color-orange}.
+:::
+
+## `forma * pohlavi` zapíše všechny čtyři kombinace
+
+```{r}
+#| label: categorical-interaction-model
+#| echo: true
+mod_formy <- lm(
+  formula = delka_krunyre_mm ~ forma * pohlavi,
+  data = data_formy
+)
+
+round(
+  x = summary(object = mod_formy)$coefficients,
+  digits = 3
+)
+```
+
+::: {.fragment}
+`forma * pohlavi = forma + pohlavi + forma:pohlavi`
+:::
+
+[Referenční kombinace: modrá forma a samice.]{.footer}
+
+## Čtyři koeficienty skládají čtyři skupinové průměry
+
+```{r}
+#| label: categorical-coefficients
+#| include: false
+bf <- coef(mod_formy)
+ci_formy <- confint(mod_formy)
+```
+
+::: columns
+::: {.column width="48%"}
+- **`(Intercept)`**
+  modrá samice: [`r format_cz(bf[["(Intercept)"]], digits = 3)` mm]{.text-hgl-indigo_velvet}
+
+- **`formaoranžová`**
+  oranžová − modrá mezi samicemi: [`r format_cz(bf[["formaoranžová"]], digits = 3, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+:::
+::: {.column width="48%"}
+- **`pohlavisamec`**
+  samec − samice v modré formě: [`r format_cz(bf[["pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
+
+- **`formaoranžová:pohlavisamec`**
+  změna rozdílu mezi formami: [`r format_cz(bf[["formaoranžová:pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
+:::
+:::
+
+::: {.fragment}
+95% interval interakce: [`r format_cz(ci_formy["formaoranžová:pohlavisamec", 1])`; `r format_cz(ci_formy["formaoranžová:pohlavisamec", 2])`] mm
+:::
+
+## Model vrátí odhad pro každou ze čtyř skupin
+
+```{r}
+#| label: emmeans-four-groups
+#| echo: true
+prumery_model <- emmeans::emmeans(
+  object = mod_formy,
+  specs = ~ pohlavi | forma
+)
+
+prumery_model
+```
+
+::: {.fragment}
+Model má jeden parametr pro každou kombinaci, proto odhady odpovídají pozorovaným skupinovým průměrům.
+:::
+
+## Co čtyři průměry neříkají o jednotlivých krabech?
+
+```{r}
+#| label: categorical-residuals
+#| echo: false
+#| fig-alt: "Houslové grafy reziduí s body všech krabů ukazují variabilitu uvnitř čtyř skupin."
+data_formy$residuum_mm <- residuals(mod_formy)
+ggplot2::ggplot(data_formy, ggplot2::aes(pohlavi, residuum_mm, fill = pohlavi)) +
+  ggplot2::geom_violin(alpha = 0.35, width = 0.75, colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::geom_point(
+    position = ggplot2::position_jitter(width = 0.10, height = 0, seed = 900723),
+    alpha = 0.6, size = 1.7, colour = biostat_cols[["graphite"]]
+  ) +
+  ggplot2::facet_wrap(ggplot2::vars(forma)) +
+  ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::scale_fill_manual(values = vec_barvy, guide = "none") +
+  ggplot2::labs(x = "Pohlaví", y = "Odchylka od průměru skupiny (mm)") +
+  theme_l08
+```
+
+[Model vystihuje čtyři průměry. Jednotliví krabi se od nich stále výrazně liší.]{.footer}
+
+## Rozdíl mezi pohlavími závisí na barevné formě
+
+::: {.panel-result}
+- Modrá forma: samec − samice = [`r format_cz(rozdil_modra, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+- Oranžová forma: samec − samice = [`r format_cz(rozdil_oranzova, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+- Změna rozdílu: [`r format_cz(rozdil_rozdilu, signed = TRUE)` mm]{.text-hgl-orange}
+- 95% interval změny: [`r format_cz(ci_formy["formaoranžová:pohlavisamec", 1])`; `r format_cz(ci_formy["formaoranžová:pohlavisamec", 2])`] mm
+:::
+
+::: {.fragment}
+Výsledek popisuje tyto měřené kraby. Barevná forma ani pohlaví nebyly experimentálně přiřazeny.
+:::
+
+
+# Jedna myšlenka, dva obrazy
+
+## Interakce mění sklon nebo skupinový rozdíl
+
+```{r}
+#| label: compare-interaction-visuals
+#| echo: false
+#| fig-alt: "Vedle sebe jsou neparalelní regresní přímky a čtyři skupiny s propojenými průměry."
+cowplot::plot_grid(
+  graf_interakce +
+    ggplot2::ggtitle("číselný × skupinový") +
+    ggplot2::theme(legend.position = "none"),
+  graf_ctyri_prumery +
+    ggplot2::ggtitle("skupinový × skupinový") +
+    ggplot2::theme(legend.position = "none"),
+  nrow = 1,
+  labels = c("A", "B")
+)
+```
+
+::: columns
+::: {.column width="48%"}
+[Co se mění?]{.text-bold} Rozdíl mezi přímkami podél osy délky.
+:::
+::: {.column width="48%"}
+[Co se mění?]{.text-bold} Rozdíl mezi pohlavími podle formy.
+:::
+:::
+
+## Co musíme doplnit, aby tvrzení o efektu bylo úplné?
+
+::: columns
+::: {.column width="48%"}
+::: {.panel-warning}
+[Neúplné]{.card-title}
+
+„Délka má efekt.“
+
+„Samci jsou větší.“
+:::
+:::
+::: {.column width="48%"}
+::: {.panel-question}
+[Opravte tvrzení]{.card-title}
+
+- Pro které pohlaví?
+- Při jaké délce?
+- V které barevné formě?
+- Větší v jakém znaku?
+:::
+:::
+:::
+
+::: {.fragment .panel-insight}
+V modelu s interakcí vždy uvádíme [hodnotu nebo úroveň druhého prediktoru]{.text-hgl-indigo_velvet}.
+:::
+
+## Hlavní efekty v interakci jsou podmíněné
+
+::: incremental
+1. Začněte biologickou otázkou: [mění se vztah nebo rozdíl?]{.text-hgl-indigo_velvet}
+2. Ukažte data a modelové [předpovědi pro konkrétní kombinace]{.text-hgl-orange}.
+3. Koeficient čtěte vzhledem k [referenční skupině a hodnotě druhého prediktoru]{.text-hgl-indigo_velvet}.
+4. Interakční člen popisuje [změnu sklonu nebo rozdíl dvou rozdílů]{.text-hgl-orange}.
+5. Závěr omezte na rozsah a způsob získání dat.
+:::
+
+## Co si odnést
+
+::: incremental
+- Interakce říká, že vztah jednoho prediktoru [závisí na druhém]{.text-hgl-indigo_velvet}.
+- `x * y` je zkratka pro [`x + y + x:y`]{.text-hgl-orange}.
+- Předpovědi při konkrétních kombinacích bývají čitelnější než izolované koeficienty.
+- Hlavní efekty jsou [podmíněné]{.text-hgl-indigo_velvet}.
+- U krabů se mění jak sklon mezi pohlavími, tak rozdíl mezi pohlavími podle barevné formy.
 :::
 
 <br>
 
-[`.text-font-heading` — Source Sans 3, heading weight]{.text-font-heading}
+[Studijní materiály](`r slides_url`) · [Zdrojový repozitář](`r github_url`) · [Kurzový slovník](https://cuni-natur-biostatistics.github.io/slovnik/)
 
-[`.text-font-monospace` — JetBrains Mono]{.text-font-monospace}
+[Data: Campbell, N. A. & Mahon, R. J. (1974), `MASS::crabs`.]{.footer}
 
-[`.text-bold` — bold]{.text-bold}
-
-# Colour utilities {.center}
-
-## Colours: indigo_velvet and amethyst
+## Který biologicky smysluplný model máme zvolit?
 
 ::: columns
-::: {.column width="48%"}
-::: {.bg-indigo_velvet style="padding:0.55rem 0.8rem;border-radius:10px;margin-bottom:0.5rem;"}
-[`.bg-indigo_velvet` — primary indigo]{.text-color-white}
+::: {.column width="50%"}
+```{r}
+#| label: zobrazit-krabi-modely
+#| echo: false
+#| out-width: "100%"
+#| fig-alt: "Dva modří krabi porovnávají dvě dvojice stop v písku: první dvojice zůstává rovnoběžná, druhá se postupně rozbíhá."
+#| fig-cap: "Ilustrační obraz vytvořen AI."
+include_local_figure("krabi_modely.png")
+```
 :::
-[`.text-color-indigo_velvet`]{.text-color-indigo_velvet}
+::: {.column width="46%"}
+**Aditivní kandidát**
 
-[`.text-hgl-indigo_velvet`]{.text-hgl-indigo_velvet}
-:::
-::: {.column width="48%"}
-::: {.bg-amethyst style="padding:0.55rem 0.8rem;border-radius:10px;margin-bottom:0.5rem;"}
-[`.bg-amethyst` — lighter purple]{.text-color-white}
-:::
-[`.text-color-amethyst`]{.text-color-amethyst}
+`zadni_sirka_mm ~`<br>
+`delka_krunyre_mm + pohlavi`
 
-[`.text-hgl-amethyst`]{.text-hgl-amethyst}
-:::
-:::
+[Stálý rozdíl]{.text-hgl-indigo_velvet}
 
-## Colours: orange and graphite
+<br>
 
-::: columns
-::: {.column width="48%"}
-::: {.bg-orange style="padding:0.55rem 0.8rem;border-radius:10px;margin-bottom:0.5rem;"}
-[`.bg-orange` — vivid orange]{.text-color-graphite}
-:::
-[`.text-color-orange`]{.text-color-orange}
+**Interakční kandidát**
 
-[`.text-hgl-orange`]{.text-hgl-orange}
-:::
-::: {.column width="48%"}
-::: {.bg-graphite style="padding:0.55rem 0.8rem;border-radius:10px;margin-bottom:0.5rem;"}
-[`.bg-graphite` — dark base]{.text-color-white}
-:::
-[`.text-color-graphite`]{.text-color-graphite}
+`zadni_sirka_mm ~`<br>
+`delka_krunyre_mm * pohlavi`
 
-[`.text-hgl-graphite`]{.text-hgl-graphite}
+[Měnící se rozdíl]{.text-hgl-amethyst}
 :::
 :::
 
-## Colours: neutral palette tones
-
-::: columns
-::: {.column width="23%"}
-::: {.bg-parchment style="padding:0.5rem 0.7rem;border-radius:10px;border:1px solid #ccc;"}
-[`.bg-parchment`]{.text-color-graphite .text-size-smaller}
-:::
-[`.text-color-parchment`]{.text-color-parchment .text-size-smaller .bg-graphite style="padding:1px 4px;border-radius:3px;"}
-
-[`.text-hgl-parchment`]{.text-hgl-parchment .text-size-smaller}
-:::
-::: {.column width="23%"}
-::: {.bg-grey_olive style="padding:0.5rem 0.7rem;border-radius:10px;"}
-[`.bg-grey_olive`]{.text-color-white .text-size-smaller}
-:::
-[`.text-color-grey_olive`]{.text-color-grey_olive .text-size-smaller}
-
-[`.text-hgl-grey_olive`]{.text-hgl-grey_olive .text-size-smaller}
-:::
-::: {.column width="23%"}
-::: {.bg-light_gray style="padding:0.5rem 0.7rem;border-radius:10px;border:1px solid #ccc;"}
-[`.bg-light_gray`]{.text-color-graphite .text-size-smaller}
-:::
-[`.text-color-light_gray`]{.text-color-light_gray .text-size-smaller .bg-graphite style="padding:1px 4px;border-radius:3px;"}
-
-[`.text-hgl-light_gray`]{.text-hgl-light_gray .text-size-smaller}
-:::
-::: {.column width="23%"}
-::: {.bg-white style="padding:0.5rem 0.7rem;border-radius:10px;border:1px solid #ccc;"}
-[`.bg-white`]{.text-color-graphite .text-size-smaller}
-:::
-[`.text-color-white`]{.text-color-white .text-size-smaller .bg-graphite style="padding:1px 4px;border-radius:3px;"}
-
-[`.text-hgl-white`]{.text-hgl-white .text-size-smaller}
-:::
+::: {.fragment .panel-question}
+Jak vyvážíme popis dat a složitost modelu?
 :::
 
-# Layout utilities {.center}
-
-## Layout: `.columns.align-top`
-
-::: {.columns .align-top}
-::: {.column width="48%"}
-**Left column** starts at the top — without `.align-top` the content would be vertically centred.
-
-::: {.card-indigo}
-Card in the left column.
-
-Second paragraph inside the card — the left column is taller.
-:::
-:::
-::: {.column width="48%"}
-**Right column** is shorter.
-
-Without `.align-top` the right text would shift down to the centre of the column pair.
-:::
-:::
-
-[Syntax: `::: {.columns .align-top}` — add the class `.align-top` to `.columns`.]{.text-size-smaller .text-color-grey_olive}
-
-## Layout: vertical offsets
-
-::: {.card-question}
-[Example: `.slide-margin-top-15`]{.kicker}
-
-This card would have `margin-top: 15%` if it had the class `.slide-margin-top-15`.
-Useful for vertically centring an isolated element on a slide.
-:::
-
-::: {.takeaway-strip .strip-compact}
-`.slide-margin-top-15` → `margin-top: 15%` · `.slide-margin-top-25` → `margin-top: 25%` · `.center-vertical` → absolute centre
-:::
-
-[For a group of related elements, prefer the normal-flow `.layout-stack.layout-center-y` utility shown below.]{.text-size-smaller .text-color-grey_olive}
-
-## Layout: `.layout-grid-2`
-
-:::: {.layout-grid-2}
-::: {.panel-result}
-[Left result]{.panel-title}
-
-Two equal-width elements form one comparison.
-:::
-
-::: {.panel-question}
-[Right question]{.panel-title}
-
-The shared gap keeps the pair readable.
-:::
-::::
-
-::: {.takeaway-strip}
-Use `::: {.layout-grid-2}` for a comparison or prompt pair—not merely to decorate an ordinary list.
-:::
-
-## Layout: vertical stack
-
-:::: {.layout-stack}
-::: {.box-question}
-First related teaching element.
-:::
-
-::: {.box-result}
-Second element with consistent breathing room.
-:::
-
-::: {.takeaway-strip}
-The default gap is `1.4rem`; override `--layout-gap` on the wrapper only when the rendered composition needs it.
-:::
-::::
-
-## Layout: centred stack
-
-:::: {.layout-stack .layout-center-y}
-::: {.box-question .text-center}
-Which observation would change your conclusion?
-:::
-
-::: {.takeaway-strip .text-center}
-`.layout-center-y` centres the short stack in normal flow without transforming its children.
-:::
-::::
-
+[L09: R² · adjustované R² · AIC]{.footer}
