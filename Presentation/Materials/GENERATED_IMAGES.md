@@ -82,3 +82,29 @@ Avoid: road lanes, branching Y intersection, curved parallel road edges, photore
 ```
 
 The first crossroads variant made both candidates look like roads with parallel edges and was rejected before repository use.
+
+## `krabi_ctyri_skupiny.png`
+
+- Teaching role: introduce the categorical-by-categorical example by making the four combinations of two color forms and two sexes visible before students inspect the data.
+- Generation date: 2026-09-26
+- SHA-256: `DC7959D457959A6D151B367B6A7DC960AA0EFF076DC292670C57A433241B93A0`
+- Generation mode: OpenAI built-in image generation; new bitmap asset.
+- Style reference: the prompt restated the established L08 flat editorial paper-cut language because the image tool could not read the local reference file through the environment ACL.
+- Selected output: exactly four crabs arranged as a balanced 2 × 2 group, with one female and one male in each blue and orange color form.
+
+### Generation prompt
+
+```text
+Use case: scientific-educational
+Asset type: 16:9 section-divider illustration for a university biostatistics lecture
+Primary request: Create a humorous, friendly illustration showing the four combinations formed by two crab color forms and two sexes. Arrange exactly four recognizable shore crabs as a clean 2 by 2 character group: blue female and blue male on the left side, orange female and orange male on the right side. Each color pair must clearly contain one female and one male. Give each crab a small plain round badge showing only one large standard sex symbol, either ♀ or ♂, so the two sexes are unambiguous. The four crabs look like a cheerful class photo and have slightly different natural poses.
+Scene/backdrop: minimal sandy shoreline with a subdued sea horizon and generous clean negative space
+Subject: exactly four friendly shore crabs, two naturally blue toned and two naturally orange toned
+Style/medium: original flat editorial paper cut illustration, crisp layered shapes, gentle paper texture, rounded friendly character design, playful academic tone consistent with a polished university lecture
+Composition/framing: wide landscape, balanced four character composition, readable when projected, no overlap between badges
+Lighting/mood: bright, warm, lightly comic
+Color palette: muted natural blue, muted natural orange, sand, off white, and graphite; avoid bright course purple
+Text (verbatim): no words or numbers; the only glyphs allowed are two ♀ symbols and two ♂ symbols
+Constraints: exactly four crabs; exactly two blue and two orange; exactly one ♀ and one ♂ within each color; symbols must be correct and clearly paired with individual crabs; no formulas, graphs, axes, logos, watermark, human hands, clothing, eyelashes, bows, hats, or gender stereotypes; do not imply that one sex or color is better, larger, or the correct answer; this is a conceptual memory device, not statistical evidence
+Avoid: photorealism, crowded background, speech bubbles, written labels, decorative statistics, extra animals, duplicated limbs, incorrect sex symbols
+```

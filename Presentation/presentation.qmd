@@ -83,32 +83,6 @@ include_local_figure("krabi_mereni.png")
 
 **Délka krunýře** a **zadní šířka krunýře** jsou dvě měření téhož kraba.
 
-## Co naznačují naměření krabi?
-
-```{r}
-#| label: uvodni-data
-#| include: false
-data_krabi <- MASS::crabs[MASS::crabs$sp == "B", c("sex", "CL", "RW")]
-names(data_krabi) <- c("pohlavi", "delka_krunyre_mm", "zadni_sirka_mm")
-data_krabi$pohlavi <- factor(data_krabi$pohlavi, levels = c("F", "M"), labels = c("samice", "samec"))
-graf_body <- ggplot2::ggplot(data_krabi, ggplot2::aes(delka_krunyre_mm, zadni_sirka_mm, colour = pohlavi)) +
-  ggplot2::geom_point(alpha = 0.58, size = 2.2) +
-  ggplot2::scale_colour_manual(values = vec_barvy) +
-  ggplot2::labs(x = "Délka krunýře (mm)", y = "Zadní šířka krunýře (mm)", colour = "Pohlaví") +
-  theme_l08
-```
-
-```{r}
-#| label: uvodni-graf
-#| echo: false
-#| fig-alt: "Bodový graf délky a zadní šířky krunýře modrých krabů; samice a samci jsou odlišeni barvou."
-graf_body
-```
-
-::: {.panel-question}
-[Když se délka zvětšuje, mění se zadní šířka u obou pohlaví stejně?]{.text-size-heading .text-bold}
-:::
-
 {{< include ../pollslive/generated/active.qmd >}}
 
 ## Výsledky učení
@@ -144,11 +118,14 @@ data_krabi$pohlavi <- factor(
 head(x = data_krabi, n = 4)
 ```
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
+
+<br>
+
 ::: {.panel-data}
 [100 krabů]{.card-title}
 
-- modrá barevná forma
+- 🔵 modrá barevná forma
 - 50 samic · 50 samců
 - délka krunýře v mm
 - zadní šířka v mm
@@ -158,7 +135,24 @@ head(x = data_krabi, n = 4)
 :::
 :::
 
-## Jak spolu souvisejí délka a zadní šířka?
+## Co naznačují naměření krabi?
+
+```{r}
+#| label: raw-plot-setup
+#| include: false
+graf_body <- ggplot2::ggplot(
+  data_krabi,
+  ggplot2::aes(delka_krunyre_mm, zadni_sirka_mm, colour = pohlavi)
+) +
+  ggplot2::geom_point(alpha = 0.58, size = 2.2) +
+  ggplot2::scale_colour_manual(values = vec_barvy) +
+  ggplot2::labs(
+    x = "Délka krunýře (mm)",
+    y = "Zadní šířka krunýře (mm)",
+    colour = "Pohlaví"
+  ) +
+  theme_l08
+```
 
 ```{r}
 #| label: raw-prompt
@@ -220,7 +214,10 @@ graf_aditivni
 graf_aditivni
 ```
 :::
-::: {.column width="32%"}
+::: {.column width="32%" .fragment}
+
+<br>
+
 ::: {.panel-question}
 [Ve dvojici:]{.card-title}
 
@@ -247,9 +244,11 @@ graf_ruzne
 
 ## Když se rozdíl mění, mluvíme o interakci
 
+<br>
+
 ::: columns
-::: {.column width="48%"}
-::: {.panel-warning}
+::: {.column width="48%" .fragment}
+::: {.panel-insight}
 [Aditivní model]{.card-title}
 
 $$\text{rozdíl mezi pohlavími}=\text{stálý}$$
@@ -257,8 +256,8 @@ $$\text{rozdíl mezi pohlavími}=\text{stálý}$$
 Rovnoběžné přímky
 :::
 :::
-::: {.column width="48%"}
-::: {.panel-insight}
+::: {.column width="48%" .fragment}
+::: {.panel-warning}
 [Model s interakcí]{.card-title}
 
 $$\text{rozdíl mezi pohlavími}=f(\text{délky})$$
@@ -268,11 +267,15 @@ Různé sklony
 :::
 :::
 
+<br>
+
 ::: {.fragment}
 **Interakce:** vztah délky a zadní šířky [závisí na pohlaví]{.text-hgl-indigo_velvet}.
 :::
 
-## `delka * pohlavi` přidá člen `delka:pohlavi`
+## Jak zapsat model s interakcí?
+
+<br>
 
 ::: incremental
 1. `zadni_sirka_mm ~ delka_krunyre_mm + pohlavi`
@@ -322,43 +325,46 @@ graf_interakce + ggplot2::geom_vline(xintercept = 30, linetype = "dashed", colou
 
 ## Dva odhady při délce 30 mm
 
+<br>
+
+
 ```{r}
-#| label: predictions-at-30
+#| label: predictions-at-30-setup
 #| echo: true
+#| eval: false
 data_30_mm <- data.frame(
   delka_krunyre_mm = c(30, 30),
   pohlavi = factor(c("samice", "samec"), levels = levels(x = data_krabi$pohlavi))
 )
+```
+
+```{r}
+#| label: predictions-at-30-real
+#| echo: false
+#| eval: true
+data_30_mm <- data.frame(
+  delka_krunyre_mm = c(30, 30),
+  pohlavi = factor(c("samice", "samec"), levels = levels(x = data_krabi$pohlavi))
+)
+
+head(x = data_30_mm, n = 2)
+
 data_30_mm <- cbind(
   data_30_mm,
   predict(object = mod_interakce, newdata = data_30_mm, interval = "confidence")
 )
 ```
 
+::: {.fragment}
 ```{r}
-#| label: predictions-at-30-plot
-#| echo: false
-#| fig-alt: "Dva zvýrazněné modelové odhady při délce 30 milimetrů leží na přímkách samic a samců."
-graf_30 <- graf_interakce +
-  ggplot2::geom_vline(xintercept = 30, linetype = "dotted", colour = biostat_cols[["grey_olive"]]) +
-  ggplot2::geom_errorbar(
-    data = data_30_mm,
-    ggplot2::aes(x = delka_krunyre_mm, ymin = lwr, ymax = upr),
-    inherit.aes = FALSE,
-    width = 0.2, linewidth = 1, position = ggplot2::position_dodge(width = 0.5)
-  ) +
-  ggplot2::geom_point(
-    data = data_30_mm,
-    ggplot2::aes(x = delka_krunyre_mm, y = fit, fill = pohlavi),
-    inherit.aes = FALSE,
-    shape = 21, size = 5, colour = "white", stroke = 1.4,
-    position = ggplot2::position_dodge(width = 0.5)
-  ) +
-  ggplot2::scale_fill_manual(values = vec_barvy, guide = "none")
-graf_30
+#| label: predictions-at-30-interval
+#| echo: true
+#| eval: false
+predict(object = mod_interakce, newdata = data_30_mm, interval = "confidence")
 ```
+:::
 
-## Samec má při 30 mm odhadovanou zadní šířku o 1,76 mm menší
+## Samec - zadní šířka - při 30 mm
 
 ```{r}
 #| label: difference-at-30
@@ -390,10 +396,36 @@ rozdil_30 <- odhad_samec_30 - odhad_samice_30
 :::
 :::
 
+::: {.fragment}
+```{r}
+#| label: predictions-at-30-plot
+#| echo: false
+#| fig-alt: "Dva zvýrazněné modelové odhady při délce 30 milimetrů leží na přímkách samic a samců."
+graf_30 <- graf_interakce +
+  ggplot2::geom_vline(xintercept = 30, linetype = "dotted", colour = biostat_cols[["grey_olive"]]) +
+  ggplot2::geom_errorbar(
+    data = data_30_mm,
+    ggplot2::aes(x = delka_krunyre_mm, ymin = lwr, ymax = upr),
+    inherit.aes = FALSE,
+    width = 0.2, linewidth = 1, position = ggplot2::position_dodge(width = 0.5)
+  ) +
+  ggplot2::geom_point(
+    data = data_30_mm,
+    ggplot2::aes(x = delka_krunyre_mm, y = fit, fill = pohlavi),
+    inherit.aes = FALSE,
+    shape = 21, size = 5, colour = "white", stroke = 1.4,
+    position = ggplot2::position_dodge(width = 0.5)
+  ) +
+  ggplot2::scale_fill_manual(values = vec_barvy, guide = "none")
+graf_30
+```
+:::
+
+
 ## Co už můžeme říci o stejně dlouhých krabech?
 
 ::: {.panel-insight}
-U modrých krabů model odhaduje:
+U krabů 🔵 modré formy model odhaduje:
 
 - rostoucí vztah délky a zadní šířky u obou pohlaví;
 - [pomalejší sklon u samců]{.text-hgl-orange};
@@ -401,13 +433,13 @@ U modrých krabů model odhaduje:
 :::
 
 ::: {.fragment}
-**Ještě nevíme:** jak přesně čtyři koeficienty tento obraz skládají.
+**Ještě nevíme:** jak přesně je toto vyjádřeno koeficienty modelu.
 :::
 
 
-# Čtyři koeficienty, jedna dvojice přímek
+# Koeficienty interakčního modelu
 
-## Kde jsou v `summary()` čtyři části interakce?
+## Jaké jsou koeficienty v `summary()`?
 
 ```{r}
 #| label: interaction-summary
@@ -422,8 +454,10 @@ round(
 )
 ```
 
+<br>
+
 ::: {.fragment}
-Čteme nejprve sloupec **Estimate**. Každý řádek dostane význam až s referenční skupinou a hodnotou druhého prediktoru.
+Čteme nejprve sloupec **Estimate**.
 :::
 
 ## První dva koeficienty popisují referenční samice
@@ -434,8 +468,10 @@ round(
 b <- coef(mod_interakce)
 ```
 
+<br>
+
 ::: columns
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-warning}
 [`(Intercept)`]{.card-title}
 
@@ -443,10 +479,10 @@ b <- coef(mod_interakce)
 
 Odhad pro samici při délce **0 mm**.
 
-Takového kraba jsme neměřili.
+(hypotetický krab)
 :::
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-insight}
 [`delka_krunyre_mm`]{.card-title}
 
@@ -459,11 +495,17 @@ Sklon samičí přímky.
 
 ## Koeficient pohlaví porovnává skupiny při délce 0 mm
 
+<br>
+
 [`pohlavisamec` = `r format_cz(b[["pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-size-heading .text-bold .text-hgl-orange}
+
+<br>
 
 Rozdíl **samec − samice**, když `delka_krunyre_mm = 0`.
 
-::: {.fragment}
+<br>
+
+::: {.fragment .incremental}
 Není to:
 
 - rozdíl při každé délce;
@@ -483,6 +525,8 @@ Není to:
 ci_interakce <- confint(mod_interakce)
 ```
 
+<br>
+
 ::: columns
 ::: {.column width="48%"}
 ::: {.panel-insight}
@@ -500,6 +544,8 @@ ci_interakce <- confint(mod_interakce)
 :::
 :::
 
+<br>
+
 ::: {.fragment}
 $$
 \text{sklon samce}
@@ -512,29 +558,39 @@ $$
 $$
 :::
 
-::: {.fragment}
+<br>
+
+::: {.fragment .text-center}
 95% interval rozdílu sklonů: [`r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 1], digits = 3)`; `r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 2], digits = 3)`] mm/mm
 :::
 
-## Koeficienty dávají rozdíl −1,76 mm při 30 mm
+## Rozdíl při 30 mm skládají dva známé příspěvky
 
-Rozdíl **samec − samice** při délce $x$:
+<br>
 
-::: incremental
+Rozdíl **samec − samice při 30 mm** tvoří:
+
+::: {.fragment}
+1. rozdíl mezi pohlavími při délce 0 mm: [`r format_cz(b[["pohlavisamec"]], digits = 4, signed = TRUE)` mm]{.text-hgl-indigo_velvet};
+2. třicet změn rozdílu na každý 1 mm délky: $30 \times$ [`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 4, signed = TRUE)` mm/mm]{.text-hgl-orange}.
+:::
+
+::: {.fragment}
+$$
+\text{rozdíl při 30 mm}
+=
+`r format_cz(b[["pohlavisamec"]], digits = 4)`
++ 30 \times (`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 4)`)
+\approx
+\mathbf{`r format_cz(rozdil_30, digits = 2, signed = TRUE)`\ \text{mm}}
+$$
+:::
+
+::: {.fragment}
+Obecně pro délku $x$:
+
 $$
 \Delta(x)=\beta_{\text{samec}}+x\,\beta_{\text{délka:samec}}
-$$
-
-$$
-\Delta(30)
-=
-`r format_cz(b[["pohlavisamec"]], digits = 3)`
-+
-30 \times (`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3)`)
-$$
-
-$$
-\Delta(30)=\mathbf{`r format_cz(rozdil_30, digits = 3, signed = TRUE)`\ \text{mm}}
 $$
 :::
 
@@ -547,12 +603,10 @@ Hlasujte a přidejte jednověté zdůvodnění:
 
 1. Ano, při každé délce.
 2. Ne, pouze při délce 30 mm.
-3. Ne, pouze při délce 0 mm.
+3. [Ne, pouze při délce 0 mm.]{.rn-circle-orange}
 :::
 
 ::: {.fragment}
-[Správně: pouze při délce 0 mm.]{.text-hgl-indigo_velvet}
-
 Při jiné délce musíme přidat příspěvek [interakčního koeficientu]{.text-hgl-orange}.
 :::
 
@@ -578,13 +632,52 @@ ggplot2::ggplot(data_diagnostika, ggplot2::aes(odhad, residuum, colour = pohlavi
 
 [Graf neukazuje výrazný systematický vzorec. To neprokazuje kauzalitu ani platnost mimo pozorované délky.]{.footer}
 
-## U modrých krabů se rozdíl mezi pohlavími mění s délkou
+## U krabů 🔵 modré formy se rozdíl mezi pohlavími mění s délkou
 
-::: {.panel-result}
-- Samice: sklon [`r format_cz(b[["delka_krunyre_mm"]], digits = 3)` mm/mm]{.text-hgl-indigo_velvet}
-- Samci: sklon [`r format_cz(sum(b[c("delka_krunyre_mm", "delka_krunyre_mm:pohlavisamec")]), digits = 3)` mm/mm]{.text-hgl-indigo_velvet}
-- Změna rozdílu na 1 mm délky: [`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
-- Rozdíl při 30 mm: [`r format_cz(rozdil_30, signed = TRUE)` mm]{.text-hgl-orange}
+```{r}
+#| label: interaction-result-intervals
+#| include: false
+ci_sklony <- as.data.frame(
+  confint(
+    emmeans::emtrends(
+      object = mod_interakce,
+      specs = ~ pohlavi,
+      var = "delka_krunyre_mm"
+    )
+  )
+)
+ci_sklon_samice <- ci_sklony[ci_sklony$pohlavi == "samice", ]
+ci_sklon_samec <- ci_sklony[ci_sklony$pohlavi == "samec", ]
+
+ci_rozdil_30 <- as.data.frame(
+  confint(
+    emmeans::contrast(
+      object = emmeans::emmeans(
+        object = mod_interakce,
+        specs = ~ pohlavi,
+        at = list(delka_krunyre_mm = 30)
+      ),
+      method = list("samec - samice" = c(-1, 1))
+    )
+  )
+)
+```
+
+::: {.panel-result .text-size-smaller}
+::: columns
+::: {.column width="48%"}
+[Sklony]{.card-title}
+
+- Samice: [`r format_cz(b[["delka_krunyre_mm"]], digits = 3)` mm/mm]{.text-hgl-indigo_velvet}; 95% IS: [`r format_cz(ci_sklon_samice$lower.CL, digits = 3)`; `r format_cz(ci_sklon_samice$upper.CL, digits = 3)`]
+- Samci: [`r format_cz(sum(b[c("delka_krunyre_mm", "delka_krunyre_mm:pohlavisamec")]), digits = 3)` mm/mm]{.text-hgl-indigo_velvet}; 95% IS: [`r format_cz(ci_sklon_samec$lower.CL, digits = 3)`; `r format_cz(ci_sklon_samec$upper.CL, digits = 3)`]
+:::
+::: {.column width="48%"}
+[Rozdíl samec − samice]{.card-title}
+
+- Změna na 1 mm délky: [`r format_cz(b[["delka_krunyre_mm:pohlavisamec"]], digits = 3, signed = TRUE)` mm/mm]{.text-hgl-orange}; 95% IS: [`r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 1], digits = 3)`; `r format_cz(ci_interakce["delka_krunyre_mm:pohlavisamec", 2], digits = 3)`]
+- Při 30 mm: [`r format_cz(rozdil_30, signed = TRUE)` mm]{.text-hgl-orange}; 95% IS: [`r format_cz(ci_rozdil_30$lower.CL)`; `r format_cz(ci_rozdil_30$upper.CL)`]
+:::
+:::
 :::
 
 ::: {.fragment}
@@ -593,7 +686,16 @@ Pozorovací data popisují asociaci v tomto souboru. Nevysvětlují příčinu r
 
 # Když jsou oba prediktory skupiny
 
-## Liší se rozdíl mezi pohlavími u modré a oranžové formy?
+```{r}
+#| label: zobrazit-krabi-ctyri-skupiny
+#| echo: false
+#| out-width: "82%"
+#| fig-alt: "Čtyři krabi tvoří čtyři kombinace: samice a samec modré formy a samice a samec oranžové formy."
+#| fig-cap: "Ilustrační obraz vytvořen AI."
+include_local_figure("krabi_ctyri_skupiny.png")
+```
+
+## Liší se rozdíl mezi pohlavími u 🔵 modré a 🟠 oranžové formy?
 
 ```{r}
 #| label: all-form-data
@@ -601,8 +703,11 @@ Pozorovací data popisují asociaci v tomto souboru. Nevysvětlují příčinu r
 data_formy <- MASS::crabs[, c("sp", "sex", "CL")]
 names(data_formy) <- c("forma", "pohlavi", "delka_krunyre_mm")
 data_formy$forma <- factor(data_formy$forma, levels = c("B", "O"), labels = c("modrá", "oranžová"))
+popisky_forem <- c(modrá = "🔵 modrá", oranžová = "🟠 oranžová")
 data_formy$pohlavi <- factor(data_formy$pohlavi, levels = c("F", "M"), labels = c("samice", "samec"))
 ```
+
+<br>
 
 ::: columns
 ::: {.column width="48%"}
@@ -612,7 +717,7 @@ data_formy$pohlavi <- factor(data_formy$pohlavi, levels = c("F", "M"), labels = 
 Délka krunýře (mm)
 :::
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-data}
 [Dva prediktory]{.card-title}
 
@@ -621,7 +726,9 @@ Barevná forma · pohlaví
 :::
 :::
 
-::: {.panel-question}
+<br>
+
+::: {.panel-question .fragment}
 Mění se rozdíl **samec − samice** mezi barevnými formami?
 :::
 
@@ -629,6 +736,7 @@ Mění se rozdíl **samec − samice** mezi barevnými formami?
 
 ```{r}
 #| label: raw-four-groups
+#| dev: ragg_png
 #| echo: false
 #| fig-alt: "Houslové grafy a jednotlivé body ukazují délku krunýře samic a samců v modré a oranžové formě."
 graf_ctyri_body <- ggplot2::ggplot(
@@ -640,12 +748,18 @@ graf_ctyri_body <- ggplot2::ggplot(
     position = ggplot2::position_jitter(width = 0.10, height = 0, seed = 900723),
     alpha = 0.55, size = 1.8
   ) +
-  ggplot2::facet_wrap(ggplot2::vars(forma)) +
+  ggplot2::facet_wrap(
+    ggplot2::vars(forma),
+    labeller = ggplot2::as_labeller(popisky_forem)
+  ) +
   ggplot2::scale_colour_manual(values = vec_barvy) +
   ggplot2::scale_fill_manual(values = vec_barvy) +
   ggplot2::labs(x = "Pohlaví", y = "Délka krunýře (mm)") +
   theme_l08 +
-  ggplot2::theme(legend.position = "none")
+  ggplot2::theme(
+    legend.position = "none",
+    strip.text = ggplot2::element_text(family = "Segoe UI Emoji")
+  )
 graf_ctyri_body
 ```
 
@@ -655,6 +769,7 @@ graf_ctyri_body
 
 ```{r}
 #| label: silent-write
+#| dev: ragg_png
 #| echo: false
 #| fig-alt: "Stejný graf čtyř skupin bez zobrazených průměrů."
 graf_ctyri_body
@@ -674,6 +789,7 @@ Napište pro každou formu:
 
 ```{r}
 #| label: means-four-groups
+#| dev: ragg_png
 #| echo: false
 #| fig-alt: "Stejný graf jednotlivých krabů doplněný o čtyři průměry a dvě spojnice."
 data_prumery <- data_formy |>
@@ -707,10 +823,12 @@ rozdil_oranzova <- tab_prumery["oranžová", "samec"] - tab_prumery["oranžová"
 rozdil_rozdilu <- rozdil_oranzova - rozdil_modra
 ```
 
+<br>
+
 ::: columns
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-insight}
-[Modrá forma]{.card-title}
+[🔵 Modrá forma]{.card-title}
 
 $$
 `r format_cz(tab_prumery["modrá", "samec"])`
@@ -721,9 +839,9 @@ $$
 $$
 :::
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-warning}
-[Oranžová forma]{.card-title}
+[🟠 Oranžová forma]{.card-title}
 
 $$
 `r format_cz(tab_prumery["oranžová", "samec"])`
@@ -738,13 +856,9 @@ $$
 
 ## Interakce je rozdíl dvou rozdílů
 
-$$
-\Delta
-=
-(\text{samec} - \text{samice})_{\text{oranžová}}
--
-(\text{samec} - \text{samice})_{\text{modrá}}
-$$
+<br>
+
+**Rozdíl dvou rozdílů** = **🟠 oranžový rozdíl** − **🔵 modrý rozdíl**
 
 ::: {.fragment}
 $$
@@ -758,12 +872,23 @@ $$
 $$
 :::
 
+<br>
+
 ::: {.fragment .panel-result}
-Rozdíl mezi pohlavími se při přechodu od modré k oranžové formě změní o [`r format_cz(abs(rozdil_rozdilu))` mm]{.text-size-heading .text-bold .text-color-orange}.
+Rozdíl mezi pohlavími se při přechodu od 🔵 modré k 🟠 oranžové formě změní o [`r format_cz(abs(rozdil_rozdilu))` mm]{.text-size-heading .text-bold .text-color-orange}.
 :::
 
 ## `forma * pohlavi` zapíše všechny čtyři kombinace
 
+<br>
+
+::: {.fragment}
+`forma + pohlavi + forma:pohlavi = forma * pohlavi `
+:::
+
+<br>
+
+::: {.fragment}
 ```{r}
 #| label: categorical-interaction-model
 #| echo: true
@@ -777,12 +902,10 @@ round(
   digits = 3
 )
 ```
-
-::: {.fragment}
-`forma * pohlavi = forma + pohlavi + forma:pohlavi`
 :::
 
-[Referenční kombinace: modrá forma a samice.]{.footer}
+
+[Referenční kombinace: 🔵 modrá forma a samice.]{.footer}
 
 ## Čtyři koeficienty skládají čtyři skupinové průměry
 
@@ -796,25 +919,27 @@ ci_formy <- confint(mod_formy)
 ::: columns
 ::: {.column width="48%"}
 - **`(Intercept)`**
-  modrá samice: [`r format_cz(bf[["(Intercept)"]], digits = 3)` mm]{.text-hgl-indigo_velvet}
+  🔵 modrá samice: [`r format_cz(bf[["(Intercept)"]], digits = 3)` mm]{.text-hgl-indigo_velvet}
 
 - **`formaoranžová`**
-  oranžová − modrá mezi samicemi: [`r format_cz(bf[["formaoranžová"]], digits = 3, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+  🟠 oranžová − 🔵 modrá mezi samicemi: [`r format_cz(bf[["formaoranžová"]], digits = 3, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 - **`pohlavisamec`**
-  samec − samice v modré formě: [`r format_cz(bf[["pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
+  samec − samice v 🔵 modré formě: [`r format_cz(bf[["pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
 
 - **`formaoranžová:pohlavisamec`**
-  změna rozdílu mezi formami: [`r format_cz(bf[["formaoranžová:pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
+  změna rozdílu mezi 🟠 oranžovou a 🔵 modrou formou: [`r format_cz(bf[["formaoranžová:pohlavisamec"]], digits = 3, signed = TRUE)` mm]{.text-hgl-orange}
 :::
 :::
 
-::: {.fragment}
+<br>
+
+::: {.fragment .text-center}
 95% interval interakce: [`r format_cz(ci_formy["formaoranžová:pohlavisamec", 1])`; `r format_cz(ci_formy["formaoranžová:pohlavisamec", 2])`] mm
 :::
 
-## Model vrátí odhad pro každou ze čtyř skupin
+## Odhad pro každou ze čtyř skupin
 
 ```{r}
 #| label: emmeans-four-groups
@@ -827,14 +952,17 @@ prumery_model <- emmeans::emmeans(
 prumery_model
 ```
 
+<br>
+
 ::: {.fragment}
 Model má jeden parametr pro každou kombinaci, proto odhady odpovídají pozorovaným skupinovým průměrům.
 :::
 
-## Co čtyři průměry neříkají o jednotlivých krabech?
+## Rezidua jsou odchylky jednotlivých krabů od skupinových průměrů
 
 ```{r}
 #| label: categorical-residuals
+#| dev: ragg_png
 #| echo: false
 #| fig-alt: "Houslové grafy reziduí s body všech krabů ukazují variabilitu uvnitř čtyř skupin."
 data_formy$residuum_mm <- residuals(mod_formy)
@@ -844,28 +972,27 @@ ggplot2::ggplot(data_formy, ggplot2::aes(pohlavi, residuum_mm, fill = pohlavi)) 
     position = ggplot2::position_jitter(width = 0.10, height = 0, seed = 900723),
     alpha = 0.6, size = 1.7, colour = biostat_cols[["graphite"]]
   ) +
-  ggplot2::facet_wrap(ggplot2::vars(forma)) +
+  ggplot2::facet_wrap(
+    ggplot2::vars(forma),
+    labeller = ggplot2::as_labeller(popisky_forem)
+  ) +
   ggplot2::geom_hline(yintercept = 0, linetype = "dashed", colour = biostat_cols[["grey_olive"]]) +
   ggplot2::scale_fill_manual(values = vec_barvy, guide = "none") +
-  ggplot2::labs(x = "Pohlaví", y = "Odchylka od průměru skupiny (mm)") +
-  theme_l08
+  ggplot2::labs(x = "Pohlaví", y = "Reziduum: krab − průměr skupiny (mm)") +
+  theme_l08 +
+  ggplot2::theme(strip.text = ggplot2::element_text(family = "Segoe UI Emoji"))
 ```
 
-[Model vystihuje čtyři průměry. Jednotliví krabi se od nich stále výrazně liší.]{.footer}
+[Model vystihuje čtyři průměry. Rezidua ukazují, o kolik se jednotliví krabi od svého skupinového průměru liší.]{.footer}
 
 ## Rozdíl mezi pohlavími závisí na barevné formě
 
 ::: {.panel-result}
-- Modrá forma: samec − samice = [`r format_cz(rozdil_modra, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
-- Oranžová forma: samec − samice = [`r format_cz(rozdil_oranzova, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+- 🔵 Modrá forma: samec − samice = [`r format_cz(rozdil_modra, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
+- 🟠 Oranžová forma: samec − samice = [`r format_cz(rozdil_oranzova, signed = TRUE)` mm]{.text-hgl-indigo_velvet}
 - Změna rozdílu: [`r format_cz(rozdil_rozdilu, signed = TRUE)` mm]{.text-hgl-orange}
 - 95% interval změny: [`r format_cz(ci_formy["formaoranžová:pohlavisamec", 1])`; `r format_cz(ci_formy["formaoranžová:pohlavisamec", 2])`] mm
 :::
-
-::: {.fragment}
-Výsledek popisuje tyto měřené kraby. Barevná forma ani pohlaví nebyly experimentálně přiřazeny.
-:::
-
 
 # Jedna myšlenka, dva obrazy
 
@@ -873,6 +1000,7 @@ Výsledek popisuje tyto měřené kraby. Barevná forma ani pohlaví nebyly expe
 
 ```{r}
 #| label: compare-interaction-visuals
+#| dev: ragg_png
 #| echo: false
 #| fig-alt: "Vedle sebe jsou neparalelní regresní přímky a čtyři skupiny s propojenými průměry."
 cowplot::plot_grid(
@@ -898,8 +1026,13 @@ cowplot::plot_grid(
 
 ## Co musíme doplnit, aby tvrzení o efektu bylo úplné?
 
+<br>
+
 ::: columns
 ::: {.column width="48%"}
+
+<br>
+
 ::: {.panel-warning}
 [Neúplné]{.card-title}
 
@@ -908,7 +1041,7 @@ cowplot::plot_grid(
 „Samci jsou větší.“
 :::
 :::
-::: {.column width="48%"}
+::: {.column width="48%" .fragment}
 ::: {.panel-question}
 [Opravte tvrzení]{.card-title}
 
@@ -920,11 +1053,15 @@ cowplot::plot_grid(
 :::
 :::
 
+<br>
+
 ::: {.fragment .panel-insight}
 V modelu s interakcí vždy uvádíme [hodnotu nebo úroveň druhého prediktoru]{.text-hgl-indigo_velvet}.
 :::
 
 ## Hlavní efekty v interakci jsou podmíněné
+
+<br>
 
 ::: incremental
 1. Začněte biologickou otázkou: [mění se vztah nebo rozdíl?]{.text-hgl-indigo_velvet}
@@ -943,10 +1080,6 @@ V modelu s interakcí vždy uvádíme [hodnotu nebo úroveň druhého prediktoru
 - Hlavní efekty jsou [podmíněné]{.text-hgl-indigo_velvet}.
 - U krabů se mění jak sklon mezi pohlavími, tak rozdíl mezi pohlavími podle barevné formy.
 :::
-
-<br>
-
-[Studijní materiály](`r slides_url`) · [Zdrojový repozitář](`r github_url`) · [Kurzový slovník](https://cuni-natur-biostatistics.github.io/slovnik/)
 
 [Data: Campbell, N. A. & Mahon, R. J. (1974), `MASS::crabs`.]{.footer}
 

@@ -37,7 +37,8 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 
 - `Presentation/Materials/krabi_mereni.png`: a playful crab measurement station that grounds carapace length and rear carapace width before the raw-data plot.
 - `Presentation/Materials/krabi_modely.png`: two crab-observed trail pairs that frame the closing choice between constant and changing group separation.
-- Both illustrations use the same original paper-cut visual language, contain no generated instructional text, carry Czech alt text and visible AI disclosure, and serve a stated teaching role rather than decoration.
+- `Presentation/Materials/krabi_ctyri_skupiny.png`: a balanced four-crab group that introduces the crossing of two color forms and two sexes before the categorical interaction example.
+- All three illustrations use the same original paper-cut visual language, contain no generated prose, carry Czech alt text and visible AI disclosure, and serve a stated teaching role rather than decoration.
 - Exact prompts, rejected variants, SHA-256 hashes, and provenance are recorded in `Presentation/Materials/GENERATED_IMAGES.md`.
 - No statistical claim is supported by generated artwork; observed data and model-derived displays remain the evidence.
 
@@ -57,71 +58,70 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 | --- | --- | --- | --- |
 | 1 | Question-first title | Liší se vztah délky a zadní šířky krunýře mezi samicemi a samci? | Minimal question-first title; ask for intuition without showing a fit. |
 | 2 | Measurement-context illustration | Co vlastně na krabovi měříme? | Funny generated crab-measurement scene grounds the two carapace dimensions; visible AI disclosure and no analytical claim. |
-| 3 | Opening observation prompt | Co naznačují naměření krabi? | Show blue-form raw points. Ask about direction and whether both groups change alike. Do not name interaction. |
-| 4 | PollsLive introduction | Co si pamatujete z minulé lekce? | Introduce three independent L07 retrieval questions before the L08 outcomes. |
-| 5 | Retrieval question 1 | Co znamená záporný koeficient roční teploty v modelu s roční i maximální teplotou? | Read the conditional coefficient from familiar L07 evidence; reveal the answer and explanation after a vote. |
-| 6 | Retrieval question 2 | Kterému odhadu z modelu se dvěma teplotami bychom měli více důvěřovat? | Choose the scenario inside the observed predictor cloud; reveal why joint support matters. |
-| 7 | Retrieval question 3 | Prohodíme pořadí dvou korelovaných teplot ve formuli. Co se může změnit? | Distinguish unchanged coefficients and predictions from order-sensitive sequential tests. Bridge to additivity. |
-| 8 | Learning outcomes | Výsledky učení | Recognize an interaction question, fit and visualize it, interpret predictions and conditional coefficients. |
-| 9 | Section divider | Když rovnoběžné přímky nestačí | Sparse divider for the first data story. |
-| 10 | Data orientation | Jeden bod představuje jednoho kraba | Source, blue form, one crab per row, length, rear width, sex. |
-| 11 | Noticing prompt | Jak spolu souvisejí délka a zadní šířka? | Return to raw points; students describe before modelling. |
-| 12 | Familiar baseline | Aditivní model kreslí rovnoběžné přímky | Overlay additive fit; recall common slope and constant vertical difference. |
-| 13 | Pair prediction | Zůstává rozdíl mezi pohlavími při každé délce stejný? | Think-pair-share comparing shorter and longer ends of the range. |
-| 14 | Evidence reveal | Data naznačují různé sklony | Replace parallel lines with exploratory group-specific lines on the same axes. |
-| 15 | Concept naming | Když se rozdíl mění, mluvíme o interakci | Name continuous-by-categorical interaction after the visual comparison. |
-| 16 | Formalisation | `delka * pohlavi` přidá člen `delka:pohlavi` | Start with `delka + pohlavi`, add the colon term, then reveal `x * y = x + y + x:y`. |
-| 17 | Model fit and visual | Model s interakcí dovoluje dvěma pohlavím různé sklony | Visible `lm()` call; fitted lines over observations only across represented lengths. |
-| 18 | Prediction prompt | Co model odhaduje pro dva kraby dlouhé 30 mm? | Mark 30 mm, which lies within both groups' ranges; ask which line is higher and by how much. |
-| 19 | Evidence reveal | Dva odhady při délce 30 mm | Reveal two model predictions and confidence intervals. |
-| 20 | Main result | Samec má při 30 mm odhadovanou zadní šířku o 1,76 mm menší | Highlight male minus female in units and distinguish predictions from individual observations. |
-| 21 | Spine return | Co už můžeme říci o stejně dlouhých krabech? | Return to slide 1: fitted relation and predicted difference depend on length; state observational scope. |
-| 22 | Section divider | Čtyři koeficienty, jedna dvojice přímek | Move from predictions to model summary. |
-| 23 | Output orientation | Kde jsou v `summary()` čtyři části interakce? | Map rows to intercept, reference slope, sex contrast, slope difference. Avoid a p-value hunt. |
-| 24 | Coefficient interpretation | První dva koeficienty popisují referenční samice | Intercept at 0 mm is a mathematical reference; length coefficient is female slope in mm/mm. |
-| 25 | Conditional main effect | Koeficient pohlaví porovnává skupiny při délce 0 mm | Explain why `pohlavisamec` is not the sex difference at every length. |
-| 26 | Interaction coefficient | Interakční koeficient mění sklon samců vůči samicím | Build male slope as female slope plus interaction coefficient; show interval for slope difference. |
-| 27 | Worked callback | Koeficienty dávají rozdíl −1,76 mm při 30 mm | Compute the contrast and explicitly recall the result already seen on slide 20. |
-| 28 | Misconception check | Platí koeficient `pohlavisamec` při každé délce? | Quick vote: yes/no/only at 0 mm; require a one-sentence justification. |
-| 29 | Model check | Jak dobře přímky popisují naměřené kraby? | Residuals versus fitted values plus an explicit scope sentence; diagnostics do not prove truth. |
-| 30 | Qualified conclusion | U modrých krabů se rozdíl mezi pohlavími mění s délkou | Summarize slopes, 30 mm contrast, uncertainty, observed-range limit, and no causal identification. |
-| 31 | Section divider | Když jsou oba prediktory skupiny | Begin the second data story. |
-| 32 | New question | Liší se rozdíl mezi pohlavími u modré a oranžové formy? | Use both forms and carapace length response; ask about a changing sex contrast. |
-| 33 | Raw-data evidence | Jaké délky vidíme ve čtyřech skupinách? | Approved violin plus all points, without means or connectors. |
-| 34 | Silent-write prompt | Je rozdíl mezi samci a samicemi u obou forem stejný? | One minute: write the direction of the sex contrast within each form. |
-| 35 | Evidence reveal | Průměry ukazují dva různé rozdíly | Reuse slide 33 exactly; add only four means and within-form connecting lines. |
-| 36 | Guided calculation | Jak velký je rozdíl samec minus samice v každé formě? | Students calculate or choose both contrasts; reveal in millimetres. |
-| 37 | Conceptual payoff | Interakce je rozdíl dvou rozdílů | Subtract blue-form contrast from orange-form contrast with a bracket/arrow visual. |
-| 38 | Formalisation | `forma * pohlavi` zapíše všechny čtyři kombinace | Show model and expansion; blue females are the reference combination. |
-| 39 | Coefficient mapping | Čtyři koeficienty skládají čtyři skupinové průměry | Map rows to reference mean, form contrast among females, sex contrast in blue crabs, and difference of contrasts. |
-| 40 | Predictions | Model vrátí odhad pro každou ze čtyř skupin | Four predictions with intervals; a compact `emmeans()` call is a familiar route to them. |
-| 41 | Model check | Co čtyři průměry neříkají o jednotlivých krabech? | Violin residual plot with every point; ask what spread remains. |
-| 42 | Qualified conclusion | Rozdíl mezi pohlavími závisí na barevné formě | Direction and size of difference of differences with uncertainty; associative conclusion. |
-| 43 | Section divider | Jedna myšlenka, dva obrazy | Prepare synthesis across both examples. |
-| 44 | Comparison | Interakce mění sklon nebo skupinový rozdíl | Nonparallel-line visual beside connected-means visual; identify which contrast changes. |
-| 45 | Transfer task | Co musíme doplnit, aby tvrzení o efektu bylo úplné? | Improve “délka má efekt” and “samci jsou větší” by stating the conditioning predictor/value. |
-| 46 | Synthesis | Hlavní efekty v interakci jsou podmíněné | Biological dependency question, predictions/contrasts, and reference-relative coefficients. |
-| 47 | Synthesis | Co si odnést | Consolidate the key ideas and evidence-supported answer to slide 1. |
-| 48 | Closing question and L09 bridge | Který biologicky smysluplný model máme zvolit? | End with additive and interaction candidates side by side; preview R², adjusted R², and AIC without defining them. |
+| 3 | PollsLive introduction | Co si pamatujete z minulé lekce? | Introduce three independent L07 retrieval questions before the L08 outcomes. |
+| 4 | Retrieval question 1 | Co znamená záporný koeficient roční teploty v modelu s roční i maximální teplotou? | Read the conditional coefficient from familiar L07 evidence; reveal the answer and explanation after a vote. |
+| 5 | Retrieval question 2 | Kterému odhadu z modelu se dvěma teplotami bychom měli více důvěřovat? | Choose the scenario inside the observed predictor cloud; reveal why joint support matters. |
+| 6 | Retrieval question 3 | Prohodíme pořadí dvou korelovaných teplot ve formuli. Co se může změnit? | Distinguish unchanged coefficients and predictions from order-sensitive sequential tests. Bridge to additivity. |
+| 7 | Learning outcomes | Výsledky učení | Recognize an interaction question, fit and visualize it, interpret predictions and conditional coefficients. |
+| 8 | Section divider | Když rovnoběžné přímky nestačí | Sparse divider for the first data story. |
+| 9 | Data orientation | Jeden bod představuje jednoho kraba | Source, blue form, one crab per row, length, rear width, sex. |
+| 10 | Noticing prompt | Co naznačují naměření krabi? | Show blue-form raw points after data orientation; students describe direction, overlap, and whether the slopes look alike before modelling. |
+| 11 | Familiar baseline | Aditivní model kreslí rovnoběžné přímky | Overlay additive fit; recall common slope and constant vertical difference. |
+| 12 | Pair prediction | Zůstává rozdíl mezi pohlavími při každé délce stejný? | Think-pair-share comparing shorter and longer ends of the range. |
+| 13 | Evidence reveal | Data naznačují různé sklony | Replace parallel lines with exploratory group-specific lines on the same axes. |
+| 14 | Concept naming | Když se rozdíl mění, mluvíme o interakci | Name continuous-by-categorical interaction after the visual comparison. |
+| 15 | Formalisation | Jak zapsat model s interakcí? | Start with `delka + pohlavi`, add the colon term, then reveal `x * y = x + y + x:y`. |
+| 16 | Model fit and visual | Model s interakcí dovoluje dvěma pohlavím různé sklony | Visible `lm()` call; fitted lines over observations only across represented lengths. |
+| 17 | Prediction prompt | Co model odhaduje pro dva kraby dlouhé 30 mm? | Mark 30 mm, which lies within both groups' ranges; ask which line is higher and by how much. |
+| 18 | Evidence reveal | Dva odhady při délce 30 mm | Reveal two model predictions and confidence intervals. |
+| 19 | Main result | Samec - zadní šířka - při 30 mm | Highlight male minus female in units and distinguish predictions from individual observations. |
+| 20 | Spine return | Co už můžeme říci o stejně dlouhých krabech? | Return to slide 1: fitted relation and predicted difference depend on length; state observational scope. |
+| 21 | Section divider | Koeficienty interakčního modelu | Move from predictions to model summary. |
+| 22 | Output orientation | Jaké jsou koeficienty v `summary()`? | Map rows to intercept, reference slope, sex contrast, slope difference. Avoid a p-value hunt. |
+| 23 | Coefficient interpretation | První dva koeficienty popisují referenční samice | Intercept at 0 mm is a mathematical reference; length coefficient is female slope in mm/mm. |
+| 24 | Conditional main effect | Koeficient pohlaví porovnává skupiny při délce 0 mm | Explain why `pohlavisamec` is not the sex difference at every length. |
+| 25 | Interaction coefficient | Interakční koeficient mění sklon samců vůči samicím | Build male slope as female slope plus interaction coefficient; show interval for slope difference. |
+| 26 | Worked callback | Rozdíl při 30 mm skládají dva známé příspěvky | Restate the two contributions in words, substitute model-derived values, and only then introduce the compact symbolic formula. |
+| 27 | Misconception check | Platí koeficient `pohlavisamec` při každé délce? | Quick vote: yes/no/only at 0 mm; require a one-sentence justification. |
+| 28 | Model check | Jak dobře přímky popisují naměřené kraby? | Residuals versus fitted values plus an explicit scope sentence; diagnostics do not prove truth. |
+| 29 | Qualified conclusion | U krabů 🔵 modré formy se rozdíl mezi pohlavími mění s délkou | Summarize both slopes, the change in difference, and the 30 mm contrast with 95% confidence intervals; retain the observational-scope caveat. |
+| 30 | Section divider | Když jsou oba prediktory skupiny | Begin the second data story with a generated four-crab illustration that makes the 2 color forms × 2 sexes structure visible. |
+| 31 | New question | Liší se rozdíl mezi pohlavími u 🔵 modré a 🟠 oranžové formy? | Use both forms and carapace length response; ask about a changing sex contrast. |
+| 32 | Raw-data evidence | Jaké délky vidíme ve čtyřech skupinách? | Approved violin plus all points, without means or connectors. |
+| 33 | Silent-write prompt | Je rozdíl mezi samci a samicemi u obou forem stejný? | One minute: write the direction of the sex contrast within each form. |
+| 34 | Evidence reveal | Průměry ukazují dva různé rozdíly | Reuse slide 33 exactly; add only four means and within-form connecting lines. |
+| 35 | Guided calculation | Jak velký je rozdíl samec minus samice v každé formě? | Students calculate or choose both contrasts; reveal in millimetres. |
+| 36 | Conceptual payoff | Interakce je rozdíl dvou rozdílů | Subtract blue-form contrast from orange-form contrast with a bracket/arrow visual. |
+| 37 | Formalisation | `forma * pohlavi` zapíše všechny čtyři kombinace | Show model and expansion; blue females are the reference combination. |
+| 38 | Coefficient mapping | Čtyři koeficienty skládají čtyři skupinové průměry | Map rows to reference mean, form contrast among females, sex contrast in blue crabs, and difference of contrasts. |
+| 39 | Predictions | Odhad pro každou ze čtyř skupin | Four predictions with intervals; a compact `emmeans()` call is a familiar route to them. |
+| 40 | Model check | Rezidua jsou odchylky jednotlivých krabů od skupinových průměrů | Name the displayed quantities as residuals and use a violin plot with every point to show within-group spread. |
+| 41 | Qualified conclusion | Rozdíl mezi pohlavími závisí na barevné formě | Direction and size of difference of differences with uncertainty; associative conclusion. |
+| 42 | Section divider | Jedna myšlenka, dva obrazy | Prepare synthesis across both examples. |
+| 43 | Comparison | Interakce mění sklon nebo skupinový rozdíl | Nonparallel-line visual beside connected-means visual; identify which contrast changes. |
+| 44 | Transfer task | Co musíme doplnit, aby tvrzení o efektu bylo úplné? | Improve “délka má efekt” and “samci jsou větší” by stating the conditioning predictor/value. |
+| 45 | Synthesis | Hlavní efekty v interakci jsou podmíněné | Biological dependency question, predictions/contrasts, and reference-relative coefficients. |
+| 46 | Synthesis | Co si odnést | Consolidate the key ideas and evidence-supported answer to slide 1. |
+| 47 | Closing question and L09 bridge | Který biologicky smysluplný model máme zvolit? | End with additive and interaction candidates side by side; preview R², adjusted R², and AIC without defining them. |
 
 ## Knowledge-state ledger
 
 | Concept block | May assume before | Introduced or earned here | Must not assume yet | Evidence or experience |
 | --- | --- | --- | --- | --- |
-| 1 — Hook and retrieval (1-8) | Scatterplots, categorical and multiple-regression coefficients, parallel additive lines, diagnostics. | Opening dependency question; conditional coefficients, supported predictions, sequential-test order. | Different crab slopes or an interaction. | Generated measurement context, raw crab plot, and three L07 retrieval questions. |
-| 2 — Additive to interaction (9-17) | `lm(y ~ x + group)` and parallel lines. | Changing contrast, interaction, colon term, star shorthand. | The 30 mm result or coefficient meanings. | Same points with additive and group-specific lines, pair prompt, formula expansion. |
-| 3 — Predictions (18-21) | Different slopes and 30 mm within both observed ranges. | Two 30 mm predictions and male-minus-female contrast −1.76 mm. | All four raw-scale coefficients. | Marked fitted-line predictions, intervals, spine return. |
-| 4 — Coefficients and checks (22-30) | Fitted lines and the 30 mm contrast. | Four summary rows, conditional effects, male slope, repeated −1.76 calculation, limitations. | Model-selection criteria or causal explanations. | Annotated `summary()`, vote, calculation, residuals. |
-| 5 — Four groups (31-37) | Interaction means a changing comparison. | Two within-form contrasts and their difference of differences. | Categorical-model coefficients. | Raw plot, exact reused plot with means/connectors, calculation. |
-| 6 — Categorical model (38-42) | Observed pattern and difference of differences. | Formula, reference combination, coefficients, predictions, uncertainty, residual spread. | Causal form or sex effects. | Model, output, `emmeans()` predictions, residual violins. |
-| 7 — Transfer (43-47) | One interaction of each predictor-type combination. | Every effect statement specifies the other predictor's value or level. | Formal model comparison. | Side-by-side visuals and statement repair. |
-| 8 — L09 bridge (48) | Additive and interaction candidates from biological questions. | Need to compare justified candidates for fit and complexity. | Definitions of R², adjusted R², AIC. | Candidate formulas and a forward question. |
+| 1 — Hook and retrieval (1-7) | Scatterplots, categorical and multiple-regression coefficients, parallel additive lines, diagnostics. | Opening dependency question; conditional coefficients, supported predictions, sequential-test order. | The current crab data pattern, different crab slopes, or an interaction. | Generated measurement context followed directly by three L07 retrieval questions. |
+| 2 — Additive to interaction (8-16) | `lm(y ~ x + group)` and parallel lines. | Current dataset orientation, its first data view, changing contrast, interaction, colon term, and star shorthand. | The 30 mm result or coefficient meanings. | Raw points after the outcomes, followed by additive and group-specific lines, pair prompt, and formula expansion. |
+| 3 — Predictions (17-20) | Different slopes and 30 mm within both observed ranges. | Two 30 mm predictions and male-minus-female contrast −1.76 mm. | All four raw-scale coefficients. | Marked fitted-line predictions, intervals, spine return. |
+| 4 — Coefficients and checks (21-29) | Fitted lines and the 30 mm contrast. | Four summary rows, conditional effects, male slope, repeated −1.76 calculation, limitations. | Model-selection criteria or causal explanations. | Annotated `summary()`, vote, calculation, residuals. |
+| 5 — Four groups (30-36) | Interaction means a changing comparison. | Two within-form contrasts and their difference of differences. | Categorical-model coefficients. | Raw plot, exact reused plot with means/connectors, calculation. |
+| 6 — Categorical model (37-41) | Observed pattern and difference of differences. | Formula, reference combination, coefficients, predictions, uncertainty, residual spread. | Causal form or sex effects. | Model, output, `emmeans()` predictions, residual violins. |
+| 7 — Transfer (42-46) | One interaction of each predictor-type combination. | Every effect statement specifies the other predictor's value or level. | Formal model comparison. | Side-by-side visuals and statement repair. |
+| 8 — L09 bridge (47) | Additive and interaction candidates from biological questions. | Need to compare justified candidates for fit and complexity. | Definitions of R², adjusted R², AIC. | Candidate formulas and a forward question. |
 
 ## PollsLive retrieval proposal
 
 ### Integration map
 
-- Placement: slides 4-7, after the measurement context and raw-data hook and before learning outcomes.
+- Placement: slides 3-6, directly after the measurement-context hook and before learning outcomes.
 - Retrieves: approved L07 material on conditional coefficients, supported predictor combinations, correlated predictors, and sequential tests.
 - Bridge: an additive model holds one predictor's relationship constant across the other; L08 relaxes that assumption.
 - Scheduled lecture: 2026-11-23.
@@ -181,32 +181,32 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 
 ## Story-map audits before human approval
 
-- Heading strip: biological question → L07 retrieval → observed data → familiar additive lines → visually earned interaction → predictions → coefficients → checks → second interaction → synthesis.
+- Heading strip: title/question → measurement-context hook → L07 retrieval → learning outcomes → first data section → familiar additive lines → visually earned interaction → predictions → coefficients → checks → second interaction → synthesis.
 - First use: *interaction* follows visual comparison; `*` follows explicit colon term; coefficients follow 30 mm predictions; difference of differences follows two visible contrasts.
 - Information leakage: no result precedes raw points and a prompt. The second example shows observations before means or model output.
 - Scope: no causal claim, no extrapolation, no L09 metric, no centred 30 mm model.
-- Formula consistency: male minus female throughout. Slide 25 deliberately repeats the highlighted −1.76 mm result.
-- Visual continuity: slides 33 and 35 use the exact same seeded raw-data layer; slide 35 adds only means and connectors. First-example comparison plots share axes.
+- Formula consistency: male minus female throughout. Slide 26 deliberately repeats the highlighted −1.76 mm result.
+- Visual continuity: slides 32 and 34 use the exact same seeded raw-data layer; slide 34 adds only means and connectors. First-example comparison plots share axes.
 - PollsLive: map, exact options, answers, explanations, evidence, alt text, and provenance require explicit approval before implementation.
 
 ## Active-learning cadence
 
 | Minute | Slide | Activity | Evidence of learning |
 | --- | --- | --- | --- |
-| 2 | 3 | Notice raw points | Separate overall association from possible group-specific pattern. |
-| 6 | 4-7 | PollsLive retrieval | Retrieve conditional coefficients, support, sequential order. |
-| 18 | 13 | Think-pair-share | Connect parallel lines to a constant contrast. |
-| 29 | 18 | Predict before reveal | Read two fitted lines at a common length. |
-| 43 | 28 | Misconception vote | State that `pohlavisamec` is conditional on 0 mm. |
-| 58 | 34 | Silent write | Separate two within-form contrasts. |
-| 66 | 36-37 | Guided calculation | Construct the difference of differences. |
-| 80 | 45 | Repair statements | Name the conditioning predictor and value/level. |
+| 5 | 3-6 | PollsLive retrieval | Retrieve conditional coefficients, support, sequential order. |
+| 14 | 10 | Notice raw points | Separate overall association from possible group-specific pattern after dataset orientation. |
+| 22 | 12 | Think-pair-share | Connect parallel lines to a constant contrast. |
+| 29 | 17 | Predict before reveal | Read two fitted lines at a common length. |
+| 43 | 27 | Misconception vote | State that `pohlavisamec` is conditional on 0 mm. |
+| 58 | 33 | Silent write | Separate two within-form contrasts. |
+| 66 | 35-36 | Guided calculation | Construct the difference of differences. |
+| 80 | 44 | Repair statements | Name the conditioning predictor and value/level. |
 
 ## Visual workflow checks
 
 - Story map approved before full slide copy: [x]
 - Text-light slides checked at presentation scale: [x]
-- Staged reveals checked for slides 16, 19-20, 23-28, 36-39, and 46: [x]
+- Staged reveals checked for slides 15, 18-19, 22-27, 35-38, and 45: [x]
 - Figures generated locally near slide blocks: [x]
 - Immediate interpretation after key visuals: [x]
 - Interaction cadence present: [x]
@@ -216,12 +216,12 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - Interaction: observation or prediction prompt using a stable visual.
 - Evidence reveal: the same axes or raw-data layer gains only the needed model feature.
 - Interpretation: one biological-unit claim paired with its conditioning value or group.
-- Bridges: slide 21 returns to the opening question; 30 and 42 close examples; 45 opens L09.
+- Bridges: slide 20 returns to the opening question; 29 and 41 close examples; slide 47 opens the L09 bridge.
 
 ## Risks and fixes
 
 - Visual rhythm risk: repeated scatterplots and coefficient slides may feel uniform.
-- Pacing risk: 48 short slides may rush if arithmetic gets too much live time.
+- Pacing risk: 47 short slides may rush if arithmetic gets too much live time.
 - Fix: stable figures with purposeful overlays, one algebra line per reveal, concise `emmeans` use, sparse section dividers, and activity checkpoints.
 
 ## Stage 5 - Human review gate
@@ -231,8 +231,8 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - Lesson-vision review: [x]
 - Human review: [ ] (the 2026-09-22 approval predates the requested image revision)
 - Credible findings resolved: [x]
-- Presentation rendered and checked: [x] (48-slide HTML/PDF; full-scale inspection of revised slides 2, 23-29, and 48; all-slide PDF geometry screen)
-- Reviewer decision: independent vision review passed with no remaining source finding; human review of the revised deck is pending.
+- Presentation rendered and checked: [x] (47-slide HTML/PDF; full-scale inspection of the corrected opening sequence and all-slide PDF geometry screen)
+- Reviewer decision: independent flow review found no remaining presentation-source issue after its workflow-documentation findings were resolved; human review of the revised deck is pending.
 
 ### 2026-09-23 revision validation
 
@@ -244,6 +244,36 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - Independent final vision review found no remaining source or lesson-vision issue. Its browser/image tools were unavailable because of the environment ACL failure; the authoring agent completed the visual inspection through rendered PDF images.
 - `renv::status()` still reports template packages that are installed and recorded but unused; no dependency needed by this deck is missing, and no broad lockfile pruning was performed.
 
+### 2026-09-24 author revision validation
+
+- Reworked slide 27 to reveal the verbal interpretation, substituted coefficient values, and general formula in that order; the displayed arithmetic now uses an approximate two-decimal result consistent with its rounded inputs.
+- Added the roughnotation circle to the correct response on slide 28 and verified it in the live RevealJS state.
+- Added 95% confidence intervals to both slopes, the change in slope difference, and the 30 mm sex contrast on slide 30.
+- Added blue and orange emoji cues to student-visible form labels, including plot facets rendered with a color-emoji device/font path.
+- Renamed and explained slide 41 explicitly in terms of residuals.
+- Regenerated PollsLive material from the corrected canonical local client; validation passed and the generated wording matches the canonical source.
+- Final checks passed: 48 rendered headings match the story map, HTML and `docs/index.html` hashes match, the PDF has 48 pages with zero out-of-bounds text blocks, and UTF-8 checks passed.
+- Independent presentation re-review found no remaining actionable issue. Human approval of this revised deck remains pending.
+
+### 2026-09-26 four-group illustration validation
+
+- Added `krabi_ctyri_skupiny.png` to the then-current slide 31 (now slide 30) so the section divider visibly introduces the four combinations formed by two color forms and two sexes without adding another slide.
+- Full-scale inspection of the then-current slide 31 (now slide 30) passed: the four groups have equal visual status and comparable scale, the sex badges are unambiguous, and the image does not imply a statistical result or preferred group.
+- The image uses the established paper-cut beach style and muted palette; the following slide (then 32, now 31) immediately converts the visual setup into the response-and-predictor question.
+- The generated asset, exact prompt, SHA-256 hash, Czech alt text, and visible AI disclosure are recorded in the source and provenance ledger.
+- Canonical offline render and PollsLive validation passed. The deck remains 48 slides; all rendered headings match the story map, HTML and `docs/index.html` hashes match, and the PDF has zero detected out-of-bounds text blocks.
+- Independent vision review found no source or content issue after the workflow documentation was updated to include the third generated illustration.
+
+### 2026-09-26 opening-order correction
+
+- The human author called back the canonical opening rule: title → biological question or visual hook → previous-lesson retrieval → learning outcomes → first data moment.
+- Removed the premature raw-data slide that appeared before retrieval. The opening now moves directly from the title and measurement-context illustration to the L07 retrieval block and then to learning outcomes.
+- Renamed the later first-data slide to `Co naznačují naměření krabi?` and moved the hidden plot construction beside that slide, after dataset orientation.
+- The deck now contains 47 slides. Story-map rows, knowledge-state ranges, activity references, visual-continuity references, and current-state slide references were renumbered accordingly.
+- Canonical offline render completed with 47 slides. Full-scale inspection of slides 1-3, 7, and 9-10 confirmed the required opening sequence and a clean handoff into the first data moment.
+- Automated validation passed: 47 rendered headings match the 47-row story map, HTML and `docs/index.html` hashes match, the PDF has 47 pages with zero detected out-of-bounds text blocks, PollsLive validation passed, and UTF-8 checks passed.
+- Independent flow review confirmed the canonical opening order, no information leakage, and no broken `graf_body` dependency; its workflow-reference findings were corrected.
+
 ## Decision
 
 - [x] Revised slides ready for human review
@@ -251,4 +281,4 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - [x] Human story-map approval is `approved` and recorded
 - [x] Diff contains only Stages 4-5 files
 - [ ] Presentation PR ready to merge
-- Notes: the 47-slide deck was approved on 2026-09-22. The human-requested generated-image revision on 2026-09-23 expands it to 48 slides; it has been rendered, visually checked, and independently reviewed, and now awaits renewed human approval. Git publication awaits separate authorization.
+- Notes: the deck returned to 47 slides on 2026-09-26 after the premature opening data slide was removed to restore the canonical opening order. Rendering, visual inspection, automated validation, and independent review passed; renewed human approval and separate Git publication authorization remain pending.
