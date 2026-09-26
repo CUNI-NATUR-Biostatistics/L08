@@ -229,10 +229,10 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - Finished headings compared with story map: [x]
 - Heading-strip, visible-copy, first-use audits: [x]
 - Lesson-vision review: [x]
-- Human review: [ ] (the 2026-09-22 approval predates the requested image revision)
+- Human review: [x] (final revised presentation approved by Ondřej Mottl on 2026-09-26)
 - Credible findings resolved: [x]
 - Presentation rendered and checked: [x] (47-slide HTML/PDF; full-scale inspection of the corrected opening sequence and all-slide PDF geometry screen)
-- Reviewer decision: independent flow review found no remaining presentation-source issue after its workflow-documentation findings were resolved; human review of the revised deck is pending.
+- Reviewer decision: independent flow review found no remaining presentation-source issue after its workflow-documentation findings were resolved; Ondřej Mottl approved the revised deck on 2026-09-26.
 
 ### 2026-09-23 revision validation
 
@@ -274,11 +274,19 @@ On 2026-09-23, the human author identified that the approved deck had omitted th
 - Automated validation passed: 47 rendered headings match the 47-row story map, HTML and `docs/index.html` hashes match, the PDF has 47 pages with zero detected out-of-bounds text blocks, PollsLive validation passed, and UTF-8 checks passed.
 - Independent flow review confirmed the canonical opening order, no information leakage, and no broken `graf_body` dependency; its workflow-reference findings were corrected.
 
+
+### 2026-09-26 final human approval
+
+- Approver: Ondřej Mottl
+- Decision: approved the current presentation without further requested revisions.
+- Approval scope: the complete 47-slide deck, including the generated four-group illustration and corrected canonical opening order.
+- Required post-approval release render and validation: completed; canonical 47-slide HTML/PDF render passed, `Presentation/presentation.html` matches `docs/index.html` by SHA-256, all 47 headings match the story map, and the PDF has zero detected out-of-bounds text blocks.
+
 ## Decision
 
-- [x] Revised slides ready for human review
+- [x] Revised slides approved by the human author
 - [x] Story-map status is `complete`
 - [x] Human story-map approval is `approved` and recorded
 - [x] Diff contains only Stages 4-5 files
 - [ ] Presentation PR ready to merge
-- Notes: the deck returned to 47 slides on 2026-09-26 after the premature opening data slide was removed to restore the canonical opening order. Rendering, visual inspection, automated validation, and independent review passed; renewed human approval and separate Git publication authorization remain pending.
+- Notes: Ondřej Mottl approved the current 47-slide presentation on 2026-09-26 after the canonical opening-order correction. Git publication awaits separate authorization.
