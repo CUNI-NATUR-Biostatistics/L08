@@ -1,0 +1,98 @@
+{
+  "$schema": "https://raw.githubusercontent.com/CUNI-NATUR-Biostatistics/_internal/main/pollslive/quiz.schema.json",
+  "schemaVersion": 2,
+  "academicYear": "2026-27",
+  "lesson": "L08",
+  "retrievesLesson": "L07",
+  "lectureDate": "2026-11-23",
+  "title": "L08 – Opakování předchozí lekce – 2026/27",
+  "questions": [
+    {
+      "id": "conditional-temperature-coefficient",
+      "text": "Co znamená záporný koeficient roční teploty v modelu s roční i maximální teplotou?",
+      "options": [
+        {
+          "id": "annual-holding-maximum",
+          "label": "Změnu odhadované tloušťky listu při zvýšení roční teploty o 1 °C, když maximální teplotu držíme stejnou."
+        },
+        {
+          "id": "both-temperatures",
+          "label": "Celkovou změnu tloušťky listu při zvýšení obou teplot o 1 °C."
+        },
+        {
+          "id": "origin-difference",
+          "label": "Rozdíl průměrné roční teploty mezi původními a zavlečenými populacemi."
+        },
+        {
+          "id": "ignoring-maximum",
+          "label": "Vztah roční teploty k tloušťce listu bez ohledu na maximální teplotu."
+        }
+      ],
+      "correctOptionId": "annual-holding-maximum",
+      "explanation": "V modelu s více prediktory čteme každý sklon při stejné hodnotě ostatních prediktorů. Koeficient proto není totožný s jednoduchým jednoprediktorovým sklonem.",
+      "media": {
+        "path": "assets/l07-conditional-coefficient.png",
+        "alt": "Schéma modelu se dvěma teplotami zvýrazňuje koeficient roční teploty a podmínku stejné maximální teploty.",
+        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 A10A149367F7B253BE6FC85561E5765CDD3584DD205D5F6F00DAC82AF8C63FE2."
+      }
+    },
+    {
+      "id": "supported-temperature-scenario",
+      "text": "Kterému odhadu z modelu se dvěma teplotami bychom měli více důvěřovat?",
+      "options": [
+        {
+          "id": "inside-cloud",
+          "label": "Odhadu pro kombinaci roční a maximální teploty, která leží uvnitř pozorovaného mraku bodů."
+        },
+        {
+          "id": "inside-separate-ranges",
+          "label": "Odhadu pro libovolnou kombinaci uvnitř rozsahu každé teploty, i když se tato dvojice v datech nevyskytuje."
+        },
+        {
+          "id": "opposite-extremes",
+          "label": "Odhadu pro kombinaci nejnižší roční a nejvyšší maximální teploty, protože využívá oba extrémy."
+        },
+        {
+          "id": "all-equal",
+          "label": "Všem odhadům stejně, protože lineární model umí spočítat každou číselnou kombinaci."
+        }
+      ],
+      "correctOptionId": "inside-cloud",
+      "explanation": "Model výpočet provede i mimo společně pozorované kombinace, ale takový odhad je extrapolace. Opora je silnější uvnitř mraku skutečných kombinací prediktorů.",
+      "media": {
+        "path": "assets/l07-supported-scenario.png",
+        "alt": "Bodový graf roční a maximální teploty ukazuje jednu kombinaci uvnitř pozorovaného mraku a druhou mimo něj.",
+        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 A7D2CF77548B3788FEEE7693428C34A7915188356385B9388214B405E38018A1."
+      }
+    },
+    {
+      "id": "sequential-anova-order",
+      "text": "Prohodíme pořadí dvou korelovaných teplot ve formuli. Co se může změnit?",
+      "options": [
+        {
+          "id": "coefficients-and-predictions",
+          "label": "Koeficienty modelu i jeho předpovědi."
+        },
+        {
+          "id": "sequential-table",
+          "label": "Koeficienty se nezmění, ale sekvenční tabulka z anova() může přidělit sdílenou informaci jinak."
+        },
+        {
+          "id": "sample-size",
+          "label": "Pouze počet pozorování v modelu."
+        },
+        {
+          "id": "nothing",
+          "label": "Nic; koeficienty, předpovědi i každý řádek sekvenční anova() musí zůstat stejné."
+        }
+      ],
+      "correctOptionId": "sequential-table",
+      "explanation": "Pořadí prediktorů nemění fit ani koeficienty stejného modelu. Sekvenční anova() však testuje členy v pořadí ve formuli, takže u korelovaných prediktorů se její řádky mohou změnit.",
+      "media": {
+        "path": "assets/l07-sequential-order.png",
+        "alt": "Dvě pořadí stejných prediktorů mají shodné koeficienty, zatímco zvýrazněné řádky sekvenční tabulky anova se liší.",
+        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 2139DE455FF77C91249126E3184D8B76A1661C2299C83C371F66A7D242403BD7."
+      }
+    }
+  ]
+}
