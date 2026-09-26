@@ -9,7 +9,7 @@
 - **Dataset:** `MASS::crabs`; one row is one measured crab
 - **Core interface:** base R with explicit `MASS::crabs`; no data file is distributed
 - **Optional dependency:** `emmeans`, used only in `L08-N01`
-- **Human approval:** required after independent exercise review
+- **Human approval:** approved by Ondřej Mottl on 2026-09-26 after independent exercise review
 
 The exercise follows the approved lesson sequence: observe the data, compare an additive model with an interaction model, make a biologically meaningful prediction inside the observed range, diagnose the model, and transfer the same interaction idea to two categorical predictors.
 
@@ -136,3 +136,4 @@ Optional tasks are clearly separated and are not part of the 68-minute route. Th
 - Required independent review: the complete script and this blueprint must be reviewed read-only with `_internal/.ai/agents/exercise-reviewer.md`; credible findings must be resolved and affected checks rerun.
 - **Independent review outcome, 2026-09-26:** the initial review identified excessive mechanical workload, implicit four-group ordering, an incomplete coefficient-interpretation check, a noncanonical random seed, and an undefined coefficient-vector name. The worksheet was scaffolded and corrected; the follow-up reviewer returned no findings and judged the 68-minute route ready for human review.
 - **Expanded optional-bank review, 2026-09-26:** after adding L08-N05–L08-N08, review identified one unnamed prediction dependency and two record mismatches. The dependency was made explicit as `mat_predikce_ctyri`, the 16-task harness and scope record were corrected, both new plots were inspected, and the final follow-up returned no findings.
+- **Human approval outcome, 2026-09-26:** Ondřej Mottl approved the complete exercise, including the expanded eight-task optional bank.
