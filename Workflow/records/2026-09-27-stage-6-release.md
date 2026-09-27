@@ -13,7 +13,7 @@
 - Presentation PR #3 merged: yes
 - Exercise PR #4 merged: yes
 - Default branch updated locally before creating the release-fix branch: yes
-- Release-fix PR: pending
+- Release-fix PR: #5 open
 - Publication tag and GitHub release: pending release-fix PR merge
 
 ## Public bundle and routes
