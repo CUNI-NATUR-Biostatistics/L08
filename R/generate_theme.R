@@ -1,7 +1,7 @@
 #----------------------------------------------------------#
 #
 #
-#                     _L-template
+#                         L08
 #
 #             Theme Generation Bootstrapper
 #       Downloads the canonical generate_theme.R from
