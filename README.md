@@ -1,48 +1,39 @@
-<!--
-Po vytvoření nového lekčního repozitáře:
-1. Nahraďte všechny výskyty LXX skutečným číslem lekce.
-2. Doplňte název, podnázev, veřejný přehled lekce a ověřené výsledky učení.
-3. Zkontrolujte všechny odkazy a názvy souborů podle website-release.yml.
-4. Odstraňte tento komentář a všechny zbývající texty DOPLŇTE.
-5. Běžné odstavce v Markdownu ručně nezalamujte na pevnou šířku.
--->
+# L08 — Mění se vztah mezi dvěma znaky podle skupiny?
 
-# LXX — DOPLŇTE název lekce
+**Interakce číselného a skupinového prediktoru i dvou skupinových prediktorů**
 
-**DOPLŇTE stručný podnázev lekce**
-
-Tento repozitář obsahuje DOPLŇTE pořadí lekce kurzu [Biostatistika a plánování ekologických pokusů (MB120P163)](https://cuni-natur-biostatistics.github.io/) vyučovaného na Přírodovědecké fakultě Univerzity Karlovy.
+Tento repozitář obsahuje osmou lekci kurzu [Biostatistika a plánování ekologických pokusů (MB120P163)](https://cuni-natur-biostatistics.github.io/) vyučovaného na Přírodovědecké fakultě Univerzity Karlovy.
 
 Úplný přehled kurzu, rozvrh, pravidla hodnocení a materiály ostatních lekcí najdete na [veřejném HUBu kurzu](https://cuni-natur-biostatistics.github.io/).
 
 ## O této lekci
 
-DOPLŇTE hlavní biologickou nebo ekologickou otázku, kterou lekce řeší, a jednou větou vysvětlete její místo v návaznosti kurzu.
+Liší se vztah délky a zadní šířky krunýře mezi samicemi a samci? Osmá lekce navazuje na aditivní modely z L07 a ukazuje, jak modelovat situaci, ve které vztah jednoho prediktoru k odezvě závisí na druhém prediktoru.
 
-DOPLŇTE dva až tři krátké odstavce srozumitelné i člověku, který tento repozitář našel samostatně na internetu. Představte hlavní dataset nebo datový příběh, statistické pojmy a způsob uvažování, kterými lekce prochází. Nepopisujte historii vývoje repozitáře, interní větve, schvalovací stav ani nahrazené datasety.
+Pracujeme s měřeními krabů druhu *Leptograpsus variegatus* z datasetu `MASS::crabs`. Nejprve porovnáme aditivní model s rovnoběžnými přímkami a model s interakcí, který dovoluje samicím a samcům různé sklony. Předpovědi při společné pozorované délce propojujeme s podmíněnými koeficienty a rezidui.
 
-DOPLŇTE závěrečnou větu vysvětlující, proč je lekce důležitá pro další části kurzu nebo pro práci s biologickými daty.
+Druhý příklad používá dva skupinové prediktory: barevnou formu a pohlaví. Interakci zde čteme jako rozdíl dvou rozdílů. Lekce tak připravuje studenty na biologicky zdůvodněné porovnávání modelů v L09 a současně připomíná hranici mezi asociací v pozorovacích datech a příčinným tvrzením.
 
 ## Výsledky učení
 
 Po prostudování této lekce dokážete:
 
-- DOPLŇTE pozorovatelnou studentskou činnost;
-- DOPLŇTE pozorovatelnou studentskou činnost;
-- DOPLŇTE pozorovatelnou studentskou činnost;
-- DOPLŇTE pozorovatelnou studentskou činnost;
-- DOPLŇTE pozorovatelnou studentskou činnost.
+- rozpoznat biologickou otázku, ve které vztah jednoho prediktoru závisí na druhém;
+- fitovat a zobrazit jednoduchý model s interakcí;
+- interpretovat předpovědi a podmíněné koeficienty modelu;
+- vysvětlit interakci číselného a skupinového prediktoru;
+- vysvětlit interakci dvou skupinových prediktorů jako rozdíl dvou rozdílů;
+- omezit biologický závěr na pozorovaný rozsah a způsob získání dat.
 
 ## Materiály pro studenty
 
-Následující odkazy vedou vždy na nejnovější schválené vydání LXX. Rozpracovaná verze ve větvi `main` může být novější, ale není určena jako závazná studijní verze.
+Následující odkazy vedou vždy na nejnovější schválené vydání L08. Rozpracovaná verze ve větvi `main` může být novější, ale není určena jako závazná studijní verze.
 
 | Materiál | Online verze | PDF |
 | --- | --- | --- |
-| Skripta | [Číst online](https://cuni-natur-biostatistics.github.io/LXX/current/learning/) | [Stáhnout PDF](https://cuni-natur-biostatistics.github.io/LXX/current/learning/skripta.pdf) |
-| Prezentace | [Otevřít slidy](https://cuni-natur-biostatistics.github.io/LXX/current/presentation/) | [Stáhnout PDF](https://cuni-natur-biostatistics.github.io/LXX/current/presentation/presentation.pdf) |
-
-Pro navazující praktické cvičení je připraven [R skript ke stažení](https://cuni-natur-biostatistics.github.io/LXX/current/code/cviceni.R). Skript obsahuje úlohy a kód, se kterými budete pracovat během praktika.
+| Skripta | [Číst online](https://cuni-natur-biostatistics.github.io/L08/current/learning/) | [Stáhnout PDF](https://cuni-natur-biostatistics.github.io/L08/current/learning/skripta.pdf) |
+| Prezentace | [Otevřít slidy](https://cuni-natur-biostatistics.github.io/L08/current/presentation/) | [Stáhnout PDF](https://cuni-natur-biostatistics.github.io/L08/current/presentation/presentation.pdf) |
+| Praktické cvičení v R | [Stáhnout skript](https://cuni-natur-biostatistics.github.io/L08/current/code/cviceni.R) | — |
 
 - [HUB kurzu](https://cuni-natur-biostatistics.github.io/) je hlavní vstup ke všem veřejným studijním materiálům.
 - [Moodle kurzu](https://dl2.cuni.cz/course/view.php?id=106) slouží zapsaným studentům pro oznámení, testy, zadání, odevzdávání a individuální výsledky.
@@ -53,16 +44,14 @@ Pro navazující praktické cvičení je připraven [R skript ke stažení](http
 
 - `Learning_materials/skripta.qmd` je zdroj skript; výsledky jsou `Learning_materials/skripta.html` a `Learning_materials/skripta.pdf`.
 - `Presentation/presentation.qmd` je zdroj slidů; výsledky jsou `Presentation/presentation.html` a `Presentation/presentation.pdf`.
-- `Exercises/cviceni.R` je studentský R skript pro praktické cvičení.
-- `data/` obsahuje datové soubory specifické pro tuto lekci.
+- `Exercises/cviceni.R` je schválený studentský skript k praktickému cvičení.
+- Dataset `MASS::crabs` se načítá přímo z balíčku MASS; samostatný datový soubor se nedistribuuje.
 - `R/` obsahuje podporované renderovací a tematické nástroje.
 - `theme/` obsahuje synchronizovanou lokální kopii společné vizuální identity kurzu.
-- `pollslive/` obsahuje neaktivní šablonu pro pozdější zapojení schváleného opakovacího kvízu; bez souborů `pollslive/config.json` a `pollslive/quiz.json` nijak nemění render lekce.
-- `Workflow/` obsahuje záznamy rozhodnutí, kontrol a schválení během přípravy lekce; není součástí veřejného release balíčku.
 
 ### Reprodukovatelné prostředí
 
-Repozitář používá `renv`. Po klonování otevřete `LXX.Rproj` a v čerstvé R relaci spusťte:
+Repozitář používá `renv`. Po klonování otevřete `L08.Rproj` a v čerstvé R relaci spusťte:
 
 ```r
 renv::restore()
@@ -79,9 +68,7 @@ Samostatně lze použít `R/render_skripta.R` nebo `R/render_presentation.R`. P�
 
 ### Publikování
 
-`website-release.yml` je explicitní seznam souborů povolených ve veřejném balíčku. Větev `main` vytváří veřejný náhled, zatímco stabilní tag `LXX-vMAJOR.MINOR.PATCH-YYYYMMDD` vytváří neměnné vydání a aktualizuje cestu `/LXX/current/`. Před prvním vydáním nahraďte v manifestu i v tomto README všechny zástupné údaje skutečnými hodnotami.
-
-Podrobný publikační postup je v [`WEBSITE_RELEASES.md`](WEBSITE_RELEASES.md). Postup tvorby a kontroly lekce je v [`Workflow/README.md`](Workflow/README.md).
+`website-release.yml` je explicitní seznam souborů povolených ve veřejném balíčku. Větev `main` vytváří veřejný náhled, zatímco stabilní tag `L08-vMAJOR.MINOR.PATCH-YYYYMMDD` vytváří neměnné vydání a aktualizuje cestu `/L08/current/`. Podrobný publikační postup je v [`WEBSITE_RELEASES.md`](WEBSITE_RELEASES.md).
 
 Před vydáním je nutné zkontrolovat vyrenderované HTML a PDF, úplnost manifestu, provenanci a podmínky použití dat a médií a nepřítomnost neveřejných informací v celém repozitáři.
 

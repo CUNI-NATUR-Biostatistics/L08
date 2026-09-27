@@ -1,12 +1,12 @@
 # PollsLive retrieval-quiz adapter
 
-This directory is a dormant template. A repository created from `_L-template` renders normally and does not create, update, open, or close a PollsLive poll until the lesson deliberately opts in.
+L08 is opted into PollsLive with an approved three-question retrieval quiz for L07. The tracked `config.json`, `quiz.json`, evidence assets, and reproducible sources define the quiz used by the presentation. Generated QMD, QR codes, receipts, poll identity, response data, and credentials remain ignored and private.
 
-## Approval before activation
+## Approval and later changes
 
-Do not create the complete `quiz.json` or add the generated presentation include until both the retrieval-quiz integration map and the three exact questions have explicit human approval in the lesson workflow record. Questions should ask students to interpret familiar evidence from the preceding lesson, such as a figure, table, or R output.
+Do not replace the approved `quiz.json` or move the generated presentation include unless both the revised retrieval-quiz integration map and the three exact questions have explicit human approval in the lesson workflow record. Questions should ask students to interpret familiar evidence from the preceding lesson, such as a figure, table, or R output.
 
-## Opt in an approved lesson
+## Opt-in procedure for another lesson
 
 1. Copy `quiz.template.json` to `quiz.json` and replace every technical example with the approved lesson identity, date, questions, options, correct answers, explanations, evidence descriptions, alt text, and provenance.
 2. Copy `config.template.json` to `config.json`. Keep the reviewed 40-character `_internal` client revision pinned unless a later reviewed revision is intentionally adopted.
