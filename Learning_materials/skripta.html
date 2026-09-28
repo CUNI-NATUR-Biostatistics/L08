@@ -2793,7 +2793,7 @@ window.Quarto = {
     <div>
     <div class="quarto-title-meta-heading">Upraveno</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">22. září 2026</p>
+      <p class="date-modified">28. září 2026</p>
     </div>
   </div>
     
@@ -3179,6 +3179,23 @@ F-statistic: 921.2 on 3 and 96 DF,  p-value: &lt; 2.2e-16</code></pre>
 <li><strong><code>pohlavisamec</code></strong> je rozdíl <strong>samec minus samice při délce 0 mm</strong>: +1.973 mm. Není to rozdíl mezi pohlavími při každé délce ani odhad pro některého ze změřených krabů.</li>
 <li><strong><code>delka_krunyre_mm:pohlavisamec</code></strong> je <a class="glossary" href>interakční člen<span class="def">Situace, kdy efekt jednoho prediktoru na odezvu závisí na hodnotě jiného prediktoru.</span></a>: rozdíl <strong>sklon samce minus sklon samice</strong>, -0.124 mm/mm. Záporná hodnota říká, že samčí přímka stoupá pomaleji.</li>
 </ul>
+<div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Poznámka</span>Doplňující: proč s interakcí ponecháváme i oba hlavní členy
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Hvězdička rozvine model na <code>delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi</code>. První dva členy určují referenční přímku a rozdíl mezi skupinami v referenční hodnotě délky; poslední člen teprve popisuje rozdíl sklonů. Tomuto uspořádání se říká hierarchický princip modelu. <!-- TODO: add slug hierarchicky-princip-modelu to pojmy.yaml --></p>
+<p>Kdybychom hlavní člen délky nebo pohlaví bez věcného důvodu odstranili, interakční koeficient by zůstal bez přirozeného základu, vůči kterému se interpretuje. Výjimky existují pro úzce formulované modely, ale v úvodní analýze ponecháváme oba hlavní členy a biologickou otázku čteme z jejich společných předpovědí.</p>
+</div>
+</div>
+</div>
 <p>Hodnota 0 mm určuje pouze to, co v tomto zápisu znamenají dva koeficienty. Pro srovnání skutečně měřených délek použijeme oba koeficienty sklonu a dosadíme délku z pozorovaného rozsahu. <strong>Rozdíl -1.76 mm jsme už odečetli z předpovědí při 30 mm.</strong> Následující výpočet nepřináší nový výsledek; ukazuje, jak se stejná hodnota sestaví ze čtyř řádků tabulky <strong>Coefficients</strong>. Odhad šířky samice a rozdíl <strong>samec minus samice</strong> mají tuto stavbu:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -3252,7 +3269,7 @@ delka_krunyre_mm:pohlavisamec -0.1505977 -0.0983116</code></pre>
 </div>
 </div>
 <div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -3261,7 +3278,7 @@ delka_krunyre_mm:pohlavisamec -0.1505977 -0.0983116</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Sloupec <strong>Std. Error</strong> popisuje nejistotu jednotlivých koeficientů. <strong>t value</strong> a <strong>Pr(&gt;|t|)</strong> slouží k testování, zda by příslušný <em>podmíněný</em> koeficient mohl být nulový při předpokladech modelu. Hvězdičky u <a class="glossary" href>p-hodnot<span class="def">Pravděpodobnost, že bychom při platnosti nulové hypotézy pozorovali data alespoň tak extrémní jako naše skutečná data.</span></a> nejsou velikostí biologického rozdílu: například test u <code>(Intercept)</code> se ptá na nulovou šířku samice při délce 0 mm, což zde není zajímavá biologická otázka.</p>
 <p>Část <strong>Residuals</strong> stručně shrnuje odchylky jednotlivých krabů od přímek. <strong>Residual standard error</strong> popisuje jejich typickou velikost v milimetrech. Údaje <strong>Multiple R-squared</strong>, <strong>Adjusted R-squared</strong> a <strong>F-statistic</strong> zatím nepotřebujeme k výkladu interakce; k porovnávání biologicky zdůvodněných modelů se vrátíme v následující lekci.</p>
@@ -3269,7 +3286,7 @@ delka_krunyre_mm:pohlavisamec -0.1505977 -0.0983116</code></pre>
 </div>
 </div>
 <div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-8-contents" aria-controls="callout-8" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -3278,7 +3295,7 @@ delka_krunyre_mm:pohlavisamec -0.1505977 -0.0983116</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div id="callout-8" class="callout-8-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Funkci <code>emmeans()</code> znáte z předchozích lekcí. Pracuje se stejným odhadnutým modelem jako naše tabulka předpovědí; nastavíme v ní délku krunýře na 30 mm.</p>
 <div class="cell">
@@ -3349,6 +3366,23 @@ Confidence level used: 0.95 </code></pre>
 </div>
 <p>Rezidua se nacházejí na obou stranách nuly. Hledejte v grafu soustavné zakřivení nebo nápadně větší rozptyl na jedné straně: tím bychom poznali, že dvě přímky některou část vztahu nevystihují. Vraťte se také k bodovému grafu a prohlédněte kraby na koncích rozsahu délek. V těchto místech je méně sousedních měření, a jednotlivý krajní bod může sklon přímky více ovlivnit. Takový bod je důvod k ověření měření a citlivosti závěru, ne k automatickému odstranění.</p>
 <p><a class="glossary" href>Diagnostika modelu<span class="def">Soubor grafických a numerických kontrol ověřujících, zda jsou splněny předpoklady modelu: linearita, normalita reziduí, homoskedasticita, absence vlivných bodů.</span></a> sama nezaručí, že je vztah v populaci přesně lineární, že výběr krabů byl reprezentativní, ani že pohlaví něco způsobilo. Předpovědi mimo pozorované délky jsme nekontrolovali.</p>
+<div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Poznámka</span>Doplňující: interakci můžeme číst jen tam, kde máme data
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Rozdíl sklonů je odhadnut z oblastí, kde máme měření obou pohlaví. Kdyby samice byly pozorovány jen mezi kratšími délkami a samci jen mezi delšími délkami bez společného rozsahu, model by sice dokázal nakreslit dvě přímky, ale jejich srovnání při stejné délce by bylo založeno hlavně na extrapolaci.</p>
+<p>Před interpretací interakce proto kontrolujeme nejen počet bodů, ale také <strong>společný rozsah hodnot</strong> a zastoupení všech důležitých kombinací. Řídká nebo prázdná část grafu znamená, že modelová předpověď je méně podepřená skutečnými srovnáními. Více parametrů nemůže vytvořit informaci v kombinaci, kterou jsme nepozorovali.</p>
+</div>
+</div>
+</div>
 <div class="callout callout-style-default callout-important no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -3604,7 +3638,7 @@ formaoranžová:pohlavisamec -8.588674 -1.095326</code></pre>
 </div>
 <p>V řádku oranžové formy je rozdíl samec minus samice -0.93 mm. Získáme jej také sečtením koeficientů <code>pohlavisamec</code> a <code>formaoranžová:pohlavisamec</code>: 3.912 + (-4.842) = -0.930 mm. <strong>Samotný koeficient pohlaví tedy platí pro modrou formu; u oranžové se k němu přidá interakce.</strong></p>
 <div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -3613,7 +3647,7 @@ formaoranžová:pohlavisamec -8.588674 -1.095326</code></pre>
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Stejně jako v předchozím příkladu můžeme z již odhadnutého modelu získat předpovědi pomocí <code>emmeans()</code>. Tentokrát žádnou číselnou hodnotu nenastavujeme: žádáme o <strong>obě pohlaví uvnitř každé barevné formy</strong>, tedy o čtyři skutečně zastoupené kombinace.</p>
 <div class="cell">
@@ -3680,6 +3714,24 @@ Confidence level used: 0.95 </code></pre>
 <section id="kdy-potřebujeme-při-výkladu-modelu-uvést-další-prediktor" class="level2" data-number="18">
 <h2 data-number="18" class="anchored" data-anchor-id="kdy-potřebujeme-při-výkladu-modelu-uvést-další-prediktor"><span class="header-section-number">18</span> Kdy potřebujeme při výkladu modelu uvést další prediktor?</h2>
 <p>První příklad vyjádřil <a class="glossary" href>interakci<span class="def">Situace, kdy efekt jednoho prediktoru na odezvu závisí na hodnotě jiného prediktoru.</span></a> jako <strong>změnu rozdílu v šířce mezi pohlavími při různých délkách</strong>: dva sklony nemusí být stejné. Druhý příklad ji vyjádřil jako <strong>změnu rozdílu v délce mezi pohlavími u dvou barevných forem</strong>: dvě srovnání samce se samicí nemusí dát stejný výsledek. V obou případech musíme při výkladu jednoho prediktoru uvést hodnotu druhého.</p>
+<div class="callout-extra callout callout-style-default callout-note no-icon callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Poznámka</span>Doplňující: interakce závisí na měřítku odpovědi
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>V této lekci popisujeme <a class="glossary" href>odezvu<span class="def">Proměnná, jejíž variabilitu se snažíme vysvětlit nebo předpovědět; v notaci modelu y ~ x je odezva y.</span></a> v milimetrech, takže interakce znamená změnu <strong>rozdílu</strong> v milimetrech. Jiná biologická otázka se může ptát na poměr: například zda jsou samci v obou formách o stejných 10 % delší než samice. Stejný procentní poměr může při různých průměrech vytvářet různé rozdíly v milimetrech.</p>
+<p>Tvrzení „interakce existuje“ proto není úplné bez uvedení měřítka modelu. V lekci o binárních a početních odezvách se setkáme s modely, které používají jiné měřítko než přímé milimetry; interakční koeficient se pak nejprve interpretuje na tomto modelovém měřítku a teprve potom pomocí předpovědí v biologicky srozumitelných jednotkách.</p>
+</div>
+</div>
+</div>
+<div style="page-break-after: always;"></div>
 <div class="callout callout-style-default callout-important no-icon callout-titled">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">

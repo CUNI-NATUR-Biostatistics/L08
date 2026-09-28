@@ -401,6 +401,13 @@ prispevek_delky_rozdilu <- delka_porovnani_mm * rozdil_sklonu_samec_minus_samice
 - **`pohlavisamec`** je rozdíl **samec minus samice při délce 0 mm**: `r sprintf("%+.3f", vec_odhad_koeficientu["pohlavisamec"])` mm. Není to rozdíl mezi pohlavími při každé délce ani odhad pro některého ze změřených krabů.
 - **`delka_krunyre_mm:pohlavisamec`** je `r render_glossary_term("interakce-predikatoru", display = "interakční člen")`: rozdíl **sklon samce minus sklon samice**, `r sprintf("%+.3f", rozdil_sklonu_samec_minus_samice)` mm/mm. Záporná hodnota říká, že samčí přímka stoupá pomaleji.
 
+::: {.box-extra title="Doplňující: proč s interakcí ponecháváme i oba hlavní členy" collapse="true"}
+
+Hvězdička rozvine model na `delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi`. První dva členy určují referenční přímku a rozdíl mezi skupinami v referenční hodnotě délky; poslední člen teprve popisuje rozdíl sklonů. Tomuto uspořádání se říká hierarchický princip modelu. <!-- TODO: add slug hierarchicky-princip-modelu to pojmy.yaml -->
+
+Kdybychom hlavní člen délky nebo pohlaví bez věcného důvodu odstranili, interakční koeficient by zůstal bez přirozeného základu, vůči kterému se interpretuje. Výjimky existují pro úzce formulované modely, ale v úvodní analýze ponecháváme oba hlavní členy a biologickou otázku čteme z jejich společných předpovědí.
+:::
+
 Hodnota 0 mm určuje pouze to, co v tomto zápisu znamenají dva koeficienty. Pro srovnání skutečně měřených délek použijeme oba koeficienty sklonu a dosadíme délku z pozorovaného rozsahu. **Rozdíl `r sprintf("%+.2f", rozdil_samec_minus_samice_30)` mm jsme už odečetli z předpovědí při 30 mm.** Následující výpočet nepřináší nový výsledek; ukazuje, jak se stejná hodnota sestaví ze čtyř řádků tabulky **Coefficients**. Odhad šířky samice a rozdíl **samec minus samice** mají tuto stavbu:
 
 $$
@@ -540,6 +547,13 @@ abline(h = 0, lty = 2)
 Rezidua se nacházejí na obou stranách nuly. Hledejte v grafu soustavné zakřivení nebo nápadně větší rozptyl na jedné straně: tím bychom poznali, že dvě přímky některou část vztahu nevystihují. Vraťte se také k bodovému grafu a prohlédněte kraby na koncích rozsahu délek. V těchto místech je méně sousedních měření, a jednotlivý krajní bod může sklon přímky více ovlivnit. Takový bod je důvod k ověření měření a citlivosti závěru, ne k automatickému odstranění.
 
 `r render_glossary_term("diagnostika-modelu", display = "Diagnostika modelu")` sama nezaručí, že je vztah v populaci přesně lineární, že výběr krabů byl reprezentativní, ani že pohlaví něco způsobilo. Předpovědi mimo pozorované délky jsme nekontrolovali.
+
+::: {.box-extra title="Doplňující: interakci můžeme číst jen tam, kde máme data" collapse="true"}
+
+Rozdíl sklonů je odhadnut z oblastí, kde máme měření obou pohlaví. Kdyby samice byly pozorovány jen mezi kratšími délkami a samci jen mezi delšími délkami bez společného rozsahu, model by sice dokázal nakreslit dvě přímky, ale jejich srovnání při stejné délce by bylo založeno hlavně na extrapolaci.
+
+Před interpretací interakce proto kontrolujeme nejen počet bodů, ale také **společný rozsah hodnot** a zastoupení všech důležitých kombinací. Řídká nebo prázdná část grafu znamená, že modelová předpověď je méně podepřená skutečnými srovnáními. Více parametrů nemůže vytvořit informaci v kombinaci, kterou jsme nepozorovali.
+:::
 
 ::: {.box-result title="Co ukázal první příklad"}
 U těchto změřených krabů modré formy roste `r render_glossary_term("odhadnuta-hodnota", display = "odhadnutá zadní šířka")` s délkou u obou pohlaví. `r render_glossary_term("sklon", display = "Sklon")` je u samic přibližně `r sprintf("%.3f", sklon_samice)` mm šířky na 1 mm délky a u samců `r sprintf("%.3f", sklon_samec)` mm/mm. Při `r delka_porovnani_mm` mm je modelový rozdíl **samec minus samice** `r sprintf("%+.2f", rozdil_samec_minus_samice_30)` mm. Samčí sklon je o `r sprintf("%.3f", abs(rozdil_sklonu_samec_minus_samice))` mm/mm menší, takže u krabů s větší délkou model předpovídá ještě menší rozdíl samec minus samice. Jde o souvislost v těchto měřeních, nikoli o důkaz, že ji pohlaví způsobuje.
@@ -878,6 +892,15 @@ Ve všech skupinách jsou délky na obou stranách odhadu. Rozpětí a krajní h
 ## Kdy potřebujeme při výkladu modelu uvést další prediktor?
 
 První příklad vyjádřil `r render_glossary_term("interakce-predikatoru", display = "interakci")` jako **změnu rozdílu v šířce mezi pohlavími při různých délkách**: dva sklony nemusí být stejné. Druhý příklad ji vyjádřil jako **změnu rozdílu v délce mezi pohlavími u dvou barevných forem**: dvě srovnání samce se samicí nemusí dát stejný výsledek. V obou případech musíme při výkladu jednoho prediktoru uvést hodnotu druhého.
+
+::: {.box-extra title="Doplňující: interakce závisí na měřítku odpovědi" collapse="true"}
+
+V této lekci popisujeme `r render_glossary_term("odezva", display = "odezvu")` v milimetrech, takže interakce znamená změnu **rozdílu** v milimetrech. Jiná biologická otázka se může ptát na poměr: například zda jsou samci v obou formách o stejných 10 % delší než samice. Stejný procentní poměr může při různých průměrech vytvářet různé rozdíly v milimetrech.
+
+Tvrzení „interakce existuje“ proto není úplné bez uvedení měřítka modelu. V lekci o binárních a početních odezvách se setkáme s modely, které používají jiné měřítko než přímé milimetry; interakční koeficient se pak nejprve interpretuje na tomto modelovém měřítku a teprve potom pomocí předpovědí v biologicky srozumitelných jednotkách.
+:::
+
+{{< pagebreak >}}
 
 ::: {.box-result title="Co si odnést"}
 U modelu s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` se ptejte **„při jaké délce?“** nebo **„v jaké barevné formě?“**. V prvním modelu se samotný koeficient pohlaví vztahuje k 0 mm, délce mimo data; ve druhém k referenční barevné formě. Předpovědi pro konkrétní kombinace ukazují, jak se skupinový rozdíl mění. U modrých krabů je při `r delka_porovnani_mm` mm odhadovaný rozdíl zadní šířky **samec minus samice** `r sprintf("%+.2f", rozdil_samec_minus_samice_30)` mm; u krabů s délkou o 1 mm větší se podle modelu tento rozdíl změní o `r sprintf("%+.3f", rozdil_sklonu_samec_minus_samice)` mm. Rozdíl délky **samec minus samice** je u modré formy `r sprintf("%+.2f", rozdil_pohlavi_modra)` mm a u oranžové `r sprintf("%+.2f", rozdil_pohlavi_oranzova)` mm; změna mezi formami činí `r sprintf("%+.2f", rozdil_rozdilu_formy)` mm. Jednotlivá měření a diagnostické grafy připomínají nejistotu těchto odhadů a jejich omezený dosah.
