@@ -20,18 +20,21 @@
 ## Jak získat a otevřít skript -----
 #--------------------------------------------------#
 
-# 1. Ve veřejném webu kurzu otevřete lekci L08 a stáhněte soubor
-#    cviceni.R.
-# 2. V počítači vytvořte složku L08_praktikum a přesuňte do ní cviceni.R.
-# 3. V RStudio zvolte File > New Project > Existing Directory. Vyberte
-#    složku L08_praktikum a potvrďte Create Project.
+# 1. Z veřejné stránky lekce stáhněte skript:
+#    https://cuni-natur-biostatistics.github.io/L08/current/code/cviceni.R
+# 2. Stáhněte také data:
+#    https://cuni-natur-biostatistics.github.io/L08/current/data/krabi.csv
+# 3. V počítači vytvořte složku L08_praktikum a v ní podsložku data.
+#    Soubor cviceni.R přesuňte do L08_praktikum a krabi.csv do data.
 #
 # RStudio Project je hlavní složka vaší práce. Soubor s koncovkou .Rproj
 # pomáhá RStudio tuto složku znovu otevřít. Skript, data a případné výstupy
 # zůstávají samostatnými soubory uvnitř této složky.
 #
-# 4. V panelu Files klikněte na cviceni.R. Skript se otevře v panelu Source.
-# 5. Uložte vlastní kopii pomocí File > Save As, například jako
+# 4. V RStudio zvolte File > New Project > Existing Directory. Vyberte
+#    složku L08_praktikum a potvrďte Create Project.
+# 5. V panelu Files klikněte na cviceni.R. Skript se otevře v panelu Source.
+# 6. Uložte vlastní kopii pomocí File > Save As, například jako
 #    cviceni_L08_prijmeni.R.
 
 
@@ -76,17 +79,18 @@
 ## Technická kontrola -----
 #--------------------------------------------------#
 
-# Data crabs jsou součástí balíčku MASS. Následující kontrola nic
-# neinstaluje. Pokud se objeví chybová zpráva, nainstalujte MASS přes
-# panel Packages v RStudio a spusťte kontrolu znovu.
+# Cesta začíná v hlavní složce otevřeného projektu.
+# Kontrola nic nestahuje ani nemění ve vašem počítači.
+soubor_krabi <- "data/krabi.csv"
 
 if (
-  !requireNamespace(
-    package = "MASS",
-    quietly = TRUE
-  )) {
+  !file.exists(soubor_krabi)) {
   stop(
-    "Chybí balíček MASS. Nainstalujte jej přes panel Packages v RStudio.",
+    paste0(
+      "Soubor data/krabi.csv nebyl nalezen. ",
+      "Otevřete projekt L08_praktikum a zkontrolujte název ",
+      "i umístění CSV ve složce data."
+    ),
     call. = FALSE
   )
 }
@@ -122,7 +126,7 @@ if (
 ## Od celého souboru k biologické otázce -----
 #--------------------------------------------------#
 
-# Soubor MASS::crabs obsahuje měření 200 pobřežních krabů druhu
+# Připravený soubor obsahuje měření 200 pobřežních krabů druhu
 # Leptograpsus variegatus. Každý řádek je jeden krab. Budeme používat:
 #
 # sp  ... barevná forma: B = modrá, O = oranžová
@@ -131,7 +135,7 @@ if (
 # RW  ... zadní šířka krunýře v mm
 # BD  ... hloubka těla v mm
 #
-# Zdroj dat: Campbell & Mahon (1974), dostupný v balíčku MASS.
+# Zdroj dat: Campbell & Mahon (1974), převzato z balíčku MASS.
 
 
 #----------------------------------------#
@@ -139,7 +143,8 @@ if (
 #----------------------------------------#
 
 # Zadání:
-# Z MASS::crabs vytvořte objekt data_krabi obsahující právě sloupce
+# Načtěte soubor_krabi pomocí read.csv() do data_krabi_raw.
+# Z data_krabi_raw vytvořte objekt data_krabi obsahující právě sloupce
 # sp, sex, CL, RW a BD. Přejmenujte je v tomto pořadí na forma, pohlavi,
 # delka_krunyre_mm, zadni_sirka_mm a hloubka_tela_mm.
 #
