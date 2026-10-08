@@ -12,10 +12,6 @@
       "text": "Co znamená záporný koeficient roční teploty v modelu s roční i maximální teplotou?",
       "options": [
         {
-          "id": "annual-holding-maximum",
-          "label": "Změnu odhadované tloušťky listu při zvýšení roční teploty o 1 °C, když maximální teplotu držíme stejnou."
-        },
-        {
           "id": "both-temperatures",
           "label": "Celkovou změnu tloušťky listu při zvýšení obou teplot o 1 °C."
         },
@@ -26,6 +22,10 @@
         {
           "id": "ignoring-maximum",
           "label": "Vztah roční teploty k tloušťce listu bez ohledu na maximální teplotu."
+        },
+        {
+          "id": "annual-holding-maximum",
+          "label": "Změnu odhadované tloušťky listu při zvýšení roční teploty o 1 °C, když maximální teplotu držíme stejnou."
         }
       ],
       "correctOptionId": "annual-holding-maximum",
