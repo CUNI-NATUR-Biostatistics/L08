@@ -950,7 +950,7 @@ vec_symboly_pohlavi <-
 # jednotlivých krabů kolem těchto průměrů?
 
 #----------------------------------------------------------#
-# Shrnutí a sebekontrola -----
+# Ohlédnutí a vlastní kontrola -----
 #----------------------------------------------------------#
 
 # Dokážu vlastními slovy vysvětlit:
