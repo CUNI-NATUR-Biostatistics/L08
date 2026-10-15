@@ -1,6 +1,6 @@
 # Výuková data L08
 
-Soubor `krabi.csv` obsahuje původních 200 řádků a osm proměnných z `MASS::crabs` 7.3-66. Jeden řádek představuje jednoho pobřežního kraba druhu *Leptograpsus variegatus*. Praktikum z tabulky vybírá barevnou formu, pohlaví, délku a zadní šířku krunýře a hloubku těla.
+Soubor `krabi.csv` obsahuje původních 200 řádků a osm proměnných z `MASS::crabs` 7.3-66. Jeden řádek představuje jednoho pobřežního kraba rodu *Leptograpsus*; modrou a oranžovou barevnou formu považují autoři studie za samostatné druhy. Učební materiály, prezentace i praktikum z tabulky vybírají barevnou formu, pohlaví, délku a zadní šířku krunýře; praktikum navíc hloubku těla.
 
 Data pocházejí z práce Campbell, N. A. a Mahon, R. J. (1974), *A multivariate study of variation in two species of rock crab of the genus Leptograpsus*, *Australian Journal of Zoology* 22, 417–425. Výukovou kopii reprodukovatelně exportuje `R/prepare_crab_data.R` z verze balíčku připnuté v `renv.lock`; řádky, sloupce a hodnoty nemění.
 
