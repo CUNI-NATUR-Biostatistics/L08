@@ -10,7 +10,7 @@ Tento repozitář obsahuje osmou lekci kurzu [Biostatistika a plánování ekolo
 
 Liší se vztah délky a zadní šířky krunýře mezi samicemi a samci? Osmá lekce navazuje na aditivní modely z L07 a ukazuje, jak modelovat situaci, ve které vztah jednoho prediktoru k odezvě závisí na druhém prediktoru.
 
-Pracujeme s měřeními krabů druhu *Leptograpsus variegatus* z datasetu `MASS::crabs`. Nejprve porovnáme aditivní model s rovnoběžnými přímkami a model s interakcí, který dovoluje samicím a samcům různé sklony. Předpovědi při společné pozorované délce propojujeme s podmíněnými koeficienty a rezidui.
+Pracujeme s měřeními pobřežních krabů rodu *Leptograpsus* (modrá a oranžová barevná forma, které autoři studie považují za samostatné druhy) ze souboru `data/krabi.csv`, stabilní kopie `MASS::crabs`. Nejprve porovnáme aditivní model s rovnoběžnými přímkami a model s interakcí, který dovoluje samicím a samcům různé sklony. Předpovědi při společné pozorované délce propojujeme s podmíněnými koeficienty a rezidui.
 
 Druhý příklad používá dva skupinové prediktory: barevnou formu a pohlaví. Interakci zde čteme jako rozdíl dvou rozdílů. Lekce tak připravuje studenty na biologicky zdůvodněné porovnávání modelů v L09 a současně připomíná hranici mezi asociací v pozorovacích datech a příčinným tvrzením.
 
