@@ -19,6 +19,8 @@ resources:
   data:
     - label: "Data pobřežních krabů"
       path: data/krabi.csv
+    - label: "Data střemchy pozdní"
+      path: data/stromy.csv
   extras:
     - label: "Licence materiálů a kódu"
       path: LICENSE.md

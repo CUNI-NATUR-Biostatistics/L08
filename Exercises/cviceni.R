@@ -1,6 +1,6 @@
 #----------------------------------------------------------#
 #
-#       L08 — Mění se vztah dvou znaků podle skupiny?
+#       L08 — Kdy vztah dvou znaků závisí na třetím?
 #                  Interakce prediktorů
 #                 Praktické cvičení v R
 #             Studenti biologie a ekologie
@@ -16,15 +16,17 @@
 #--------------------------------------------------#
 ## Jak získat a otevřít soubory -----
 #--------------------------------------------------#
-# Ke cvičení potřebujete dva soubory: tento skript cviceni.R a datový
-# soubor krabi.csv. Oba najdete na webu kurzu:
+# Ke cvičení potřebujete tři soubory: tento skript cviceni.R a datové
+# soubory krabi.csv a stromy.csv. Všechny najdete na webu kurzu:
 # https://cuni-natur-biostatistics.github.io/L08/current/code/cviceni.R
 # https://cuni-natur-biostatistics.github.io/L08/current/data/krabi.csv
+# https://cuni-natur-biostatistics.github.io/L08/current/data/stromy.csv
 #
 # Jak soubory uložit:
 # 1. Vytvořte složku L08_praktikum a v ní podsložku data.
 # 2. Soubor cviceni.R uložte do složky L08_praktikum.
-# 3. Soubor krabi.csv uložte do podsložky data. Jeho jméno neměňte.
+# 3. Soubory krabi.csv a stromy.csv uložte do podsložky data. Jejich
+#    jména neměňte.
 # Pokud prohlížeč uloží soubory rovnou do složky Stažené soubory,
 # přesuňte je odtud na uvedená místa.
 #
@@ -43,16 +45,18 @@
 # ├── L08_praktikum.Rproj
 # ├── cviceni.R
 # └── data/
-#     └── krabi.csv
+#     ├── krabi.csv
+#     └── stromy.csv
 
 #--------------------------------------------------#
 ## Jak se skriptem pracovat -----
 #--------------------------------------------------#
-# Hlavní úlohy U01–U08 řešte v uvedeném pořadí, protože na sebe navazují.
+# Hlavní úlohy U01–U09 řešte v uvedeném pořadí, protože na sebe navazují.
 # Pozdější úlohy používají tabulku data_krabi z úlohy U01, tabulku
 # data_modri z úlohy U02, model mod_interakce z úlohy U04, tabulky
-# data_samice a data_samci z úlohy U05 a model mod_formy z úlohy U07.
-# Úlohy navíc N01–N08 jsou dobrovolné. Slouží k dalšímu procvičování,
+# data_samice a data_samci z úlohy U05, model mod_formy z úlohy U07
+# a tabulku data_stromy s modelem mod_stromy z úlohy U09.
+# Úlohy navíc N01–N09 jsou dobrovolné. Slouží k dalšímu procvičování,
 # klidně i po praktiku, a nemusíte je stihnout.
 #
 # Spouštění kódu:
@@ -84,10 +88,11 @@
 # Po dokončení cvičení budete schopni:
 # - rozpoznat biologickou otázku, ve které vztah jednoho prediktoru
 #   k odezvě závisí na hodnotě nebo úrovni druhého prediktoru;
-# - fitovat model s interakcí a zobrazit jeho předpovědi pro číselný
-#   i skupinový prediktor;
+# - fitovat model s interakcí a zobrazit jeho předpovědi pro kombinace
+#   číselných i skupinových prediktorů;
 # - vyložit koeficienty modelu s interakcí jako podmíněné a porovnávat
-#   skupiny pomocí předpovědí při zvolené hodnotě druhého prediktoru;
+#   skupiny nebo různé hodnoty prediktoru pomocí předpovědí při zvolené
+#   hodnotě druhého prediktoru;
 # - vysvětlit interakci dvou skupinových prediktorů jako rozdíl dvou
 #   rozdílů;
 # - omezit závěr na pozorovaný rozsah dat a na souvislost v pozorovacích
@@ -102,16 +107,28 @@
 #--------------------------------------------------#
 ## Technická kontrola souboru -----
 #--------------------------------------------------#
-# Následující kód zkontroluje, zda je datový soubor na správném místě.
-# Označte ho celý a spusťte Ctrl + Enter. Cesta k souboru začíná ve složce
-# otevřeného projektu. Pokud soubor chybí, R se zastaví a vypíše, co máte
-# zkontrolovat.
+# Následující kód zkontroluje, zda jsou oba datové soubory na správném
+# místě. Označte ho celý a spusťte Ctrl + Enter. Cesty k souborům začínají
+# ve složce otevřeného projektu. Pokud soubor chybí, R se zastaví a vypíše,
+# co máte zkontrolovat.
 soubor_krabi <- "data/krabi.csv"
+soubor_stromy <- "data/stromy.csv"
 if (
   !file.exists(soubor_krabi)) {
   stop(
     paste0(
       "Soubor data/krabi.csv nebyl nalezen. ",
+      "Otevřete projekt L08_praktikum a zkontrolujte jméno ",
+      "a umístění CSV v podsložce data."
+    ),
+    call. = FALSE
+  )
+}
+if (
+  !file.exists(soubor_stromy)) {
+  stop(
+    paste0(
+      "Soubor data/stromy.csv nebyl nalezen. ",
       "Otevřete projekt L08_praktikum a zkontrolujte jméno ",
       "a umístění CSV v podsložce data."
     ),
@@ -128,6 +145,16 @@ if (
 # RW  ... šířka zadní části krunýře v mm;
 # BD  ... hloubka těla v mm.
 # Tabulku šíří balíček MASS pod licencí GPL-2 nebo GPL-3.
+#
+# Soubor stromy.csv obsahuje měření 31 pokácených stromů střemchy pozdní
+# (Prunus serotina), severoamerického stromu, který se v českých lesích
+# šíří jako invazní druh. Jeden řádek představuje jeden strom. Hodnoty
+# jsou v amerických jednotkách:
+# Girth  ... průměr kmene v palcích, měřený asi 1,37 m nad zemí;
+# Height ... výška stromu ve stopách;
+# Volume ... objem dřeva v krychlových stopách.
+# Data pocházejí z knihy Meyer (1953), Forest Mensuration. Tabulku šíří
+# základní balíček R datasets pod licencí GPL-2 nebo GPL-3.
 
 #----------------------------------------------------------#
 # Hlavní úlohy -----
@@ -653,9 +680,9 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Které pohlaví má vyšší průměr v každé formě? Vysvětlete zápornou
 # hodnotu −4,842 mm jako změnu rozdílu, ne jako délku jedné skupiny.
 
-#----------------------------------------------------------#
-# Závěrečný biologický výklad -----
-#----------------------------------------------------------#
+#--------------------------------------------------#
+## Výklad modelu se dvěma skupinovými znaky -----
+#--------------------------------------------------#
 # Model se dvěma skupinovými prediktory má jeden odhadovaný průměr pro
 # každou kombinaci. predict() s interval = "confidence" přidá interval
 # spolehlivosti pro průměr skupiny. Residuum je u každého kraba rozdíl
@@ -716,6 +743,136 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Interpretace:
 # Proč věta "samci jsou delší" není pro tento model úplným závěrem?
 # Kterou podmínku musíme vždy doplnit?
+
+#--------------------------------------------------#
+## Dva číselné prediktory -----
+#--------------------------------------------------#
+# Interakce může spojovat i dva číselné prediktory. Lesníci odhadují
+# objem dřeva v kmeni z průměru kmene a z výšky stromu. Ptáme se:
+# přibývá objem dřeva s průměrem kmene stejně rychle u nízkých
+# i vysokých stromů? Centimetr průměru navíc znamená silnější vrstvu
+# dřeva po celé délce kmene, takže u vyššího stromu bychom čekali větší
+# přírůstek objemu.
+#
+# Připravený kód níže má dvě části. První část (od data_stromy_raw po
+# data_porovnani_stromy) načte soubor stromy.csv, převede americké
+# jednotky na centimetry, metry a krychlové metry a vytvoří tabulku čtyř
+# kombinací průměru a výšky, pro které budeme porovnávat předpovědi.
+# Zvolené průměry i výšky leží uvnitř pozorovaných dat.
+#
+# data_stromy_raw <-
+#   read.csv(file = soubor_stromy)
+#
+# data_stromy <-
+#   data.frame(
+#     prumer_cm = data_stromy_raw$Girth * 2.54, # palce na cm
+#     vyska_m = data_stromy_raw$Height * 0.3048, # stopy na m
+#     objem_m3 = data_stromy_raw$Volume * 0.0283168 # krychlové stopy na m³
+#   )
+#
+# data_porovnani_stromy <-
+#   expand.grid(
+#     prumer_cm = c(28, 36),
+#     vyska_m = c(21, 25)
+#   )
+#
+# Druhá část (od plot() po legend()) je graf. Ukáže stromy a dvě
+# předpovězené přímky modelu mod_stromy, takže ji spusťte až po odhadu
+# modelu v úloze. Přímka pro 21 m vede jen přes průměry stromů nižších
+# než 22 m, přímka pro 25 m jen přes průměry stromů vyšších než 24 m.
+# Funkce range() vrátí nejmenší a největší hodnotu; dva body stačí
+# k nakreslení přímky pomocí lines().
+#
+# plot(
+#   x = data_stromy$prumer_cm,
+#   y = data_stromy$objem_m3,
+#   pch = 16,
+#   col = "grey40",
+#   xlab = "Průměr kmene (cm)",
+#   ylab = "Objem dřeva (m³)"
+# )
+#
+# data_primka_21 <-
+#   data.frame(
+#     prumer_cm = range(data_stromy$prumer_cm[data_stromy$vyska_m < 22]),
+#     vyska_m = 21
+#   )
+# data_primka_25 <-
+#   data.frame(
+#     prumer_cm = range(data_stromy$prumer_cm[data_stromy$vyska_m > 24]),
+#     vyska_m = 25
+#   )
+#
+# lines(
+#   x = data_primka_21$prumer_cm,
+#   y = predict(object = mod_stromy, newdata = data_primka_21),
+#   col = "#86579E",
+#   lwd = 2
+# )
+# lines(
+#   x = data_primka_25$prumer_cm,
+#   y = predict(object = mod_stromy, newdata = data_primka_25),
+#   col = "#5D2890",
+#   lwd = 3
+# )
+#
+# legend(
+#   x = "topleft",
+#   legend = c("21 m", "25 m"),
+#   col = c("#86579E", "#5D2890"),
+#   lwd = c(2, 3),
+#   bty = "n"
+# )
+
+#----------------------------------------#
+### Úloha | L08-U09 -----
+#----------------------------------------#
+
+# Zadání:
+# 1. Zkopírujte a spusťte první část připraveného kódu (od
+#    data_stromy_raw po data_porovnani_stromy). Ověřte, že data_stromy
+#    má 31 řádků a žádné chybějící hodnoty, a pomocí range() zjistěte
+#    pozorovaný rozsah sloupců prumer_cm a vyska_m.
+# 2. Odhadněte mod_stromy se vzorcem objem_m3 ~ prumer_cm * vyska_m
+#    a vypište jeho koeficienty.
+# 3. Z koeficientů spočítejte sklon průměru při výškách 21, 23 a 25 m
+#    a uložte jej jako vec_sklony_prumeru.
+# 4. Pomocí mod_stromy předpovězte objem pro data_porovnani_stromy.
+#    Pro výšku 21 m i 25 m odečtěte předpověď pro 28 cm od předpovědi
+#    pro 36 cm a rozdíl vydělte 8 (36 − 28 = 8 cm). Výsledky porovnejte
+#    s prvním (21 m) a třetím (25 m) prvkem vec_sklony_prumeru.
+# 5. Zkopírujte a spusťte druhou část připraveného kódu (graf).
+#
+# Pokud vám dochází čas, dokončete kroky 1–3 a interpretaci a kroky 4–5
+# dokončete doma. Žádná další hlavní úloha na L08-U09 nenavazuje.
+
+# Vaše řešení:
+
+
+# Nápověda 1:
+# Sklon průměru už není jedno číslo. U každého koeficientu se zeptejte,
+# při jaké hodnotě druhého prediktoru platí a co se mění s výškou.
+#
+# Nápověda 2:
+# Sklon při výšce h je koeficient prumer_cm plus koeficient
+# prumer_cm:vyska_m krát h; koeficienty vybírejte z coef() podle jmen
+# a h zadejte jako vektor tří výšek. Předpovědi uložte jako nový sloupec
+# data_porovnani_stromy; řádky 1 a 2 patří výšce 21 m, řádky 3 a 4
+# výšce 25 m.
+#
+# Očekávaný výsledek:
+# data_stromy má 31 řádků a 0 chybějících hodnot. Průměr kmene sahá
+# přibližně od 21,1 do 52,3 cm, výška od 19,2 do 26,5 m. Koeficienty jsou
+# přibližně 1,9651; −0,06528; −0,12050 a 0,00493. Sklon průměru je
+# přibližně 0,038; 0,048 a 0,058 m³ na 1 cm. Předpovědi jsou přibližně
+# 0,503; 0,808; 0,572 a 1,035 m³. Rozdíl 36 − 28 cm je 0,305 m³ při
+# 21 m a 0,463 m³ při 25 m; po vydělení 8 dostanete sklony 0,038
+# a 0,058. V grafu je přímka pro 25 m strmější než přímka pro 21 m.
+#
+# Interpretace:
+# Proč nevykládáme koeficient prumer_cm (−0,065) jako sklon pro změřené
+# stromy? Napište jednu větu o tom, jak se přírůstek objemu na 1 cm
+# průměru mění s výškou, a omezte ji na pozorovaný rozsah dat.
 
 #----------------------------------------------------------#
 # Úlohy navíc -----
@@ -994,6 +1151,43 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Jaký rozdíl je mezi čtyřmi odhadovanými průměry a rozptylem residuí
 # jednotlivých krabů kolem těchto průměrů?
 
+#----------------------------------------#
+### Úloha navíc | L08-N09 -----
+#----------------------------------------#
+
+# Zadání:
+# Objem kmene je zhruba úměrný druhé mocnině průměru krát výšce, tedy
+# součinu. Logaritmus mění součin v součet. Pracujte s data_stromy
+# z L08-U09 a odhadněte mod_stromy_log se vzorcem:
+#
+# log(objem_m3) ~ log(prumer_cm) * log(vyska_m)
+#
+# Pomocí confint() vypište 95% interval spolehlivosti interakčního členu.
+# Stejně vypište interval interakce v mod_stromy a u obou intervalů
+# zjistěte, zda zahrnují nulu. Samotné hodnoty neporovnávejte, protože
+# jsou na různých měřítkách.
+
+# Vaše řešení:
+
+
+# Nápověda 1:
+# Logaritmus můžete použít přímo ve vzorci lm(); data není potřeba
+# předem upravovat.
+#
+# Nápověda 2:
+# V confint() vyberte řádek pomocí parm. Interakční člen se ve výpisu
+# jmenuje "log(prumer_cm):log(vyska_m)", v mod_stromy
+# "prumer_cm:vyska_m".
+#
+# Očekávaný výsledek:
+# V mod_stromy leží interval interakce celý nad nulou (přibližně 0,0031
+# až 0,0068). V mod_stromy_log je interval přibližně −1,19 až 1,74,
+# je široký a zahrnuje nulu.
+#
+# Interpretace:
+# Proč tvrzení "objem dřeva má interakci průměru a výšky" není úplné,
+# dokud neřekneme, na jakém měřítku objem modelujeme?
+
 #----------------------------------------------------------#
 # Ohlédnutí a vlastní kontrola -----
 #----------------------------------------------------------#
@@ -1005,6 +1199,8 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # - proč jsou hlavní koeficienty v modelu s interakcí podmíněné;
 # - jak z předpovědí porovnám dvě skupiny při stejné hodnotě prediktoru;
 # - proč je interakce dvou faktorů rozdílem dvou rozdílů;
+# - jak se u dvou číselných prediktorů mění sklon jednoho s hodnotou
+#   druhého a proč jej uvádím při zvolené hodnotě uvnitř dat;
 # - co ukazují residua a proč pozorovací model nedokládá příčinu.
 #
 # Pokud některý bod ještě neumíte vysvětlit bez pohledu do skriptu,
