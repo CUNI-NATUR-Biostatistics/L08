@@ -1,6 +1,6 @@
-# L08 — Mění se vztah mezi dvěma znaky podle skupiny?
+# L08 — Kdy vztah dvou znaků závisí na třetím?
 
-**Interakce číselného a skupinového prediktoru i dvou skupinových prediktorů**
+**Interakce číselného a skupinového prediktoru, dvou skupinových i dvou číselných prediktorů**
 
 Tento repozitář obsahuje osmou lekci kurzu [Biostatistika a plánování ekologických pokusů (MB120P163)](https://cuni-natur-biostatistics.github.io/) vyučovaného na Přírodovědecké fakultě Univerzity Karlovy.
 
@@ -12,7 +12,7 @@ Liší se vztah délky a zadní šířky krunýře mezi samicemi a samci? Osmá 
 
 Pracujeme s měřeními pobřežních krabů rodu *Leptograpsus* (modrá a oranžová barevná forma, které autoři studie považují za samostatné druhy) ze souboru `data/krabi.csv`, stabilní kopie `MASS::crabs`. Nejprve porovnáme aditivní model s rovnoběžnými přímkami a model s interakcí, který dovoluje samicím a samcům různé sklony. Předpovědi při společné pozorované délce propojujeme s podmíněnými koeficienty a rezidui.
 
-Druhý příklad používá dva skupinové prediktory: barevnou formu a pohlaví. Interakci zde čteme jako rozdíl dvou rozdílů. Lekce tak připravuje studenty na biologicky zdůvodněné porovnávání modelů v L09 a současně připomíná hranici mezi asociací v pozorovacích datech a příčinným tvrzením.
+Druhý příklad používá dva skupinové prediktory: barevnou formu a pohlaví. Interakci zde čteme jako rozdíl dvou rozdílů. Třetí, kratší příklad používá dva číselné prediktory: na měřeních 31 pokácených stromů střemchy pozdní ze souboru `data/stromy.csv` (stabilní kopie `datasets::trees`) ukazuje, jak se sklon objemu dřeva vůči průměru kmene plynule mění s výškou stromu. Lekce tak připravuje studenty na biologicky zdůvodněné porovnávání modelů v L09 a současně připomíná hranici mezi asociací v pozorovacích datech a příčinným tvrzením.
 
 ## Výsledky učení
 
@@ -23,6 +23,7 @@ Po prostudování této lekce dokážete:
 - interpretovat předpovědi a podmíněné koeficienty modelu;
 - vysvětlit interakci číselného a skupinového prediktoru;
 - vysvětlit interakci dvou skupinových prediktorů jako rozdíl dvou rozdílů;
+- vysvětlit interakci dvou číselných prediktorů jako sklon, který se mění s hodnotou druhého prediktoru;
 - omezit biologický závěr na pozorovaný rozsah a způsob získání dat.
 
 ## Materiály pro studenty
@@ -35,6 +36,7 @@ Následující odkazy vedou vždy na nejnovější schválené vydání L08. Roz
 | Prezentace | [Otevřít slidy](https://cuni-natur-biostatistics.github.io/L08/current/presentation/) | [Stáhnout PDF](https://cuni-natur-biostatistics.github.io/L08/current/presentation/presentation.pdf) |
 | Praktické cvičení v R | [Stáhnout skript](https://cuni-natur-biostatistics.github.io/L08/current/code/cviceni.R) | — |
 | Data pobřežních krabů | [Stáhnout CSV](https://cuni-natur-biostatistics.github.io/L08/current/data/krabi.csv) | — |
+| Data střemchy pozdní | [Stáhnout CSV](https://cuni-natur-biostatistics.github.io/L08/current/data/stromy.csv) | — |
 
 - [HUB kurzu](https://cuni-natur-biostatistics.github.io/) je hlavní vstup ke všem veřejným studijním materiálům.
 - [Moodle kurzu](https://dl2.cuni.cz/course/view.php?id=106) slouží zapsaným studentům pro oznámení, testy, zadání, odevzdávání a individuální výsledky.
@@ -46,7 +48,7 @@ Následující odkazy vedou vždy na nejnovější schválené vydání L08. Roz
 - `Learning_materials/skripta.qmd` je zdroj skript; výsledky jsou `Learning_materials/skripta.html` a `Learning_materials/skripta.pdf`.
 - `Presentation/presentation.qmd` je zdroj slidů; výsledky jsou `Presentation/presentation.html` a `Presentation/presentation.pdf`.
 - `Exercises/cviceni.R` je schválený studentský skript k praktickému cvičení.
-- `data/krabi.csv` je připravená stabilní kopie `MASS::crabs`; původ, citaci a podmínky dalšího použití popisuje `data/README.md`.
+- `data/krabi.csv` je připravená stabilní kopie `MASS::crabs` a `data/stromy.csv` stabilní kopie `datasets::trees` (vytváří je `R/prepare_crab_data.R` a `R/prepare_tree_data.R`); původ, citaci a podmínky dalšího použití popisuje `data/README.md`.
 - `R/` obsahuje podporované renderovací a tematické nástroje.
 - `theme/` obsahuje synchronizovanou lokální kopii společné vizuální identity kurzu.
 
