@@ -1,6 +1,6 @@
 ---
-title: "Mění se vztah mezi dvěma znaky podle skupiny?"
-subtitle: "Interakce číselného a skupinového znaku i dvou skupinových znaků"
+title: "Kdy vztah dvou znaků závisí na třetím?"
+subtitle: "Interakce číselného a skupinového znaku, dvou skupinových i dvou číselných znaků"
 lang: cs
 filters:
   - ../theme/semantic-boxes.lua
@@ -73,6 +73,8 @@ knitr::opts_hooks$set(
 source(here::here("R", "set_r_theme.R"))
 source(here::here("R", "format_value_cz.R"))
 source(here::here("R", "Functions", "use_ragg_brand_fonts.R"))
+source(here::here("R", "Functions", "build_tree_bands.R"))
+source(here::here("R", "Functions", "plot_tree_panels.R"))
 use_ragg_brand_fonts()
 
 # Glossary: use local slovnik/pojmy.yaml when available, otherwise remote fallback.
@@ -173,8 +175,8 @@ Zkusme zjistit, zda takové omezení dává smysl i pro kraby.
 Po prostudování této lekce budete schopni:
 
 - rozpoznat biologickou otázku, ve které vztah jednoho `r render_glossary_term("prediktor", display = "prediktoru")` k `r render_glossary_term("odezva", display = "odezvě")` závisí na hodnotě nebo úrovni druhého prediktoru;
-- fitovat `r render_glossary_term("linearni-model", display = "lineární model")` s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` a zobrazit jeho předpovědi pro číselný i skupinový prediktor;
-- vyložit koeficienty modelu s interakcí jako podmíněné a porovnávat skupiny pomocí předpovědí při zvolené hodnotě druhého prediktoru;
+- fitovat `r render_glossary_term("linearni-model", display = "lineární model")` s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` a zobrazit jeho předpovědi pro kombinace číselných i skupinových prediktorů;
+- vyložit koeficienty modelu s interakcí jako podmíněné a porovnávat skupiny nebo různé hodnoty prediktoru pomocí předpovědí při zvolené hodnotě druhého prediktoru;
 - vysvětlit interakci dvou skupinových prediktorů jako rozdíl dvou rozdílů;
 - omezit závěr na pozorovaný rozsah dat a na souvislost v pozorovacích datech.
 
@@ -1133,24 +1135,303 @@ ggplot2::ggplot(
 
 Ve všech skupinách jsou délky na obou stranách odhadu. Rozpětí a krajní hodnoty se mezi skupinami mohou lišit; graf proto nečtěte jako důkaz, že čtyři průměry popisují jednotlivce přesně. Bez popisu způsobu výběru krabů také nelze rozdíly automaticky zobecnit na všechny kraby ani z nich vyvozovat účinek pohlaví nebo barevné formy.
 
+## Přibývá objem dřeva s průměrem kmene stejně rychle u nízkých i vysokých stromů?
+
+V obou příkladech s kraby byl aspoň jeden `r render_glossary_term("prediktor", display = "prediktor")` skupinou. Interakce však může spojovat i dva `r render_glossary_term("numericka-promenna", display = "číselné")` prediktory. Lesníci odhadují, kolik dřeva je v kmeni, z jeho průměru a z výšky stromu. Podíváme se na měření pokácených stromů střemchy pozdní (*Prunus serotina*), severoamerického stromu, který se v českých lesích šíří jako invazní druh.
+
+::: {.box-question title="Co čekáte?"}
+Představte si dvojici nízkých stromů stejné výšky, z nichž jeden má kmen o 1 cm tlustší, a stejnou dvojici vysokých stromů. O kolik více dřeva má tlustší strom v každé dvojici? Bude tento rozdíl u nízkých i vysokých stromů stejný?
+:::
+
+::: {.box-result collapse="true" title="Možná odpověď"}
+Pravděpodobně ne. Centimetr průměru navíc znamená silnější vrstvu dřeva po celé délce kmene, takže delší kmen jí obsahuje více. Toto očekávání vychází z tvaru kmene, ne z fyziologie stromu. Pokud toto očekávání platí, `r render_glossary_term("sklon", display = "sklon")` vztahu objemu a průměru bude záviset na výšce.
+:::
+
+Soubor [stromy.csv](https://cuni-natur-biostatistics.github.io/L08/current/data/stromy.csv) je součástí materiálů lekce; uložte jej do stejné složky `data` jako soubor s kraby. Hodnoty jsou v původních amerických jednotkách: průměr kmene v palcích, výška ve stopách a objem dřeva v krychlových stopách. Proto je hned převedeme:
+
+```{r}
+#| label: nacist-stromy
+#| echo: true
+# Načteme tabulku pokácených stromů
+data_stromy <-
+  read.csv(file = "data/stromy.csv")
+
+# Převedeme jednotky na cm, m a m³
+data_stromy$prumer_cm <-
+  data_stromy$Girth * 2.54 # 1 palec = 2,54 cm
+data_stromy$vyska_m <-
+  data_stromy$Height * 0.3048 # 1 stopa = 0,3048 m
+data_stromy$objem_m3 <-
+  data_stromy$Volume * 0.0283168 # 1 krychlová stopa = 0,0283168 m³
+
+# Zkontrolujeme typy sloupců, chybějící hodnoty a rozsahy
+str(object = data_stromy)
+colSums(x = is.na(data_stromy))
+summary(object = data_stromy[, c("prumer_cm", "vyska_m", "objem_m3")])
+```
+
+```{r}
+#| label: popis-stromu
+#| echo: false
+korelace_prumer_vyska <-
+  cor(x = data_stromy$prumer_cm, y = data_stromy$vyska_m)
+```
+
+Jeden řádek představuje **jeden pokácený strom**. Sloupec `Girth` (anglicky obvod) je podle dokumentace ve skutečnosti průměr kmene měřený asi 1,37 m nad zemí. V souboru je `r nrow(data_stromy)` stromů a chybí `r sum(is.na(data_stromy))` hodnot. Průměr kmene sahá od `r format_value_cz(min(data_stromy$prumer_cm), digits = 1)` do `r format_value_cz(max(data_stromy$prumer_cm), digits = 1)` cm, výška od `r format_value_cz(min(data_stromy$vyska_m), digits = 1)` do `r format_value_cz(max(data_stromy$vyska_m), digits = 1)` m a objem dřeva od `r format_value_cz(min(data_stromy$objem_m3), digits = 2)` do `r format_value_cz(max(data_stromy$objem_m3), digits = 2)` m³. Vyšší stromy mívají i tlustší kmen (`r render_glossary_term("korelace", display = "korelace")` průměru a výšky je `r format_value_cz(korelace_prumer_vyska, digits = 2)`); oba prediktory tedy nenesou úplně nezávislou informaci, podobně jako dvě teploty v minulé lekci.
+
+Stromů je málo a dokumentace neuvádí, kde a jak byly vybrány. Závěry proto vztahujeme k těmto `r nrow(data_stromy)` stromům a k pozorovaným rozsahům průměru a výšky.
+
+::: {.box-data title="Doplňující: odkud pocházejí data o stromech" collapse="true"}
+Data pocházejí z knihy Meyer, H. A. (1953): *Forest Mensuration*, Penns Valley Publishers, převzaté do Ryan, T. A., Joiner, B. L. a Ryan, B. F. (1976): *The Minitab Student Handbook*, Duxbury Press. Tabulku šíří základní balíček R `datasets` pod licencí GPL-2 nebo GPL-3; soubor `stromy.csv` je její nezměněná kopie. Stejnou tabulku si můžete vytvořit sami:
+
+```{r}
+#| label: extra-priprava-stromy
+#| echo: true
+#| eval: false
+# Tabulka je součástí základní instalace R
+data_stromy_zdroj <-
+  as.data.frame(x = datasets::trees)
+
+# Kontrola: 31 stromů, 3 sloupce a žádné chybějící hodnoty
+dim(x = data_stromy_zdroj)
+sum(is.na(x = data_stromy_zdroj))
+
+# Uložíme tabulku do složky data jako soubor CSV
+write.csv(
+  x = data_stromy_zdroj,
+  file = "data/stromy.csv",
+  row.names = FALSE
+)
+```
+:::
+
+## Vystihne společný sklon nízké i vysoké stromy?
+
+U krabů jsme kreslili jednu přímku pro každé pohlaví. Výška je však číslo a žádné skupiny nemá. Abychom viděli, jak vypadá vztah objemu a průměru u různě vysokých stromů, rozdělíme stromy **jen pro kreslení** do čtyř výškových pásem se zhruba stejným počtem stromů. Každý panel ukazuje stromy jednoho pásma. Do modelu pásma nevstupují: model dál pracuje s výškou jako s číslem.
+
+Začneme známým aditivním modelem z minulé lekce, který má dva číselné `r render_glossary_term("prediktor", display = "prediktory")` spojené znakem `+`:
+
+```{r}
+#| label: aditivni-model-stromy
+#| echo: true
+# Aditivní model: jeden společný sklon průměru pro všechny výšky
+mod_aditivni <-
+  lm(
+    formula = objem_m3 ~ prumer_cm + vyska_m,
+    data = data_stromy
+  )
+coef(object = mod_aditivni)
+```
+
+```{r}
+#| label: pasma-stromu
+#| echo: false
+res_pasma_stromy <- build_tree_bands(data_stromy = data_stromy)
+data_pasma_souhrn <- res_pasma_stromy$summary
+sklon_aditivni <- unname(coef(mod_aditivni)["prumer_cm"])
+```
+
+Přímka v každém panelu je předpověď modelu pro **střední výšku daného pásma** (`r render_glossary_term("median", display = "medián")`: `r paste(format_value_cz(data_pasma_souhrn$vyska_median_m, digits = 1), collapse = "; ")` m) a vede jen přes průměry kmenů pozorované v tomto pásmu. V pásmech je `r paste(data_pasma_souhrn$n, collapse = ", ")` stromů.
+
+```{r}
+#| label: obrazek-pasma-aditivni
+#| echo: false
+#| fig-width: 9
+#| fig-height: 3.8
+#| fig-alt: "Čtyři panely vedle sebe, jeden pro každé výškové pásmo stromů od nejnižšího vlevo po nejvyšší vpravo; v každém je objem dřeva proti průměru kmene a fialová přímka aditivního modelu se stejným sklonem ve všech panelech. V nejnižším pásmu leží tenké kmeny nad přímkou a tlusté pod ní, v nejvyšším pásmu naopak."
+plot_tree_panels(
+  res_pasma = res_pasma_stromy,
+  mod = mod_aditivni,
+  base_size = 13
+)
+```
+
+::: {.box-question title="Co v panelech vidíte?"}
+Mají přímky ve všech panelech stejný `r render_glossary_term("sklon", display = "sklon")`? Leží body nejnižších a nejvyšších stromů kolem svých přímek stejně?
+:::
+
+::: {.box-result collapse="true" title="Možná odpověď"}
+Přímky jsou rovnoběžné: aditivní model dává všem výškám společný sklon `r format_value_cz(sklon_aditivni, digits = 3)` m³ na 1 cm průměru. V nejnižším pásmu však tenké kmeny leží nad přímkou a tlusté pod ní, takže body stoupají pozvolněji než přímka. V nejvyšším pásmu je to naopak a body stoupají strměji. Společný sklon tedy zřejmě nevystihuje nízké ani vysoké stromy.
+:::
+
+## Model s interakcí dovolí, aby se sklon průměru měnil s výškou
+
+Stejně jako u krabů zapíšeme `r render_glossary_term("interakce-predikatoru", display = "interakci")` hvězdičkou. Rozdíl je jen v tom, že druhý `r render_glossary_term("prediktor", display = "prediktor")` je číslo: interakční člen `prumer_cm:vyska_m` dovolí, aby se **`r render_glossary_term("sklon", display = "sklon")` průměru plynule měnil s výškou stromu**.
+
+```{r}
+#| label: model-stromy
+#| echo: true
+# Hvězdička dovolí, aby sklon průměru závisel na výšce
+mod_stromy <-
+  lm(
+    formula = objem_m3 ~ prumer_cm * vyska_m,
+    data = data_stromy
+  )
+coef(object = mod_stromy)
+```
+
+Model má opět čtyři koeficienty. Jejich význam rozebereme v další části; nejprve se podíváme, jaké přímky z nich vzniknou.
+
+Na stejné panely nyní nakreslíme přímky modelu s interakcí. Šedá přerušovaná čára opakuje v každém panelu přímku nejnižšího pásma, aby bylo vidět, jak se sklon s výškou mění.
+
+```{r}
+#| label: obrazek-pasma-interakce
+#| echo: false
+#| fig-width: 9
+#| fig-height: 3.8
+#| fig-alt: "Stejné čtyři panely stromů s fialovými přímkami modelu s interakcí a šedou přerušovanou přímkou nejnižšího pásma v každém panelu; od nejnižšího k nejvyššímu pásmu je fialová přímka stále strmější a vzdaluje se od šedé."
+plot_tree_panels(
+  res_pasma = res_pasma_stromy,
+  mod = mod_stromy,
+  flag_reference = TRUE,
+  base_size = 13
+)
+```
+
+```{r}
+#| label: sklony-stromy
+#| echo: false
+vec_koeficienty_stromy <- coef(mod_stromy)
+koef_prumer <- unname(vec_koeficienty_stromy["prumer_cm"])
+koef_vyska <- unname(vec_koeficienty_stromy["vyska_m"])
+koef_interakce_stromy <- unname(vec_koeficienty_stromy["prumer_cm:vyska_m"])
+
+# Teaching input: three heights inside the observed range
+vec_vysky_sklon_m <- c(21, 23, 25)
+vec_sklony_prumeru <- koef_prumer + koef_interakce_stromy * vec_vysky_sklon_m
+```
+
+Jak strmá je přímka při určité výšce? Sklon průměru složíme ze dvou koeficientů z výpisu `coef()`, z řádku `prumer_cm` a z interakčního řádku `prumer_cm:vyska_m`:
+
+$$
+\begin{aligned}
+\text{sklon průměru při zvolené výšce}
+&= \text{koeficient průměru} \\
+&\quad + \text{interakční koeficient} \times \text{zvolená výška}
+\end{aligned}
+$$
+
+Při výšce `r vec_vysky_sklon_m[[1]]` m dosadíme:
+
+$$
+\text{sklon průměru} = `r format_value_cz(koef_prumer, digits = 4, math = TRUE)` + `r format_value_cz(koef_interakce_stromy, digits = 5, math = TRUE)` \cdot `r vec_vysky_sklon_m[[1]]` \approx `r format_value_cz(vec_sklony_prumeru[[1]], digits = 3, math = TRUE)`\,\text{m}^3 \text{ na 1 cm}
+$$
+
+Stručně $\beta_1 + \beta_3 v$, kde $v$ je zvolená výška v metrech. Koeficienty číslujeme v pořadí výpisu: $\beta_0$ je intercept, $\beta_1$ řádek `prumer_cm`, $\beta_2$ řádek `vyska_m` a $\beta_3$ řádek `prumer_cm:vyska_m`. Stejně dostaneme při výškách `r paste(vec_vysky_sklon_m, collapse = ", ")` m sklony `r paste(format_value_cz(vec_sklony_prumeru, digits = 3), collapse = "; ")` m³ na 1 cm. S každým metrem výšky navíc přibude ke sklonu `r format_value_cz(koef_interakce_stromy, digits = 4)` m³ na 1 cm; to je hodnota interakčního koeficientu.
+
+Stejné sklony ukážou i přímé předpovědi. Zvolíme dva průměry a dvě výšky, které leží uvnitř pozorovaných dat, a pro každou kombinaci spočteme odhad objemu:
+
+```{r}
+#| label: predpovedi-stromy
+#| echo: true
+# Zvolené průměry a výšky leží uvnitř pozorovaných rozsahů
+prumery_porovnani_cm <- c(28, 36)
+vysky_porovnani_m <- c(21, 25)
+
+# Každá kombinace průměru a výšky dostane jeden řádek
+data_porovnani_stromy <-
+  expand.grid(
+    prumer_cm = prumery_porovnani_cm,
+    vyska_m = vysky_porovnani_m
+  )
+data_porovnani_stromy$objem_odhad_m3 <-
+  predict(
+    object = mod_stromy,
+    newdata = data_porovnani_stromy
+  )
+data_porovnani_stromy
+```
+
+```{r}
+#| label: rozdily-predpovedi-stromy
+#| echo: false
+vec_odhad_stromy <- data_porovnani_stromy$objem_odhad_m3
+prirustek_nizky <-
+  vec_odhad_stromy[data_porovnani_stromy$vyska_m == vysky_porovnani_m[[1]]] |>
+  diff()
+prirustek_vysoky <-
+  vec_odhad_stromy[data_porovnani_stromy$vyska_m == vysky_porovnani_m[[2]]] |>
+  diff()
+krok_prumeru_cm <- diff(prumery_porovnani_cm)
+```
+
+::: {.box-result title="Stejný rozdíl v průměru, různý rozdíl v objemu"}
+Kmen o průměru `r prumery_porovnani_cm[[2]]` cm místo `r prumery_porovnani_cm[[1]]` cm znamená podle modelu u stromu vysokého `r vysky_porovnani_m[[1]]` m o `r format_value_cz(prirustek_nizky, digits = 2)` m³ dřeva více, u stromu vysokého `r vysky_porovnani_m[[2]]` m o `r format_value_cz(prirustek_vysoky, digits = 2)` m³ více. Po vydělení `r krok_prumeru_cm` cm dostaneme právě sklony průměru při těchto výškách.
+:::
+
+## Co znamená koeficient průměru, když se sklon mění s výškou?
+
+Vraťme se ke čtyřem koeficientům z výpisu `coef(object = mod_stromy)`:
+
+- **`(Intercept)`** je `r render_glossary_term("odhad", display = "odhad")` objemu stromu s průměrem 0 cm a výškou 0 m. Takový strom neexistuje; číslo samo o sobě nevykládáme.
+- **`prumer_cm`** je `r render_glossary_term("sklon", display = "sklon")` průměru **při výšce 0 m**: `r format_value_cz(koef_prumer, digits = 3, signed = TRUE)` m³ na 1 cm. Záporná hodnota neznamená, že by tlustší kmen měl méně dřeva; platí pro výšku, kterou žádný změřený strom nemá.
+- **`vyska_m`** je obdobně sklon výšky **při průměru 0 cm**: `r format_value_cz(koef_vyska, digits = 3, signed = TRUE)` m³ na 1 m. Ani tento koeficient sám nevykládáme.
+- **`prumer_cm:vyska_m`** je `r render_glossary_term("interakce-predikatoru", display = "interakční člen")`: o `r format_value_cz(koef_interakce_stromy, digits = 4)` m³ na 1 cm se zvětší sklon průměru, když je strom o 1 m vyšší.
+
+::: {.box-warning title="Koeficient průměru neplatí při každé výšce"}
+U dvou číselných `r render_glossary_term("prediktor", display = "prediktorů")` leží hodnota 0 často daleko mimo data. Hlavní koeficient pak popisuje situaci, kterou jsme nepozorovali. Sklon jednoho prediktoru proto vždy uvádíme **při zvolené hodnotě druhého** uvnitř pozorovaného rozsahu.
+:::
+
+```{r}
+#| label: sklony-vysky-stromy
+#| echo: false
+vec_sklony_vysky <- koef_vyska + koef_interakce_stromy * prumery_porovnani_cm
+interval_interakce_stromy <-
+  confint(mod_stromy)["prumer_cm:vyska_m", ]
+```
+
+Interakci lze číst i obráceně. Stejný koeficient říká, o kolik se zvětší sklon výšky (m³ dřeva na 1 m výšky), když je kmen o 1 cm tlustší. U stromu s průměrem `r prumery_porovnani_cm[[1]]` cm přibude podle modelu na každý metr výšky `r format_value_cz(vec_sklony_vysky[[1]], digits = 3)` m³ dřeva, u stromu s průměrem `r prumery_porovnani_cm[[2]]` cm `r format_value_cz(vec_sklony_vysky[[2]], digits = 3)` m³. Obě věty popisují tutéž vlastnost modelu.
+
+Jak přesně interakční koeficient známe, ukáže 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")`:
+
+```{r}
+#| label: interval-interakce-stromy
+#| echo: true
+# Interval patří změně sklonu průměru na 1 m výšky
+confint(
+  object = mod_stromy,
+  parm = "prumer_cm:vyska_m"
+)
+```
+
+Interval pro změnu sklonu průměru (m³ na 1 cm průměru) při zvýšení stromu o 1 m sahá od `r format_value_cz(interval_interakce_stromy[[1]], digits = 4)` do `r format_value_cz(interval_interakce_stromy[[2]], digits = 4)`. `r if (interval_interakce_stromy[[1]] > 0) "Celý leží nad nulou: při předpokladech modelu tedy data podporují strmější vztah objemu a průměru u vyšších stromů." else if (interval_interakce_stromy[[2]] < 0) "Celý leží pod nulou: při předpokladech modelu tedy data podporují pozvolnější vztah objemu a průměru u vyšších stromů." else "Zahrnuje i nulu, takže směr změny sklonu s výškou zůstává podle tohoto modelu nejistý."` Platí to pro `r nrow(data_stromy)` změřených stromů a v pozorovaném rozsahu průměrů a výšek.
+
+V tomto krátkém příkladu jsme nekontrolovali `r render_glossary_term("residuum", display = "residua")` ani vliv jednotlivých stromů, jako jsme to udělali u krabů; `r nrow(data_stromy)` stromů je pro takovou kontrolu malý soubor. Objem kmene navíc roste zhruba s druhou mocninou průměru, takže část rozdílu mezi panely by mohl popsat i zakřivený vztah. Přímky zde proto čteme jako jednoduchý popis v pozorovaném rozsahu, ne jako jediný možný model.
+
 ## Kdy musíme při výkladu jednoho prediktoru uvést hodnotu druhého?
 
-První příklad vyjádřil `r render_glossary_term("interakce-predikatoru", display = "interakci")` jako **změnu rozdílu v šířce mezi pohlavími při různých délkách**: dva sklony nemusí být stejné. Druhý příklad ji vyjádřil jako **změnu rozdílu v délce mezi pohlavími u dvou barevných forem**: dvě srovnání samce se samicí nemusí dát stejný výsledek. V obou případech musíme při výkladu jednoho `r render_glossary_term("prediktor", display = "prediktoru")` uvést hodnotu nebo úroveň druhého: ptáme se **„při jaké délce?“** nebo **„v jaké barevné formě?“**.
+První příklad vyjádřil `r render_glossary_term("interakce-predikatoru", display = "interakci")` jako **změnu rozdílu v šířce mezi pohlavími při různých délkách**: dva `r render_glossary_term("sklon", display = "sklony")` nemusí být stejné. Druhý příklad ji vyjádřil jako **změnu rozdílu v délce mezi pohlavími u dvou barevných forem**: dvě srovnání samce se samicí nemusí dát stejný výsledek. Třetí příklad ji vyjádřil jako **plynulou změnu sklonu průměru s výškou stromu**: s každým metrem výšky je přímka o něco strmější. Ve všech třech případech musíme při výkladu jednoho `r render_glossary_term("prediktor", display = "prediktoru")` uvést hodnotu nebo úroveň druhého: ptáme se **„při jaké délce?“**, **„v jaké barevné formě?“** nebo **„při jaké výšce?“**.
 
 ::: {.box-data title="Doplňující: interakce závisí na měřítku odezvy" collapse="true"}
 
-V této lekci popisujeme `r render_glossary_term("odezva", display = "odezvu")` v milimetrech, takže interakce znamená změnu **rozdílu** v milimetrech. Jiná biologická otázka se může ptát na poměr: například zda jsou samci v obou formách o stejných 10 % delší než samice. Stejný procentní poměr může při různých `r render_glossary_term("prumer", display = "průměrech")` vytvářet různé rozdíly v milimetrech.
+V příkladech s kraby popisujeme `r render_glossary_term("odezva", display = "odezvu")` v milimetrech, takže interakce znamená změnu **rozdílu** v milimetrech. Jiná biologická otázka se může ptát na poměr: například zda jsou samci v obou formách o stejných 10 % delší než samice. Stejný procentní poměr může při různých `r render_glossary_term("prumer", display = "průměrech")` vytvářet různé rozdíly v milimetrech.
+
+```{r}
+#| label: stromy-logaritmy
+#| echo: false
+mod_stromy_log <-
+  lm(
+    formula = log(objem_m3) ~ log(prumer_cm) * log(vyska_m),
+    data = data_stromy
+  )
+interval_interakce_log <-
+  confint(mod_stromy_log)["log(prumer_cm):log(vyska_m)", ]
+```
+
+Poměry a součiny se na logaritmickém měřítku mění v rozdíly a součty. Příklad se stromy to ukazuje na skutečných datech. Objem kmene je zhruba úměrný druhé mocnině průměru krát výšce, tedy *součinu*. Když objem, průměr i výšku nahradíme jejich logaritmy (`r render_glossary_term("transformace", display = "transformace")`, ke které se vrátíme v lekci o tvaru rozdělení), změní se tento součin v součet a model bez interakce by mohl stačit. Interakční koeficient takového modelu má 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` od `r format_value_cz(interval_interakce_log[[1]], digits = 2)` do `r format_value_cz(interval_interakce_log[[2]], digits = 2)`. Interval je široký a zahrnuje nulu, takže na logaritmickém měřítku data interakci nedokládají, ačkoli v krychlových metrech ji ukazují zřetelně.
 
 Tvrzení „interakce existuje“ proto není úplné bez uvedení měřítka modelu. V lekci o binárních a početních odezvách se setkáme s modely, které používají jiné měřítko než přímé milimetry; interakční koeficient se pak nejprve interpretuje na tomto modelovém měřítku a potom pomocí předpovědí v biologicky srozumitelných jednotkách.
 :::
 
-## Co tedy můžeme říct o krabech?
+## Co tedy můžeme říct o krabech a stromech?
 
 Vraťme se k hlavní otázce: **Je rozdíl v zadní šířce krunýře mezi stejně dlouhou samicí a samcem stejný u menších i větších krabů?**
 
 U změřených krabů modré formy není. Zadní šířka roste s délkou u obou pohlaví, ale u samic rychleji: o `r format_value_cz(sklon_samice, digits = 3)` mm na 1 mm délky, u samců o `r format_value_cz(sklon_samec, digits = 3)` mm. Rozdíl samec minus samice se proto mění o `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3, signed = TRUE)` mm na každý milimetr délky (95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` `r format_value_cz(interval_rozdilu_sklonu[[1]], digits = 3)` až `r format_value_cz(interval_rozdilu_sklonu[[2]], digits = 3)` mm/mm). Při délce `r delka_porovnani_mm` mm má samec podle modelu zadní šířku o `r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm menší než stejně dlouhá samice. Graf residuí neukázal zakřivení, které by dvě přímky přehlédly.
 
 Výsledek odpovídá biologickému očekávání z úvodu, že samice mají s rostoucí velikostí relativně širší zadní část krunýře. Data však jsou pozorovací a není doloženo, že krabi byli vybráni náhodně: popisují souvislost u těchto `r nrow(data_krabi)` krabů a v pozorovaném rozsahu délek, nikoli příčinu. Druhý příklad ukázal, že stejná logika platí pro dvě skupinové proměnné: rozdíl v délce mezi pohlavími byl u oranžové formy o `r format_value_cz(abs(rozdil_rozdilu_formy), digits = 2)` mm menší než u modré, ale `r render_glossary_term("prumer", display = "průměrné")` délky závisejí i na tom, které kraby autoři vybrali.
+
+Třetí příklad přenesl stejnou myšlenku na dva číselné `r render_glossary_term("prediktor", display = "prediktory")`. U `r nrow(data_stromy)` změřených stromů byl vztah objemu a průměru tím strmější, čím byl strom vyšší: při `r vysky_porovnani_m[[1]]` m přidal kmen o `r krok_prumeru_cm` cm tlustší podle modelu `r format_value_cz(prirustek_nizky, digits = 2)` m³ dřeva, při `r vysky_porovnani_m[[2]]` m `r format_value_cz(prirustek_vysoky, digits = 2)` m³. Na původním měřítku objemu to odpovídá očekávání z tvaru kmene; platí to jen v pozorovaném rozsahu průměrů a výšek.
 
 ## Co bude následovat dál
 
@@ -1162,14 +1443,17 @@ Aditivní model a model s interakcí jsou dva kandidátní popisy téhož vztahu
 - `x * y` je zkratka pro `x + y + x:y`; interakční člen u číselného a skupinového prediktoru popisuje rozdíl `r render_glossary_term("sklon", display = "sklonů")`.
 - Hlavní koeficienty v modelu s interakcí jsou podmíněné: platí při nulové hodnotě druhého prediktoru nebo v referenční skupině. Skupiny proto porovnáváme pomocí předpovědí při zvolené hodnotě.
 - U dvou skupinových prediktorů je interakce rozdíl dvou rozdílů.
+- U dvou číselných prediktorů interakce znamená, že se sklon jednoho plynule mění s hodnotou druhého; sklon proto uvádíme při zvolených hodnotách uvnitř dat.
 - Závěr omezujeme na pozorovaný rozsah dat, na způsob jejich získání a na souvislost, nikoli příčinu.
 
 ### Závěrečná otázka
 
-Uveďte biologickou otázku, u které byste čekali, že se vztah dvou znaků liší mezi skupinami. Jak by vypadal graf?
+Uveďte biologickou otázku, u které byste čekali, že vztah dvou znaků závisí na skupině nebo na hodnotě jiného znaku. Jak by vypadal graf?
 
 ::: {.box-result collapse="true" title="Možné odpovědi"}
 Například vztah hmotnosti a délky těla u ryb z teplé a studené vody: v teplejší vodě mohou ryby s rostoucí délkou přibírat rychleji, takže přímky by se rozbíhaly. Nebo vztah dávky hnojiva a výnosu u dvou odrůd plodiny, z nichž jedna na hnojivo reaguje silněji. V obou případech by `r render_glossary_term("bodovy-graf", display = "bodový graf")` ukázal dvě skupiny bodů s různým sklonem a aditivní model s rovnoběžnými přímkami by takový rozdíl nezachytil.
+
+Místo skupiny může vztah měnit i další číselný znak: například růst semenáčků s teplotou může být strmější ve vlhčí půdě. Graf by pak měl několik panelů pro různou vlhkost půdy a přímka růstu proti teplotě by byla s rostoucí vlhkostí strmější.
 :::
 
 ## Slovníček pojmů {.unnumbered}
