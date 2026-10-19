@@ -8,90 +8,90 @@
   "title": "L08 – Opakování předchozí lekce – 2026/27",
   "questions": [
     {
-      "id": "conditional-temperature-coefficient",
-      "text": "Co znamená záporný koeficient roční teploty v modelu s roční i maximální teplotou?",
+      "id": "zmena-sklonu-po-pridani-teploty",
+      "text": "Proč se po přidání maximální teploty změnil sklon roční teploty i jeho SE?",
       "options": [
         {
-          "id": "both-temperatures",
-          "label": "Celkovou změnu tloušťky listu při zvýšení obou teplot o 1 °C."
+          "id": "prvni-model-chybny",
+          "label": "První model byl chybný; až druhý ukazuje skutečný účinek roční teploty."
         },
         {
-          "id": "origin-difference",
-          "label": "Rozdíl průměrné roční teploty mezi původními a zavlečenými populacemi."
+          "id": "poradi-ve-formuli",
+          "label": "Maximální teplota stojí ve formuli druhá, a proto převzala část efektu."
         },
         {
-          "id": "ignoring-maximum",
-          "label": "Vztah roční teploty k tloušťce listu bez ohledu na maximální teplotu."
+          "id": "podminena-otazka",
+          "label": "Koeficient teď platí při stejné max. teplotě; obě teploty silně korelují."
         },
         {
-          "id": "annual-holding-maximum",
-          "label": "Změnu odhadované tloušťky listu při zvýšení roční teploty o 1 °C, když maximální teplotu držíme stejnou."
+          "id": "mene-populaci",
+          "label": "Po přidání prediktoru model použil méně populací než předtím."
         }
       ],
-      "correctOptionId": "annual-holding-maximum",
-      "explanation": "V modelu s více prediktory čteme každý sklon při stejné hodnotě ostatních prediktorů. Koeficient proto není totožný s jednoduchým jednoprediktorovým sklonem.",
+      "correctOptionId": "podminena-otazka",
+      "explanation": "Nový koeficient odpovídá na užší otázku při stejné maximální teplotě (r ≈ 0,85) a tu nese málo populací, proto SE roste. Pořadí ve formuli koeficienty nemění.",
       "media": {
-        "path": "assets/l07-conditional-coefficient.png",
-        "alt": "Schéma modelu se dvěma teplotami zvýrazňuje koeficient roční teploty a podmínku stejné maximální teploty.",
-        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 A10A149367F7B253BE6FC85561E5765CDD3584DD205D5F6F00DAC82AF8C63FE2."
+        "path": "assets/l07-sklon-ve-dvou-modelech.png",
+        "alt": "Dva výstupy R: v modelu jen s roční teplotou má teplota_rocni_C Estimate −0.0091 a Std. Error 0.0008; v modelu s roční i maximální teplotou má Estimate −0.0053 a Std. Error 0.0016, teplota_max_C −0.0048 a 0.0017. Oba modely používají 128 populací.",
+        "provenance": "Rendered by R/render_pollslive_assets.R from mod_rocni_teplota and mod_dve_teploty of approved L07, fitted to pollslive/source/l07-kridlatka_populace.csv (SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1); checksum pinned in R/verify_pollslive_assets.R."
       }
     },
     {
-      "id": "supported-temperature-scenario",
-      "text": "Kterému odhadu z modelu se dvěma teplotami bychom měli více důvěřovat?",
+      "id": "znamenko-po-pridani-puvodu",
+      "text": "S původem v modelu změnil sklon roční teploty znaménko. Proč?",
       "options": [
         {
-          "id": "inside-cloud",
-          "label": "Odhadu pro kombinaci roční a maximální teploty, která leží uvnitř pozorovaného mraku bodů."
+          "id": "celkovy-sklon-misil-puvod",
+          "label": "Celkový sklon mísil rozdíl obou původů, které žijí v různě teplých oblastech."
         },
         {
-          "id": "inside-separate-ranges",
-          "label": "Odhadu pro libovolnou kombinaci uvnitř rozsahu každé teploty, i když se tato dvojice v datech nevyskytuje."
+          "id": "teplota-list-zesiluje",
+          "label": "Roční teplota ve skutečnosti list zesiluje, první model měl opačné znaménko."
         },
         {
-          "id": "opposite-extremes",
-          "label": "Odhadu pro kombinaci nejnižší roční a nejvyšší maximální teploty, protože využívá oba extrémy."
+          "id": "nevyznamny-bez-vlivu",
+          "label": "Podmíněný sklon je nevýznamný, roční teplota tedy na list nemá vliv."
         },
         {
-          "id": "all-equal",
-          "label": "Všem odhadům stejně, protože lineární model umí spočítat každou číselnou kombinaci."
+          "id": "puvod-nesouvisi",
+          "label": "Původ a roční teplota spolu nesouvisejí, změna je jen výběrová variabilita."
         }
       ],
-      "correctOptionId": "inside-cloud",
-      "explanation": "Model výpočet provede i mimo společně pozorované kombinace, ale takový odhad je extrapolace. Opora je silnější uvnitř mraku skutečných kombinací prediktorů.",
+      "correctOptionId": "celkovy-sklon-misil-puvod",
+      "explanation": "Zavlečené populace mají tlustší listy a pocházejí z chladnějších oblastí. Původ je konfundující proměnná; uvnitř původu je vztah slabý a jeho interval zahrnuje nulu.",
       "media": {
-        "path": "assets/l07-supported-scenario.png",
-        "alt": "Bodový graf roční a maximální teploty ukazuje jednu kombinaci uvnitř pozorovaného mraku a druhou mimo něj.",
-        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 A7D2CF77548B3788FEEE7693428C34A7915188356385B9388214B405E38018A1."
+        "path": "assets/l07-tloustka-podle-puvodu.png",
+        "alt": "Bodový graf tloušťky listu proti průměrné teplotě původu: zavlečené populace leží vlevo nahoře (chladněji, tlustší listy), původní vpravo dole (tepleji, tenčí listy). Podnadpis: sklon roční teploty bez původu −0,0091 mm/°C, s původem v modelu +0,0015 mm/°C, 95% interval od −0,0009 do 0,0039.",
+        "provenance": "Rendered by R/render_pollslive_assets.R as a redraw of the inline L07 slide figure p_skupiny (emoji in the axis titles left out), with a subtitle quoting the slopes of mod_rocni_teplota and mod_puvod, from pollslive/source/l07-kridlatka_populace.csv; checksum pinned in R/verify_pollslive_assets.R."
       }
     },
     {
-      "id": "sequential-anova-order",
-      "text": "Prohodíme pořadí dvou korelovaných teplot ve formuli. Co se může změnit?",
+      "id": "srovnani-mimo-prekryv",
+      "text": "Chceme porovnat zavlečené a původní populace při roční teplotě 8 °C. Co platí?",
       "options": [
         {
-          "id": "coefficients-and-predictions",
-          "label": "Koeficienty modelu i jeho předpovědi."
+          "id": "v-celkovem-rozsahu",
+          "label": "8 °C leží v rozsahu všech populací (6–20 °C), odhad je proto podložený."
         },
         {
-          "id": "sequential-table",
-          "label": "Koeficienty se nezmění, ale sekvenční tabulka z anova() může přidělit sdílenou informaci jinak."
+          "id": "extrapolace-puvodnich",
+          "label": "Původní populace pod 12 °C nemáme; rozdíl při 8 °C stojí na extrapolaci."
         },
         {
-          "id": "sample-size",
-          "label": "Pouze počet pozorování v modelu."
+          "id": "rozdil-vsude-stejny",
+          "label": "Aditivní model dává stejný rozdíl při každé teplotě, takže na 8 °C nezáleží."
         },
         {
-          "id": "nothing",
-          "label": "Nic; koeficienty, předpovědi i každý řádek sekvenční anova() musí zůstat stejné."
+          "id": "nelze-predikovat",
+          "label": "Model s původem a teplotou neumí předpovídat pro konkrétní teplotu."
         }
       ],
-      "correctOptionId": "sequential-table",
-      "explanation": "Pořadí prediktorů nemění fit ani koeficienty stejného modelu. Sekvenční anova() však testuje členy v pořadí ve formuli, takže u korelovaných prediktorů se její řádky mohou změnit.",
+      "correctOptionId": "extrapolace-puvodnich",
+      "explanation": "Model rozdíl vypočte při každé teplotě, ale data ho podporují jen v překryvu obou skupin, asi 12–16 °C. Při 8 °C existují jen zavlečené populace.",
       "media": {
-        "path": "assets/l07-sequential-order.png",
-        "alt": "Dvě pořadí stejných prediktorů mají shodné koeficienty, zatímco zvýrazněné řádky sekvenční tabulky anova se liší.",
-        "provenance": "Deterministically rendered by R/render_pollslive_assets.R from approved L07 data at revision 68923d3d4c5afbfe455805aaeaa81bde5b844ef0; source SHA-256 638AA8DBF0829D27760E0447EEBC7104C6C2270836935DAFD8FA88F8B6DC4CC1; asset SHA-256 2139DE455FF77C91249126E3184D8B76A1661C2299C83C371F66A7D242403BD7."
+        "path": "assets/l07-rozsahy-teplot.png",
+        "alt": "Úsečky rozsahů průměrné teploty původu: původní populace asi od 12 do 20 °C, zavlečené asi od 6 do 16 °C.",
+        "provenance": "Rendered by R/render_pollslive_assets.R as a redraw of the inline L07 slide figure p_rozsahy, from pollslive/source/l07-kridlatka_populace.csv; checksum pinned in R/verify_pollslive_assets.R."
       }
     }
   ]
