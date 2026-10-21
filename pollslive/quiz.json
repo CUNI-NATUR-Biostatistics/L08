@@ -83,7 +83,7 @@
         },
         {
           "id": "nelze-predikovat",
-          "label": "Model s původem a teplotou neumí předpovídat pro konkrétní teplotu."
+          "label": "Model s původem a teplotou neumí predikovat pro konkrétní teplotu."
         }
       ],
       "correctOptionId": "extrapolace-puvodnich",
