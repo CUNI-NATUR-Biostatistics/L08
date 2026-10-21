@@ -1,6 +1,6 @@
 ---
 title: "Kdy vztah dvou znaků závisí na třetím?"
-subtitle: "Interakce číselného a skupinového znaku, dvou skupinových i dvou číselných znaků"
+subtitle: "Interakce numerického a kategoriálního znaku, dvou kategoriálních i dvou numerických znaků"
 lang: cs
 filters:
   - ../theme/semantic-boxes.lua
@@ -156,9 +156,9 @@ Proč bychom rozdíl vůbec čekali? Zadní část krunýře leží zhruba nad z
 
 Zadní šířku budeme odhadovat z délky krunýře a pohlaví. Data jsou pozorovací: samotný rozdíl mezi skupinami nám neřekne, co jej způsobilo.
 
-## Kdy předpovídají dvě přímky stejný sklon?
+## Kdy mají dvě přímky stejný sklon?
 
-V minulé lekci jste viděli model se dvěma `r render_glossary_term("prediktor", display = "prediktory")`: číselným znakem a skupinou. Jeho dvě předpovědní přímky byly rovnoběžné. Jak se podle takového modelu změní rozdíl mezi skupinami, když se číselný prediktor zvětší?
+V minulé lekci jste viděli model se dvěma `r render_glossary_term("prediktor", display = "prediktory")`: numerickým znakem a skupinou. Jeho dvě odhadnuté přímky byly rovnoběžné. Jak se podle takového modelu změní rozdíl mezi skupinami, když se numerický prediktor zvětší?
 
 ::: {.box-question title="Vybavte si minulou lekci"}
 Nakreslete dvě rovnoběžné přímky. Vyberte na ose x dvě různé hodnoty. Je svislá vzdálenost mezi přímkami v obou místech stejná?
@@ -175,9 +175,9 @@ Zkusme zjistit, zda takové omezení dává smysl i pro kraby.
 Po prostudování této lekce budete schopni:
 
 - rozpoznat biologickou otázku, ve které vztah jednoho `r render_glossary_term("prediktor", display = "prediktoru")` k `r render_glossary_term("odezva", display = "odezvě")` závisí na hodnotě nebo úrovni druhého prediktoru;
-- fitovat `r render_glossary_term("linearni-model", display = "lineární model")` s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` a zobrazit jeho předpovědi pro kombinace číselných i skupinových prediktorů;
-- vyložit koeficienty modelu s interakcí jako podmíněné a porovnávat skupiny nebo různé hodnoty prediktoru pomocí předpovědí při zvolené hodnotě druhého prediktoru;
-- vysvětlit interakci dvou skupinových prediktorů jako rozdíl dvou rozdílů;
+- fitovat `r render_glossary_term("linearni-model", display = "lineární model")` s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` a zobrazit jeho `r render_glossary_term("predikce", display = "predikce")` pro kombinace numerických i kategoriálních prediktorů;
+- vyložit koeficienty modelu s interakcí jako podmíněné a porovnávat skupiny nebo různé hodnoty prediktoru pomocí predikcí při zvolené hodnotě druhého prediktoru;
+- vysvětlit interakci dvou kategoriálních prediktorů jako rozdíl dvou rozdílů;
 - omezit závěr na pozorovaný rozsah dat a na souvislost v pozorovacích datech.
 
 ## Jeden řádek tabulky představuje jednoho kraba
@@ -197,7 +197,7 @@ str(object = data_krabi_vse)
 
 Sloupec `sp` označuje barevnou formu (`B` modrá, `O` oranžová), `sex` pohlaví (`F` samice, `M` samec). `CL` je délka krunýře a `RW` šířka jeho zadní části; obě hodnoty jsou v milimetrech. Délka a zadní šířka jsou dvě různé osy téhož krunýře. Ostatní rozměry v této lekci nepotřebujeme.
 
-Pro první otázku vybereme jen kraby **modré formy** a tři potřebné sloupce. Jeden řádek znamená **jednoho změřeného kraba**, ne opakované měření téhož jedince.
+Pro první otázku vybereme jen kraby **modré formy** a tři potřebné sloupce. Jeden řádek znamená **jednoho změřeného kraba**, ne `r render_glossary_term("opakovana-mereni", display = "opakované měření")` téhož jedince.
 
 ```{r}
 #| label: vybrat-modrou-formu
@@ -256,12 +256,12 @@ Funkce `write.csv()` uloží textové sloupce v uvozovkách, takže se soubor m�
 :::
 
 ::: {.box-data title="Původ a dosah dat" collapse="true"}
-Campbell, N. A. a R. J. Mahon (1974): A multivariate study of variation in two species of rock crab of the genus *Leptograpsus*. *Australian Journal of Zoology* 22, 417–425. Tabulku šíří balíček MASS (`MASS::crabs`) pod licencí GPL-2 nebo GPL-3; soubor `krabi.csv` je její nezměněná kopie. Autoři vybrali do každé kombinace formy a pohlaví právě `r min(table(data_krabi_vse$sp, data_krabi_vse$sex))` krabů. Popis zdroje nedokládá náhodný `r render_glossary_term("vyber", display = "výběr")` ze všech krabů; naše závěry proto vztahujeme k těmto měřením, ne automaticky k celé populaci.
+Campbell, N. A. a R. J. Mahon (1974): A multivariate study of variation in two species of rock crab of the genus *Leptograpsus*. *Australian Journal of Zoology* 22, 417–425. Tabulku šíří balíček MASS (`MASS::crabs`) pod licencí GPL-2 nebo GPL-3; soubor `krabi.csv` je její nezměněná kopie. Autoři vybrali do každé kombinace formy a pohlaví právě `r min(table(data_krabi_vse$sp, data_krabi_vse$sex))` krabů. Popis zdroje nedokládá náhodný `r render_glossary_term("vyber", display = "výběr")` ze všech krabů; naše závěry proto vztahujeme k těmto měřením, ne automaticky k celé `r render_glossary_term("populace", display = "populaci")`.
 :::
 
 ## Které délky a šířky jsou v datech zastoupené?
 
-Před modelem zkontrolujeme typy `r render_glossary_term("promenna", display = "proměnných")`, chybějící hodnoty a rozsahy. To nám také ukáže, při jakých délkách má smysl porovnávat předpovědi obou pohlaví.
+Před modelem zkontrolujeme typy `r render_glossary_term("promenna", display = "proměnných")`, chybějící hodnoty a rozsahy. To nám také ukáže, při jakých délkách má smysl porovnávat `r render_glossary_term("predikce", display = "predikce")` obou pohlaví.
 
 ```{r}
 #| label: prohlednout-data
@@ -279,7 +279,7 @@ summary(object = data_samice)
 summary(object = data_samci)
 ```
 
-V souboru je `r nrow(data_krabi)` krabů, z toho `r sum(data_krabi$pohlavi == "samice")` samic a `r sum(data_krabi$pohlavi == "samec")` samců. V těchto třech sloupcích chybí `r sum(is.na(data_krabi))` hodnot. Délka krunýře samic sahá od `r format_value_cz(min(data_samice$delka_krunyre_mm), digits = 1)` do `r format_value_cz(max(data_samice$delka_krunyre_mm), digits = 1)` mm, u samců od `r format_value_cz(min(data_samci$delka_krunyre_mm), digits = 1)` do `r format_value_cz(max(data_samci$delka_krunyre_mm), digits = 1)` mm. Obě skupiny tedy mají společný rozsah pozorovaných délek. To nám později umožní porovnat modelové předpovědi pro stejně dlouhou samici a samce bez extrapolace.
+V souboru je `r nrow(data_krabi)` krabů, z toho `r sum(data_krabi$pohlavi == "samice")` samic a `r sum(data_krabi$pohlavi == "samec")` samců. V těchto třech sloupcích chybí `r sum(is.na(data_krabi))` hodnot. Délka krunýře samic sahá od `r format_value_cz(min(data_samice$delka_krunyre_mm), digits = 1)` do `r format_value_cz(max(data_samice$delka_krunyre_mm), digits = 1)` mm, u samců od `r format_value_cz(min(data_samci$delka_krunyre_mm), digits = 1)` do `r format_value_cz(max(data_samci$delka_krunyre_mm), digits = 1)` mm. Obě skupiny tedy mají společný rozsah pozorovaných délek. To nám později umožní porovnat predikce pro stejně dlouhou samici a samce bez `r render_glossary_term("extrapolace", display = "extrapolace")`.
 
 ## Jak souvisí délka a zadní šířka krunýře?
 
@@ -325,7 +325,7 @@ Body naznačují rostoucí vztah u obou pohlaví. Samice mají při podobné dé
 
 ## Rovnoběžné přímky předpokládají společný sklon
 
-Začneme známým aditivním modelem. Oba `r render_glossary_term("prediktor", display = "prediktory")` v něm mohou měnit předpovězenou šířku, ale **`r render_glossary_term("sklon", display = "sklon")` vůči délce je pro obě pohlaví společný**.
+Začneme známým `r render_glossary_term("aditivni-model", display = "aditivním modelem")`. Oba `r render_glossary_term("prediktor", display = "prediktory")` v něm mohou měnit odhadnutou šířku, ale **`r render_glossary_term("sklon", display = "sklon")` vůči délce je pro obě pohlaví společný**.
 
 ```{r}
 #| label: aditivni-model
@@ -387,12 +387,12 @@ graf_krabi_zaklad +
   )
 ```
 
-::: {.box-question title="Co předpovídá aditivní model?"}
-Co by tento model předpověděl o rozdílu v zadní šířce mezi stejně dlouhými kraby u kratších a delších délek z pozorovaného rozsahu?
+::: {.box-question title="Co predikuje aditivní model?"}
+Co by tento model predikoval o rozdílu v zadní šířce mezi stejně dlouhými kraby u kratších a delších délek z pozorovaného rozsahu?
 :::
 
 ::: {.box-result collapse="true" title="Možná odpověď"}
-Přímky zůstávají rovnoběžné, takže předpovězený rozdíl je v obou případech stejný. Je to vlastnost modelu, kterou jsme do něj vložili znakem `+`, ne výsledek samostatného testu této vlastnosti.
+Přímky zůstávají rovnoběžné, takže predikovaný rozdíl je v obou případech stejný. Je to vlastnost modelu, kterou jsme do něj vložili znakem `+`, ne výsledek samostatného testu této vlastnosti.
 :::
 
 ## Mění se rozdíl mezi samicemi a samci s délkou krunýře?
@@ -413,7 +413,7 @@ graf_krabi_zaklad +
 ```
 
 ::: {.box-question title="Předpovězte tvar"}
-Pokud mají samice při určité společné délce větší předpovězenou zadní šířku a jejich přímka stoupá rychleji, bude rozdíl mezi přímkami u delších krabů menší, stejný, nebo větší?
+Pokud mají samice při určité společné délce větší odhadnutou zadní šířku a jejich přímka stoupá rychleji, bude rozdíl mezi přímkami u delších krabů menší, stejný, nebo větší?
 :::
 
 ::: {.box-result collapse="true" title="Možná odpověď"}
@@ -424,7 +424,7 @@ Když se svislá vzdálenost přímek mění s délkou, závisí vztah délky a 
 
 ## Model s interakcí dovoluje samicím a samcům různé sklony
 
-Předchozí obrázek ukázal, proč zkusit model se dvěma různými `r render_glossary_term("sklon", display = "sklony")`. Délku krunýře v modelu měříme v milimetrech. Zápis `delka_krunyre_mm * pohlavi` dovolí, aby se sklon vůči délce mezi pohlavími lišil. Jednotlivé členy tohoto vzorce rozebereme po konkrétní předpovědi.
+Předchozí obrázek ukázal, proč zkusit model se dvěma různými `r render_glossary_term("sklon", display = "sklony")`. Délku krunýře v modelu měříme v milimetrech. Zápis `delka_krunyre_mm * pohlavi` dovolí, aby se sklon vůči délce mezi pohlavími lišil. Jednotlivé členy tohoto vzorce rozebereme po konkrétní `r render_glossary_term("predikce", display = "predikci")`.
 
 ```{r}
 #| label: model-s-interakci
@@ -437,7 +437,7 @@ mod_interakce <-
   )
 ```
 
-Předpovědní přímky kreslíme jen v rozsahu délek, které byly v dané skupině opravdu pozorovány. Za konci těchto úseků bychom už extrapolovali.
+Odhadnuté přímky kreslíme jen v rozsahu délek, které byly v dané skupině opravdu pozorovány. Za konci těchto úseků bychom už extrapolovali.
 
 ```{r}
 #| label: obrazek-interakcni-primky
@@ -457,9 +457,9 @@ graf_interakce <-
 graf_interakce
 ```
 
-Přímka samic zde stoupá strměji než přímka samců. Čáry jsou `r render_glossary_term("odhadnuta-hodnota", display = "odhadnuté hodnoty")` modelu, zatímco body jsou skutečná měření. Svislou vzdálenost přímek vyčíslíme pro jednu společnou délku krunýře.
+Přímka samic zde stoupá strměji než přímka samců. Čáry ukazují odhadnuté přímky modelu, zatímco body jsou skutečná měření. Svislou vzdálenost přímek vyčíslíme pro jednu společnou délku krunýře.
 
-## Co model předpovídá pro stejně dlouhou samici a samce?
+## Co model predikuje pro stejně dlouhou samici a samce?
 
 V grafu obou přímek můžeme porovnat jejich výšku nad stejným místem vodorovné osy. Zvolíme délku, která leží uvnitř pozorovaného rozsahu samic i samců a snadno ji najdeme na ose. Při srovnání pohlaví tak držíme délku krunýře stejnou.
 
@@ -495,7 +495,7 @@ odhad_samec_porovnani <-
 rozdil_porovnani <- odhad_samec_porovnani - odhad_samice_porovnani
 ```
 
-Zvolili jsme **`r delka_porovnani_mm` mm**. Která přímka je nad touto délkou výše? Oba odhady jsou v grafu označeny prázdnými kruhy. Svislá tečkovaná čára ukazuje místo, kde čteme jejich **svislou vzdálenost**; menší body zůstávají naměřenými kraby.
+Zvolili jsme **`r delka_porovnani_mm` mm**. Která přímka je nad touto délkou výše? Obě `r render_glossary_term("predikce", display = "predikce")` jsou v grafu označeny prázdnými kruhy. Svislá tečkovaná čára ukazuje místo, kde čteme jejich **svislou vzdálenost**; menší body zůstávají naměřenými kraby.
 
 ```{r}
 #| label: obrazek-dve-predpovedi
@@ -519,18 +519,18 @@ graf_interakce +
 ```
 
 ::: {.box-result title="Rozdíl při zvolené délce"}
-Při délce `r delka_porovnani_mm` mm model odhaduje zadní šířku samice `r format_value_cz(odhad_samice_porovnani, digits = 2)` mm a samce `r format_value_cz(odhad_samec_porovnani, digits = 2)` mm. **Rozdíl samec minus samice je `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm.** Samčí předpověď tedy leží o `r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm níže.
+Při délce `r delka_porovnani_mm` mm model odhaduje zadní šířku samice `r format_value_cz(odhad_samice_porovnani, digits = 2)` mm a samce `r format_value_cz(odhad_samec_porovnani, digits = 2)` mm. **Rozdíl samec minus samice je `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm.** Samčí predikce tedy leží o `r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm níže.
 :::
 
 Přímky nemají stejný `r render_glossary_term("sklon", display = "sklon")`, a proto se jejich svislá vzdálenost s délkou mění. Koeficienty modelu ukážou, o kolik se tento rozdíl změní při porovnání délek vzdálených o 1 mm.
 
 ## Co znamenají koeficienty modelu s interakcí?
 
-Z minulé lekce známe aditivní model se společným `r render_glossary_term("sklon", display = "sklonem")`:
+Z minulé lekce známe `r render_glossary_term("aditivni-model", display = "aditivní model")` se společným `r render_glossary_term("sklon", display = "sklonem")`:
 
 `zadni_sirka_mm ~ delka_krunyre_mm + pohlavi`
 
-Aby se sklon mohl mezi pohlavími lišit, přidáme `r render_glossary_term("interakce-predikatoru", display = "interakční člen")` označený dvojtečkou:
+Aby se sklon mohl mezi pohlavími lišit, přidáme interakční člen označený dvojtečkou:
 
 `zadni_sirka_mm ~ delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi`
 
@@ -538,7 +538,7 @@ R nabízí pro celý pravý výraz kratší zápis s hvězdičkou:
 
 `zadni_sirka_mm ~ delka_krunyre_mm * pohlavi`
 
-Obecně tedy platí `x * y = x + y + x:y`. Výpis `summary()` ukáže čtyři koeficienty: `r render_glossary_term("intercept", display = "intercept")` a koeficient pro každý ze tří členů na pravé straně. Jde o tentýž model, který nakreslil obě přímky a vytvořil předpovědi při `r delka_porovnani_mm` mm:
+Obecně tedy platí `x * y = x + y + x:y`. Výpis `summary()` ukáže čtyři koeficienty: `r render_glossary_term("intercept", display = "intercept")` a koeficient pro každý ze tří členů na pravé straně. Jde o tentýž model, který nakreslil obě přímky a vytvořil `r render_glossary_term("predikce", display = "predikce")` při `r delka_porovnani_mm` mm:
 
 ```{r}
 #| label: souhrn-interakce
@@ -546,7 +546,7 @@ Obecně tedy platí `x * y = x + y + x:y`. Výpis `summary()` ukáže čtyři ko
 summary(object = mod_interakce)
 ```
 
-V tabulce **Coefficients** jsou čtyři řádky. Sloupec **Estimate** obsahuje `r render_glossary_term("odhad", display = "odhady")` v milimetrech nebo v milimetrech šířky na milimetr délky. Referenční skupinou jsou samice, protože jsme je při tvorbě faktoru `pohlavi` uvedli jako první.
+V tabulce **Coefficients** jsou čtyři řádky. Sloupec **Estimate** obsahuje `r render_glossary_term("odhad", display = "odhady")` v milimetrech nebo v milimetrech šířky na milimetr délky. `r render_glossary_term("referencni-skupina", display = "Referenční skupinou")` jsou samice, protože jsme je při tvorbě faktoru `pohlavi` uvedli jako první.
 
 ```{r}
 #| label: odhady-koeficientu
@@ -568,14 +568,14 @@ prispevek_delky_rozdilu <-
 - **`pohlavisamec`** je rozdíl **samec minus samice při délce 0 mm**: `r format_value_cz(vec_odhad_koeficientu[["pohlavisamec"]], digits = 3, signed = TRUE)` mm. Není to rozdíl mezi pohlavími při každé délce ani odhad pro některého ze změřených krabů.
 - **`delka_krunyre_mm:pohlavisamec`** je interakční člen: rozdíl **sklon samce minus sklon samice**, `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3, signed = TRUE)` mm/mm. Záporná hodnota říká, že samčí přímka stoupá pomaleji.
 
-::: {.box-data title="Doplňující: proč s interakcí ponecháváme i oba hlavní členy" collapse="true"}
+::: {.box-data title="Doplňující: proč s interakcí ponecháváme i oba hlavní efekty" collapse="true"}
 
-Hvězdička rozvine model na `delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi`. První dva členy určují referenční přímku a rozdíl mezi skupinami v referenční hodnotě délky; poslední člen popisuje rozdíl sklonů. Tomuto uspořádání se říká hierarchický princip modelu. <!-- TODO: add slug hierarchicky-princip-modelu to pojmy.yaml -->
+Hvězdička rozvine model na `delka_krunyre_mm + pohlavi + delka_krunyre_mm:pohlavi`. První dva členy určují referenční přímku a rozdíl mezi skupinami v referenční hodnotě délky; poslední člen popisuje rozdíl sklonů. Tomuto uspořádání se říká `r render_glossary_term("hierarchicky-princip-modelu", display = "hierarchický princip modelu")`.
 
-Kdybychom hlavní člen délky nebo pohlaví bez věcného důvodu odstranili, interakční koeficient by zůstal bez přirozeného základu, vůči kterému se interpretuje. Výjimky existují pro úzce formulované modely, ale v úvodní analýze ponecháváme oba hlavní členy a biologickou otázku čteme z jejich společných předpovědí.
+Kdybychom `r render_glossary_term("hlavni-efekt", display = "hlavní efekt")` délky nebo pohlaví bez věcného důvodu odstranili, interakční koeficient by zůstal bez přirozeného základu, vůči kterému se interpretuje. Výjimky existují pro úzce formulované modely, ale v úvodní analýze ponecháváme oba hlavní efekty a biologickou otázku čteme z jejich společných predikcí.
 :::
 
-Hodnota 0 mm určuje pouze to, co v tomto zápisu znamenají dva koeficienty. Pro srovnání skutečně měřených délek použijeme oba koeficienty sklonu a dosadíme délku z pozorovaného rozsahu. **Rozdíl `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm jsme už odečetli z předpovědí při `r delka_porovnani_mm` mm.** Následující výpočet nepřináší nový výsledek; ukazuje, jak se stejná hodnota sestaví ze čtyř řádků tabulky **Coefficients**. Odhad šířky samice a rozdíl **samec minus samice** mají tuto stavbu:
+Hodnota 0 mm určuje pouze to, co v tomto zápisu znamenají dva koeficienty. Pro srovnání skutečně měřených délek použijeme oba koeficienty sklonu a dosadíme délku z pozorovaného rozsahu. **Rozdíl `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm jsme už odečetli z predikcí při `r delka_porovnani_mm` mm.** Následující výpočet nepřináší nový výsledek; ukazuje, jak se stejná hodnota sestaví ze čtyř řádků tabulky **Coefficients**. Odhad šířky samice a rozdíl **samec minus samice** mají tuto stavbu:
 
 $$
 \begin{aligned}
@@ -629,7 +629,7 @@ $$
 
 Zde $x$ znamená zvolenou délku krunýře v mm a $\hat{y}$ modelový odhad zadní šířky v mm. $\beta_0$ je řádek `(Intercept)` pro samici při 0 mm, $\beta_1$ její sklon, $\beta_2$ řádek `pohlavisamec` pro rozdíl při 0 mm a $\beta_3$ interakční řádek pro rozdíl sklonů.
 
-Odhad šířky samce získáme přičtením druhého výsledku k prvnímu: `r format_value_cz(odhad_samice_porovnani, digits = 2)` + (`r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)`) = `r format_value_cz(odhad_samec_porovnani, digits = 2)` mm. To souhlasí s řádkem samce v tabulce předpovědí. Pro biologické porovnání čteme **předpovědi při konkrétní délce** a jejich rozdíl.
+Odhad šířky samce získáme přičtením druhého výsledku k prvnímu: `r format_value_cz(odhad_samice_porovnani, digits = 2)` + (`r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)`) = `r format_value_cz(odhad_samec_porovnani, digits = 2)` mm. To souhlasí s řádkem samce v tabulce predikcí. Pro biologické porovnání čteme **predikce při konkrétní délce** a jejich rozdíl.
 
 Samčí sklon získáme sečtením samičího sklonu a interakčního koeficientu. Vyjde `r format_value_cz(sklon_samec, digits = 3)` mm/mm oproti `r format_value_cz(sklon_samice, digits = 3)` mm/mm u samic. Rozdíl **samec minus samice** se při porovnání o 1 mm delších krabů změní o `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3, signed = TRUE)` mm. Pro tento rozdíl sklonů získáme z téhož modelu 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")`:
 
@@ -646,17 +646,17 @@ confint(
 Odhadovaný rozdíl sklonů je `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3)` mm/mm; interval sahá od `r format_value_cz(interval_rozdilu_sklonu[[1]], digits = 3)` do `r format_value_cz(interval_rozdilu_sklonu[[2]], digits = 3)` mm/mm. Popisuje `r render_glossary_term("nejistota", display = "nejistotu")` odhadu při předpokladech modelu, nikoli rozsah šířek jednotlivých krabů.
 
 ::: {.box-warning title="Koeficient pohlaví neplatí při každé délce"}
-Samotný koeficient `pohlavisamec` popisuje rozdíl při **0 mm**, tedy mimo pozorované délky. Při biologickém porovnání vždy uveďte **konkrétní délku** a porovnejte dvě modelové předpovědi při této délce.
+Samotný koeficient `pohlavisamec` popisuje rozdíl při **0 mm**, tedy mimo pozorované délky. Při biologickém porovnání vždy uveďte **konkrétní délku** a porovnejte dvě predikce při této délce.
 :::
 
 ::: {.box-data title="Doplňující: co dalšího ukazuje summary()?" collapse="true"}
 Sloupec **Std. Error** popisuje nejistotu jednotlivých koeficientů. **t value** a **Pr(>|t|)** slouží k testování, zda by příslušný *podmíněný* koeficient mohl být nulový při předpokladech modelu. Hvězdičky u `r render_glossary_term("p-hodnota", display = "p-hodnot")` nejsou velikostí biologického rozdílu: například test u `(Intercept)` se ptá na nulovou šířku samice při délce 0 mm, což zde není zajímavá biologická otázka.
 
-Část **Residuals** stručně shrnuje odchylky jednotlivých krabů od přímek. **Residual standard error** je `r render_glossary_term("rezidualni-smerodatna-odchylka", display = "reziduální směrodatná odchylka")`; popisuje typickou velikost těchto odchylek v milimetrech. Údaje **Multiple R-squared**, **Adjusted R-squared** a **F-statistic** zatím nepotřebujeme k výkladu interakce; k `r render_glossary_term("porovnani-modelu", display = "porovnávání")` biologicky zdůvodněných modelů se vrátíme v následující lekci.
+Část **Residuals** stručně shrnuje odchylky jednotlivých krabů od přímek. **Residual standard error** je `r render_glossary_term("rezidualni-smerodatna-odchylka", display = "residuální směrodatná odchylka")`; popisuje typickou velikost těchto odchylek v milimetrech. Údaje **Multiple R-squared**, **Adjusted R-squared** a **F-statistic** zatím nepotřebujeme k výkladu interakce; k `r render_glossary_term("porovnani-modelu", display = "porovnávání")` biologicky zdůvodněných modelů se vrátíme v následující lekci.
 :::
 
 ::: {.box-data title="Doplňující: modelové průměry při zvolené délce pomocí emmeans" collapse="true"}
-Funkci `emmeans()` znáte z předchozích lekcí. Pracuje se stejným odhadnutým modelem jako naše tabulka předpovědí; nastavíme v ní délku krunýře na `r delka_porovnani_mm` mm.
+Funkci `emmeans()` znáte z předchozích lekcí. Pracuje se stejným odhadnutým modelem jako naše tabulka predikcí; nastavíme v ní délku krunýře na `r delka_porovnani_mm` mm.
 
 ```{r}
 #| label: extra-emmeans-sirka
@@ -671,7 +671,7 @@ prumery_sirka <-
 prumery_sirka
 ```
 
-Sloupec `emmean` obsahuje stejné dvě bodové předpovědi jako naše tabulka z `predict()`. Sloupce `lower.CL` a `upper.CL` vymezují modelový interval pro **`r render_glossary_term("prumer", display = "průměrnou")` šířku skupiny**, ne rozsah šířek jednotlivých krabů. Chceme-li interval přímo pro rozdíl **samec minus samice**, vypočteme jej zvlášť:
+Sloupec `emmean` obsahuje stejné dvě bodové predikce jako naše tabulka z `predict()`. Sloupce `lower.CL` a `upper.CL` vymezují modelový interval pro **`r render_glossary_term("prumer", display = "průměrnou")` šířku skupiny**, ne rozsah šířek jednotlivých krabů. Chceme-li interval přímo pro rozdíl **samec minus samice**, vypočteme jej zvlášť:
 
 ```{r}
 #| label: extra-emmeans-rozdily-sirky
@@ -685,24 +685,24 @@ rozdily_sirka <-
 confint(object = rozdily_sirka)
 ```
 
-Odhad rozdílu odpovídá dříve vypočteným `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm. **Interval pro rozdíl vzniká z obou předpovědí a jejich společné nejistoty**; nelze jej spolehlivě vyčíst jen z překryvu dvou intervalů pro jednotlivé průměry. Způsob výběru krabů stále omezuje, na koho lze výsledek přenést.
+Odhad rozdílu odpovídá dříve vypočteným `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm. **Interval pro rozdíl vzniká z obou predikcí a jejich společné nejistoty**; nelze jej spolehlivě vyčíst jen z překryvu dvou intervalů pro jednotlivé průměry. Způsob výběru krabů stále omezuje, na koho lze výsledek přenést.
 :::
 
 ## Jak dobře přímky popisují změřené kraby?
 
-Přímky procházejí oběma mračny bodů, ale jednotlivé šířky se od nich odchylují. Pro každého kraba je `r render_glossary_term("residuum", display = "residuum")` rozdíl mezi naměřenou a `r render_glossary_term("odhadnuta-hodnota", display = "odhadnutou šířkou")`. Graf residuí proti odhadům pomůže odhalit zakřivení nebo změnu `r render_glossary_term("rozptyl", display = "rozptylu")`, které by dvě přímky nezachytily.
+Přímky procházejí oběma mračny bodů, ale jednotlivé šířky se od nich odchylují. Pro každého kraba je `r render_glossary_term("residuum", display = "residuum")` rozdíl mezi naměřenou a `r render_glossary_term("odhadnuta-hodnota", display = "odhadnutou šířkou")`. `r render_glossary_term("graf-residui", display = "Graf residuí")` proti odhadnutým hodnotám pomůže odhalit zakřivení nebo změnu `r render_glossary_term("rozptyl", display = "rozptylu")`, které by dvě přímky nezachytily.
 
 ```{r}
 #| label: diagnostika-interakcniho-modelu
 #| echo: true
-#| fig-alt: "Residua modelu s interakcí proti odhadnuté zadní šířce; body samic a samců leží nad i pod vodorovnou přerušovanou nulou bez oblouku a s podobným rozptylem v celém rozsahu odhadů."
-# Spočteme rozdíl mezi měřením a předpovědí pro každého kraba
+#| fig-alt: "Residua modelu s interakcí proti odhadnuté zadní šířce; body samic a samců leží nad i pod vodorovnou přerušovanou nulou bez oblouku a s podobným rozptylem v celém rozsahu odhadnutých hodnot."
+# Spočteme rozdíl mezi měřením a odhadnutou hodnotou pro každého kraba
 data_krabi$odhad_sirky_mm <-
   fitted(object = mod_interakce)
 data_krabi$residuum_mm <-
   data_krabi$zadni_sirka_mm - data_krabi$odhad_sirky_mm
 
-# Nula znamená dokonalou shodu měření a předpovědi
+# Nula znamená dokonalou shodu měření a odhadnuté hodnoty
 plot(
   x = data_krabi$odhad_sirky_mm,
   y = data_krabi$residuum_mm,
@@ -716,39 +716,39 @@ plot(
 abline(h = 0, lty = 2)
 ```
 
-Hledáme soustavné zakřivení nebo nápadně větší rozptyl na jedné straně: tím bychom poznali, že dvě přímky některou část vztahu nevystihují. V tomto grafu nic takového nevidíme. Residua leží nad nulou i pod ní v celém rozsahu odhadů, netvoří oblouk a jejich rozptyl je u malých i velkých odhadů podobný. Vraťte se také k `r render_glossary_term("bodovy-graf", display = "bodovému grafu")` a prohlédněte kraby na koncích rozsahu délek. V těchto místech je méně sousedních měření, a jednotlivý krajní bod může `r render_glossary_term("sklon", display = "sklon")` přímky více ovlivnit. Takový bod je důvod k ověření měření a citlivosti závěru, ne k automatickému odstranění.
+Hledáme soustavné zakřivení nebo nápadně větší rozptyl na jedné straně: tím bychom poznali, že dvě přímky některou část vztahu nevystihují. V tomto grafu nic takového nevidíme. Residua leží nad nulou i pod ní v celém rozsahu odhadnutých hodnot, netvoří oblouk a jejich rozptyl je u malých i velkých odhadnutých hodnot podobný. Vraťte se také k `r render_glossary_term("bodovy-graf", display = "bodovému grafu")` a prohlédněte kraby na koncích rozsahu délek. V těchto místech je méně sousedních měření, a jednotlivý krajní bod může `r render_glossary_term("sklon", display = "sklon")` přímky více ovlivnit. Takový bod je důvod k ověření měření a citlivosti závěru, ne k automatickému odstranění.
 
-`r render_glossary_term("diagnostika-modelu", display = "Diagnostika modelu")` sama nezaručí, že je vztah v populaci přesně lineární, že výběr krabů byl reprezentativní, ani že pohlaví něco způsobilo. Předpovědi mimo pozorované délky jsme nekontrolovali.
+`r render_glossary_term("diagnostika-modelu", display = "Diagnostika modelu")` sama nezaručí, že je vztah v `r render_glossary_term("populace", display = "populaci")` přesně lineární, že `r render_glossary_term("vyber", display = "výběr")` krabů byl reprezentativní, ani že pohlaví něco způsobilo. `r render_glossary_term("predikce", display = "Predikce")` mimo pozorované délky jsme nekontrolovali.
 
 ::: {.box-data title="Doplňující: interakci můžeme číst jen tam, kde máme data" collapse="true"}
 
-Rozdíl sklonů je odhadnut z oblastí, kde máme měření obou pohlaví. Kdyby samice byly pozorovány jen mezi kratšími délkami a samci jen mezi delšími délkami bez společného rozsahu, model by sice dokázal nakreslit dvě přímky, ale jejich srovnání při stejné délce by bylo založeno hlavně na extrapolaci.
+Rozdíl sklonů je odhadnut z oblastí, kde máme měření obou pohlaví. Kdyby samice byly pozorovány jen mezi kratšími délkami a samci jen mezi delšími délkami bez společného rozsahu, model by sice dokázal nakreslit dvě přímky, ale jejich srovnání při stejné délce by bylo založeno hlavně na `r render_glossary_term("extrapolace", display = "extrapolaci")`.
 
-Před interpretací interakce proto kontrolujeme nejen počet bodů, ale také **společný rozsah hodnot** a zastoupení všech důležitých kombinací. Řídká nebo prázdná část grafu znamená, že modelová předpověď je méně podepřená skutečnými srovnáními. Více parametrů nemůže vytvořit informaci v kombinaci, kterou jsme nepozorovali.
+Před interpretací `r render_glossary_term("interakce-predikatoru", display = "interakce")` proto kontrolujeme nejen počet bodů, ale také **společný rozsah hodnot** a zastoupení všech důležitých kombinací. Řídká nebo prázdná část grafu znamená, že predikce modelu je méně podepřená skutečnými srovnáními. Více parametrů nemůže vytvořit informaci v kombinaci, kterou jsme nepozorovali.
 :::
 
 ::: {.box-result title="Co ukázal první příklad"}
-U těchto změřených krabů modré formy roste odhadnutá zadní šířka s délkou u obou pohlaví. Sklon je u samic přibližně `r format_value_cz(sklon_samice, digits = 3)` mm šířky na 1 mm délky a u samců `r format_value_cz(sklon_samec, digits = 3)` mm/mm. Při `r delka_porovnani_mm` mm je modelový rozdíl **samec minus samice** `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm. Samčí sklon je o `r format_value_cz(abs(rozdil_sklonu_samec_minus_samice), digits = 3)` mm/mm menší, takže u krabů s větší délkou model předpovídá ještě větší náskok samic. To odpovídá biologickému očekávání z úvodu, že samice s rostoucí velikostí mají relativně širší zadní část krunýře. Jde však o souvislost v těchto měřeních, nikoli o důkaz, že ji způsobuje pohlaví nebo nošení snůšky.
+U těchto změřených krabů modré formy roste odhadnutá zadní šířka s délkou u obou pohlaví. Sklon je u samic přibližně `r format_value_cz(sklon_samice, digits = 3)` mm šířky na 1 mm délky a u samců `r format_value_cz(sklon_samec, digits = 3)` mm/mm. Při `r delka_porovnani_mm` mm je modelový rozdíl **samec minus samice** `r format_value_cz(rozdil_porovnani, digits = 2, signed = TRUE)` mm. Samčí sklon je o `r format_value_cz(abs(rozdil_sklonu_samec_minus_samice), digits = 3)` mm/mm menší, takže u krabů s větší délkou model predikuje ještě větší náskok samic. To odpovídá biologickému očekávání z úvodu, že samice s rostoucí velikostí mají relativně širší zadní část krunýře. Jde však o souvislost v těchto měřeních, nikoli o důkaz, že ji způsobuje pohlaví nebo nošení snůšky.
 :::
 
 ## Liší se rozdíl v délce krunýře mezi pohlavími u obou barevných forem?
 
-Vztah zadní šířky k délce jsme sledovali pouze u modré formy. Soubor obsahuje také oranžovou barevnou formu. U mnoha živočichů se samice a samci liší velikostí a tento rozdíl nemusí být stejný u příbuzných druhů nebo forem. Můžeme se proto zeptat na jiný rozměr týchž krabů: **je rozdíl v délce krunýře mezi samci a samicemi stejný u obou forem?** `r render_glossary_term("odezva", display = "Odezvou")` je tentokrát délka krunýře v milimetrech. Barevná forma i pohlaví jsou `r render_glossary_term("kategoricka-promenna", display = "kategoriální proměnné")` neboli skupinové znaky; pro tento příklad nepotřebujeme číselný `r render_glossary_term("prediktor", display = "prediktor")`.
+Vztah zadní šířky k délce jsme sledovali pouze u modré formy. Soubor obsahuje také oranžovou barevnou formu. U mnoha živočichů se samice a samci liší velikostí a tento rozdíl nemusí být stejný u příbuzných druhů nebo forem. Můžeme se proto zeptat na jiný rozměr týchž krabů: **je rozdíl v délce krunýře mezi samci a samicemi stejný u obou forem?** `r render_glossary_term("odezva", display = "Odezvou")` je tentokrát délka krunýře v milimetrech. Barevná forma i pohlaví jsou `r render_glossary_term("kategoricka-promenna", display = "kategoriální proměnné")` (znaky); pro tento příklad nepotřebujeme numerický `r render_glossary_term("prediktor", display = "prediktor")`.
 
 ::: {.box-warning title="Co tato data o velikosti krabů neřeknou"}
-Autoři vybrali do každé ze čtyř skupin právě `r min(table(data_krabi_vse$sp, data_krabi_vse$sex))` krabů. `r render_glossary_term("prumer", display = "Průměrné")` délky proto závisejí také na tom, které kraby sesbírali a změřili, nejen na tom, jak velcí krabi dané formy a pohlaví v přírodě obvykle jsou. Příklad nám ukáže, jak číst model se dvěma skupinovými znaky; tvrzení o velikosti krabů v přírodě by vyžadovalo náhodný `r render_glossary_term("vyber", display = "výběr")`.
+Autoři vybrali do každé ze čtyř skupin právě `r min(table(data_krabi_vse$sp, data_krabi_vse$sex))` krabů. `r render_glossary_term("prumer", display = "Průměrné")` délky proto závisejí také na tom, které kraby sesbírali a změřili, nejen na tom, jak velcí krabi dané formy a pohlaví v přírodě obvykle jsou. Příklad nám ukáže, jak číst model se dvěma kategoriálními znaky; tvrzení o velikosti krabů v přírodě by vyžadovalo náhodný `r render_glossary_term("vyber", display = "výběr")`.
 :::
 
 ```{r}
 #| label: pripravit-obe-formy
 #| echo: true
-# Ze stejné tabulky vybereme novou odezvu i oba skupinové znaky
+# Ze stejné tabulky vybereme novou odezvu i oba kategoriální znaky
 data_formy <-
   data_krabi_vse[, c("sp", "sex", "CL")]
 names(data_formy) <-
   c("forma", "pohlavi", "delka_krunyre_mm")
 
-# Obě skupinové proměnné převedeme na faktory s referenční úrovní
+# Obě kategoriální proměnné převedeme na faktory s referenční skupinou
 data_formy$forma <-
   factor(
     x = data_formy$forma,
@@ -876,7 +876,7 @@ Průměry popisují skupiny, zatímco jednotlivé body v obrázku připomínají
 
 ## Jak model zachytí změnu rozdílu mezi pohlavími podle formy?
 
-Vrátíme se ke **stejnému obrázku se všemi jednotlivými kraby**. Body ani osy neměníme. Přidáme pouze velké kosočtverce pro čtyři `r render_glossary_term("prumer", display = "průměry")` a v každé barevné formě spojíme průměr samic s průměrem samců. Sklon spojnice zde nevyjadřuje spojitou předpověď; pouze zvýrazňuje velikost a směr rozdílu mezi dvěma kategoriemi.
+Vrátíme se ke **stejnému obrázku se všemi jednotlivými kraby**. Body ani osy neměníme. Přidáme pouze velké kosočtverce pro čtyři `r render_glossary_term("prumer", display = "průměry")` a v každé barevné formě spojíme průměr samic s průměrem samců. `r render_glossary_term("sklon", display = "Sklon")` spojnice zde nevyjadřuje spojitou `r render_glossary_term("predikce", display = "predikci")`; pouze zvýrazňuje velikost a směr rozdílu mezi dvěma kategoriemi.
 
 ```{r}
 #| label: obrazek-rozdilu-mezi-formami
@@ -951,9 +951,9 @@ summary(object = mod_formy)
 
 V tabulce **Coefficients** se opět soustřeďte na sloupec **Estimate**. Řádky nejsou čtyři nezávislé průměry: jeden je referenční průměr a zbylé tři popisují, jak se od něj dostaneme k ostatním skupinám.
 
-## Co znamenají čtyři koeficienty modelu se dvěma skupinovými znaky?
+## Co znamenají čtyři koeficienty modelu se dvěma kategoriálními znaky?
 
-Protože referenčními kategoriemi jsou **modrá forma** a **samice**, každý koeficient má přesně určené srovnání. `r render_glossary_term("odhad", display = "Odhady")` vytáhneme ze stejného modelu, který vytvořil výpis `summary()`.
+Protože `r render_glossary_term("referencni-skupina", display = "referenčními skupinami")` jsou **modrá forma** a **samice**, každý koeficient má přesně určené srovnání. `r render_glossary_term("odhad", display = "Odhady")` vytáhneme ze stejného modelu, který vytvořil výpis `summary()`.
 
 ```{r}
 #| label: koeficienty-dvou-skupinovych-znaku
@@ -979,7 +979,7 @@ confint(
 
 Modelový 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` pro změnu rozdílu sahá od `r format_value_cz(vec_interval_formy[[1]], digits = 2)` do `r format_value_cz(vec_interval_formy[[2]], digits = 2)` mm. `r if (vec_interval_formy[[2]] < 0) "Celý leží pod nulou: při předpokladech modelu data podporují menší rozdíl samec minus samice u oranžové než u modré formy." else if (vec_interval_formy[[1]] > 0) "Celý leží nad nulou: při předpokladech modelu data podporují větší rozdíl samec minus samice u oranžové než u modré formy." else "Zahrnuje také nulovou změnu, takže směr rozdílu mezi formami zůstává podle tohoto modelu nejistý."` Protože autoři vybrali do každé skupiny pevný počet krabů, nelze tento interval automaticky zobecnit na všechny kraby.
 
-Jak model sestaví předpověď pro oranžového samce? K odhadu modré samice přidá rozdíl forem mezi samicemi, rozdíl pohlaví u modré formy a změnu tohoto rozdílu u oranžové formy:
+Jak model sestaví `r render_glossary_term("predikce", display = "predikci")` pro oranžového samce? K odhadu modré samice přidá rozdíl forem mezi samicemi, rozdíl pohlaví u modré formy a změnu tohoto rozdílu u oranžové formy:
 
 $$
 \begin{aligned}
@@ -1002,7 +1002,7 @@ $$
 \end{aligned}
 $$
 
-V obecném zkráceném zápisu je to $\widehat y_{O,M}=\beta_0+\beta_O+\beta_M+\beta_{OM}$. Symbol $\widehat y_{O,M}$ značí modelový odhad délky oranžového samce, $\beta_0$ referenční průměr modré samice, $\beta_O$ rozdíl forem u samic, $\beta_M$ rozdíl pohlaví u modré formy a $\beta_{OM}$ změnu tohoto rozdílu u oranžové formy.
+V obecném zkráceném zápisu je to $\hat{y}_{O,M}=\beta_0+\beta_1+\beta_2+\beta_3$, kde $\hat{y}_{O,M}$ značí modelový odhad délky oranžového samce. Koeficienty opět číslujeme v pořadí výpisu: $\beta_0$ je řádek `(Intercept)`, tedy referenční průměr modré samice, $\beta_1$ řádek `formaoranžová` (rozdíl forem u samic), $\beta_2$ řádek `pohlavisamec` (rozdíl pohlaví u modré formy) a $\beta_3$ řádek `formaoranžová:pohlavisamec` (změna tohoto rozdílu u oranžové formy).
 
 ```{r}
 #| label: predpovedi-ctyr-skupin
@@ -1049,8 +1049,8 @@ rozdil_oranzova_predikce <-
 
 V řádku oranžové formy je rozdíl samec minus samice `r format_value_cz(rozdil_oranzova_predikce, digits = 2, signed = TRUE)` mm. Získáme jej také sečtením koeficientů `pohlavisamec` a `formaoranžová:pohlavisamec`: `r format_value_cz(vec_koeficienty_formy[["pohlavisamec"]], digits = 3)` + (`r format_value_cz(vec_koeficienty_formy[["formaoranžová:pohlavisamec"]], digits = 3)`) = `r format_value_cz(sum(vec_koeficienty_formy[c("pohlavisamec", "formaoranžová:pohlavisamec")]), digits = 3)` mm. **Samotný koeficient pohlaví tedy platí pro modrou formu; u oranžové se k němu přidá interakce.**
 
-::: {.box-data title="Doplňující: čtyři skupinové předpovědi pomocí emmeans" collapse="true"}
-Stejně jako v předchozím příkladu můžeme z již odhadnutého modelu získat předpovědi pomocí `emmeans()`. Tentokrát žádnou číselnou hodnotu nenastavujeme: žádáme o **obě pohlaví uvnitř každé barevné formy**, tedy o čtyři skutečně zastoupené kombinace.
+::: {.box-data title="Doplňující: čtyři skupinové predikce pomocí emmeans" collapse="true"}
+Stejně jako v předchozím příkladu můžeme z již odhadnutého modelu získat predikce pomocí `emmeans()`. Tentokrát žádnou číselnou hodnotu nenastavujeme: žádáme o **obě pohlaví uvnitř každé barevné formy**, tedy o čtyři skutečně zastoupené kombinace.
 
 ```{r}
 #| label: extra-emmeans-ctyri-skupiny
@@ -1064,7 +1064,7 @@ prumery_formy <-
 prumery_formy
 ```
 
-Sloupec `emmean` ukazuje stejné délky jako tabulka předpovědí z `predict()`. Protože model obsahuje obě skupiny i jejich interakci, tyto čtyři odhady jsou zde také rovny pozorovaným průměrům čtyř skupin. Intervaly `lower.CL` a `upper.CL` se vztahují ke **skupinovým průměrům**. Rozdíl **samec minus samice** pro každou formu vypočteme přímo:
+Sloupec `emmean` ukazuje stejné délky jako tabulka predikcí z `predict()`. Protože model obsahuje obě skupiny i jejich interakci, tyto čtyři odhady jsou zde také rovny pozorovaným průměrům čtyř skupin. Intervaly `lower.CL` a `upper.CL` se vztahují ke **skupinovým průměrům**. Rozdíl **samec minus samice** pro každou formu vypočteme přímo:
 
 ```{r}
 #| label: extra-emmeans-rozdily-formy
@@ -1083,9 +1083,7 @@ confint(object = rozdily_formy)
 
 ## Co o jednotlivých krabech čtyři průměry neříkají?
 
-Model čtyř skupin přesně vystihuje jejich `r render_glossary_term("prumer", display = "průměry")`. To však neznamená, že stejně dobře vystihuje každého kraba: jednotlivé délky se od skupinových průměrů výrazně liší. Zkontrolujeme proto `r render_glossary_term("residuum", display = "residua")` uvnitř skupin; jejich nulový průměr je zde vlastností odhadu skupinových průměrů, nikoli důkazem bezchybného modelu. V houslovém grafu (anglicky *violin plot*) širší část naznačuje, kde se odchylky častěji vyskytují, a každý bod ukazuje skutečné měření jednoho kraba.
-
-<!-- TODO: add slug houslovy-graf to pojmy.yaml -->
+Model čtyř skupin přesně vystihuje jejich `r render_glossary_term("prumer", display = "průměry")`. To však neznamená, že stejně dobře vystihuje každého kraba: jednotlivé délky se od skupinových průměrů výrazně liší. Zkontrolujeme proto `r render_glossary_term("residuum", display = "residua")` uvnitř skupin; jejich nulový průměr je zde vlastností odhadu skupinových průměrů, nikoli důkazem bezchybného modelu. V `r render_glossary_term("houslovy-graf", display = "houslovém grafu")` (anglicky *violin plot*) širší část naznačuje, kde se odchylky častěji vyskytují, a každý bod ukazuje skutečné měření jednoho kraba.
 
 ```{r}
 #| label: residua-ctyr-skupin
@@ -1137,7 +1135,7 @@ Ve všech skupinách jsou délky na obou stranách odhadu. Rozpětí a krajní h
 
 ## Přibývá objem dřeva s průměrem kmene stejně rychle u nízkých i vysokých stromů?
 
-V obou příkladech s kraby byl aspoň jeden `r render_glossary_term("prediktor", display = "prediktor")` skupinou. Interakce však může spojovat i dva `r render_glossary_term("numericka-promenna", display = "číselné")` prediktory. Lesníci odhadují, kolik dřeva je v kmeni, z jeho průměru a z výšky stromu. Podíváme se na měření pokácených stromů střemchy pozdní (*Prunus serotina*), severoamerického stromu, který se v českých lesích šíří jako invazní druh.
+V obou příkladech s kraby byl aspoň jeden `r render_glossary_term("prediktor", display = "prediktor")` skupinou. `r render_glossary_term("interakce-predikatoru", display = "Interakce")` však může spojovat i dva `r render_glossary_term("numericka-promenna", display = "numerické")` prediktory. Lesníci odhadují, kolik dřeva je v kmeni, z jeho průměru a z výšky stromu. Podíváme se na měření pokácených stromů střemchy pozdní (*Prunus serotina*), severoamerického stromu, který se v českých lesích šíří jako invazní druh.
 
 ::: {.box-question title="Co čekáte?"}
 Představte si dvojici nízkých stromů stejné výšky, z nichž jeden má kmen o 1 cm tlustší, a stejnou dvojici vysokých stromů. O kolik více dřeva má tlustší strom v každé dvojici? Bude tento rozdíl u nízkých i vysokých stromů stejný?
@@ -1209,7 +1207,7 @@ write.csv(
 
 U krabů jsme kreslili jednu přímku pro každé pohlaví. Výška je však číslo a žádné skupiny nemá. Abychom viděli, jak vypadá vztah objemu a průměru u různě vysokých stromů, rozdělíme stromy **jen pro kreslení** do čtyř výškových pásem se zhruba stejným počtem stromů. Každý panel ukazuje stromy jednoho pásma. Do modelu pásma nevstupují: model dál pracuje s výškou jako s číslem.
 
-Začneme známým aditivním modelem z minulé lekce, který má dva číselné `r render_glossary_term("prediktor", display = "prediktory")` spojené znakem `+`:
+Začneme známým `r render_glossary_term("aditivni-model", display = "aditivním modelem")` z minulé lekce, který má dva numerické `r render_glossary_term("prediktor", display = "prediktory")` spojené znakem `+`:
 
 ```{r}
 #| label: aditivni-model-stromy
@@ -1231,7 +1229,7 @@ data_pasma_souhrn <- res_pasma_stromy$summary
 sklon_aditivni <- unname(coef(mod_aditivni)["prumer_cm"])
 ```
 
-Přímka v každém panelu je předpověď modelu pro **střední výšku daného pásma** (`r render_glossary_term("median", display = "medián")`: `r paste(format_value_cz(data_pasma_souhrn$vyska_median_m, digits = 1), collapse = "; ")` m) a vede jen přes průměry kmenů pozorované v tomto pásmu. V pásmech je `r paste(data_pasma_souhrn$n, collapse = ", ")` stromů.
+Přímka v každém panelu je `r render_glossary_term("predikce", display = "predikce")` modelu pro **střední výšku daného pásma** (`r render_glossary_term("median", display = "medián")`: `r paste(format_value_cz(data_pasma_souhrn$vyska_median_m, digits = 1), collapse = "; ")` m) a vede jen přes průměry kmenů pozorované v tomto pásmu. V pásmech je `r paste(data_pasma_souhrn$n, collapse = ", ")` stromů.
 
 ```{r}
 #| label: obrazek-pasma-aditivni
@@ -1319,7 +1317,7 @@ $$
 
 Stručně $\beta_1 + \beta_3 v$, kde $v$ je zvolená výška v metrech. Koeficienty číslujeme v pořadí výpisu: $\beta_0$ je intercept, $\beta_1$ řádek `prumer_cm`, $\beta_2$ řádek `vyska_m` a $\beta_3$ řádek `prumer_cm:vyska_m`. Stejně dostaneme při výškách `r paste(vec_vysky_sklon_m, collapse = ", ")` m sklony `r paste(format_value_cz(vec_sklony_prumeru, digits = 3), collapse = "; ")` m³ na 1 cm. S každým metrem výšky navíc přibude ke sklonu `r format_value_cz(koef_interakce_stromy, digits = 4)` m³ na 1 cm; to je hodnota interakčního koeficientu.
 
-Stejné sklony ukážou i přímé předpovědi. Zvolíme dva průměry a dvě výšky, které leží uvnitř pozorovaných dat, a pro každou kombinaci spočteme odhad objemu:
+Stejné sklony ukážou i přímé `r render_glossary_term("predikce", display = "predikce")`. Zvolíme dva průměry a dvě výšky, které leží uvnitř pozorovaných dat, a pro každou kombinaci spočteme odhad objemu:
 
 ```{r}
 #| label: predpovedi-stromy
@@ -1366,10 +1364,10 @@ Vraťme se ke čtyřem koeficientům z výpisu `coef(object = mod_stromy)`:
 - **`(Intercept)`** je `r render_glossary_term("odhad", display = "odhad")` objemu stromu s průměrem 0 cm a výškou 0 m. Takový strom neexistuje; číslo samo o sobě nevykládáme.
 - **`prumer_cm`** je `r render_glossary_term("sklon", display = "sklon")` průměru **při výšce 0 m**: `r format_value_cz(koef_prumer, digits = 3, signed = TRUE)` m³ na 1 cm. Záporná hodnota neznamená, že by tlustší kmen měl méně dřeva; platí pro výšku, kterou žádný změřený strom nemá.
 - **`vyska_m`** je obdobně sklon výšky **při průměru 0 cm**: `r format_value_cz(koef_vyska, digits = 3, signed = TRUE)` m³ na 1 m. Ani tento koeficient sám nevykládáme.
-- **`prumer_cm:vyska_m`** je `r render_glossary_term("interakce-predikatoru", display = "interakční člen")`: o `r format_value_cz(koef_interakce_stromy, digits = 4)` m³ na 1 cm se zvětší sklon průměru, když je strom o 1 m vyšší.
+- **`prumer_cm:vyska_m`** je interakční člen: o `r format_value_cz(koef_interakce_stromy, digits = 4)` m³ na 1 cm se zvětší sklon průměru, když je strom o 1 m vyšší.
 
 ::: {.box-warning title="Koeficient průměru neplatí při každé výšce"}
-U dvou číselných `r render_glossary_term("prediktor", display = "prediktorů")` leží hodnota 0 často daleko mimo data. Hlavní koeficient pak popisuje situaci, kterou jsme nepozorovali. Sklon jednoho prediktoru proto vždy uvádíme **při zvolené hodnotě druhého** uvnitř pozorovaného rozsahu.
+U dvou numerických `r render_glossary_term("prediktor", display = "prediktorů")` leží hodnota 0 často daleko mimo data. Hlavní koeficient pak popisuje situaci, kterou jsme nepozorovali. Sklon jednoho prediktoru proto vždy uvádíme **při zvolené hodnotě druhého** uvnitř pozorovaného rozsahu.
 :::
 
 ```{r}
@@ -1380,7 +1378,7 @@ interval_interakce_stromy <-
   confint(mod_stromy)["prumer_cm:vyska_m", ]
 ```
 
-Interakci lze číst i obráceně. Stejný koeficient říká, o kolik se zvětší sklon výšky (m³ dřeva na 1 m výšky), když je kmen o 1 cm tlustší. U stromu s průměrem `r prumery_porovnani_cm[[1]]` cm přibude podle modelu na každý metr výšky `r format_value_cz(vec_sklony_vysky[[1]], digits = 3)` m³ dřeva, u stromu s průměrem `r prumery_porovnani_cm[[2]]` cm `r format_value_cz(vec_sklony_vysky[[2]], digits = 3)` m³. Obě věty popisují tutéž vlastnost modelu.
+`r render_glossary_term("interakce-predikatoru", display = "Interakci")` lze číst i obráceně. Stejný koeficient říká, o kolik se zvětší sklon výšky (m³ dřeva na 1 m výšky), když je kmen o 1 cm tlustší. U stromu s průměrem `r prumery_porovnani_cm[[1]]` cm přibude podle modelu na každý metr výšky `r format_value_cz(vec_sklony_vysky[[1]], digits = 3)` m³ dřeva, u stromu s průměrem `r prumery_porovnani_cm[[2]]` cm `r format_value_cz(vec_sklony_vysky[[2]], digits = 3)` m³. Obě věty popisují tutéž vlastnost modelu.
 
 Jak přesně interakční koeficient známe, ukáže 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")`:
 
@@ -1402,7 +1400,7 @@ V tomto krátkém příkladu jsme nekontrolovali `r render_glossary_term("residu
 
 První příklad vyjádřil `r render_glossary_term("interakce-predikatoru", display = "interakci")` jako **změnu rozdílu v šířce mezi pohlavími při různých délkách**: dva `r render_glossary_term("sklon", display = "sklony")` nemusí být stejné. Druhý příklad ji vyjádřil jako **změnu rozdílu v délce mezi pohlavími u dvou barevných forem**: dvě srovnání samce se samicí nemusí dát stejný výsledek. Třetí příklad ji vyjádřil jako **plynulou změnu sklonu průměru s výškou stromu**: s každým metrem výšky je přímka o něco strmější. Ve všech třech případech musíme při výkladu jednoho `r render_glossary_term("prediktor", display = "prediktoru")` uvést hodnotu nebo úroveň druhého: ptáme se **„při jaké délce?“**, **„v jaké barevné formě?“** nebo **„při jaké výšce?“**.
 
-::: {.box-data title="Doplňující: interakce závisí na měřítku odezvy" collapse="true"}
+::: {.box-data title="Doplňující: interakce závisí na škále odezvy" collapse="true"}
 
 V příkladech s kraby popisujeme `r render_glossary_term("odezva", display = "odezvu")` v milimetrech, takže interakce znamená změnu **rozdílu** v milimetrech. Jiná biologická otázka se může ptát na poměr: například zda jsou samci v obou formách o stejných 10 % delší než samice. Stejný procentní poměr může při různých `r render_glossary_term("prumer", display = "průměrech")` vytvářet různé rozdíly v milimetrech.
 
@@ -1418,32 +1416,32 @@ interval_interakce_log <-
   confint(mod_stromy_log)["log(prumer_cm):log(vyska_m)", ]
 ```
 
-Poměry a součiny se na logaritmickém měřítku mění v rozdíly a součty. Příklad se stromy to ukazuje na skutečných datech. Objem kmene je zhruba úměrný druhé mocnině průměru krát výšce, tedy *součinu*. Když objem, průměr i výšku nahradíme jejich logaritmy (`r render_glossary_term("transformace", display = "transformace")`, ke které se vrátíme v lekci o tvaru rozdělení), změní se tento součin v součet a model bez interakce by mohl stačit. Interakční koeficient takového modelu má 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` od `r format_value_cz(interval_interakce_log[[1]], digits = 2)` do `r format_value_cz(interval_interakce_log[[2]], digits = 2)`. Interval je široký a zahrnuje nulu, takže na logaritmickém měřítku data interakci nedokládají, ačkoli v krychlových metrech ji ukazují zřetelně.
+Poměry a součiny se na `r render_glossary_term("logaritmicka-skala", display = "logaritmické škále")` mění v rozdíly a součty. Příklad se stromy to ukazuje na skutečných datech. Objem kmene je zhruba úměrný druhé mocnině průměru krát výšce, tedy *součinu*. Když objem, průměr i výšku nahradíme jejich logaritmy (`r render_glossary_term("transformace", display = "transformace")`, ke které se vrátíme v lekci o tvaru rozdělení), změní se tento součin v součet a model bez interakce by mohl stačit. Interakční koeficient takového modelu má 95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` od `r format_value_cz(interval_interakce_log[[1]], digits = 2)` do `r format_value_cz(interval_interakce_log[[2]], digits = 2)`. Interval je široký a zahrnuje nulu, takže na logaritmické škále data interakci nedokládají, ačkoli v krychlových metrech ji ukazují zřetelně.
 
-Tvrzení „interakce existuje“ proto není úplné bez uvedení měřítka modelu. V lekci o binárních a početních odezvách se setkáme s modely, které používají jiné měřítko než přímé milimetry; interakční koeficient se pak nejprve interpretuje na tomto modelovém měřítku a potom pomocí předpovědí v biologicky srozumitelných jednotkách.
+Tvrzení „interakce existuje“ proto není úplné bez uvedení škály modelu. V lekci o binárních a početních odezvách se setkáme s modely, které používají jinou škálu než přímé milimetry; interakční koeficient se pak nejprve interpretuje na této škále modelu a potom pomocí predikcí v biologicky srozumitelných jednotkách.
 :::
 
 ## Co tedy můžeme říct o krabech a stromech?
 
 Vraťme se k hlavní otázce: **Je rozdíl v zadní šířce krunýře mezi stejně dlouhou samicí a samcem stejný u menších i větších krabů?**
 
-U změřených krabů modré formy není. Zadní šířka roste s délkou u obou pohlaví, ale u samic rychleji: o `r format_value_cz(sklon_samice, digits = 3)` mm na 1 mm délky, u samců o `r format_value_cz(sklon_samec, digits = 3)` mm. Rozdíl samec minus samice se proto mění o `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3, signed = TRUE)` mm na každý milimetr délky (95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` `r format_value_cz(interval_rozdilu_sklonu[[1]], digits = 3)` až `r format_value_cz(interval_rozdilu_sklonu[[2]], digits = 3)` mm/mm). Při délce `r delka_porovnani_mm` mm má samec podle modelu zadní šířku o `r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm menší než stejně dlouhá samice. Graf residuí neukázal zakřivení, které by dvě přímky přehlédly.
+U změřených krabů modré formy není. Zadní šířka roste s délkou u obou pohlaví, ale u samic rychleji: o `r format_value_cz(sklon_samice, digits = 3)` mm na 1 mm délky, u samců o `r format_value_cz(sklon_samec, digits = 3)` mm. Rozdíl samec minus samice se proto mění o `r format_value_cz(rozdil_sklonu_samec_minus_samice, digits = 3, signed = TRUE)` mm na každý milimetr délky (95% `r render_glossary_term("interval-spolehlivosti", display = "interval spolehlivosti")` `r format_value_cz(interval_rozdilu_sklonu[[1]], digits = 3)` až `r format_value_cz(interval_rozdilu_sklonu[[2]], digits = 3)` mm/mm). Při délce `r delka_porovnani_mm` mm má samec podle modelu zadní šířku o `r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm menší než stejně dlouhá samice. `r render_glossary_term("graf-residui", display = "Graf residuí")` neukázal zakřivení, které by dvě přímky přehlédly.
 
-Výsledek odpovídá biologickému očekávání z úvodu, že samice mají s rostoucí velikostí relativně širší zadní část krunýře. Data však jsou pozorovací a není doloženo, že krabi byli vybráni náhodně: popisují souvislost u těchto `r nrow(data_krabi)` krabů a v pozorovaném rozsahu délek, nikoli příčinu. Druhý příklad ukázal, že stejná logika platí pro dvě skupinové proměnné: rozdíl v délce mezi pohlavími byl u oranžové formy o `r format_value_cz(abs(rozdil_rozdilu_formy), digits = 2)` mm menší než u modré, ale `r render_glossary_term("prumer", display = "průměrné")` délky závisejí i na tom, které kraby autoři vybrali.
+Výsledek odpovídá biologickému očekávání z úvodu, že samice mají s rostoucí velikostí relativně širší zadní část krunýře. Data však jsou pozorovací a není doloženo, že krabi byli vybráni náhodně: popisují souvislost u těchto `r nrow(data_krabi)` krabů a v pozorovaném rozsahu délek, nikoli příčinu. Druhý příklad ukázal, že stejná logika platí pro dvě `r render_glossary_term("kategoricka-promenna", display = "kategoriální proměnné")`: rozdíl v délce mezi pohlavími byl u oranžové formy o `r format_value_cz(abs(rozdil_rozdilu_formy), digits = 2)` mm menší než u modré, ale `r render_glossary_term("prumer", display = "průměrné")` délky závisejí i na tom, které kraby autoři vybrali.
 
-Třetí příklad přenesl stejnou myšlenku na dva číselné `r render_glossary_term("prediktor", display = "prediktory")`. U `r nrow(data_stromy)` změřených stromů byl vztah objemu a průměru tím strmější, čím byl strom vyšší: při `r vysky_porovnani_m[[1]]` m přidal kmen o `r krok_prumeru_cm` cm tlustší podle modelu `r format_value_cz(prirustek_nizky, digits = 2)` m³ dřeva, při `r vysky_porovnani_m[[2]]` m `r format_value_cz(prirustek_vysoky, digits = 2)` m³. Na původním měřítku objemu to odpovídá očekávání z tvaru kmene; platí to jen v pozorovaném rozsahu průměrů a výšek.
+Třetí příklad přenesl stejnou myšlenku na dva numerické `r render_glossary_term("prediktor", display = "prediktory")`. U `r nrow(data_stromy)` změřených stromů byl vztah objemu a průměru tím strmější, čím byl strom vyšší: při `r vysky_porovnani_m[[1]]` m přidal kmen o `r krok_prumeru_cm` cm tlustší podle modelu `r format_value_cz(prirustek_nizky, digits = 2)` m³ dřeva, při `r vysky_porovnani_m[[2]]` m `r format_value_cz(prirustek_vysoky, digits = 2)` m³. Na původní škále objemu to odpovídá očekávání z tvaru kmene; platí to jen v pozorovaném rozsahu průměrů a výšek.
 
 ## Co bude následovat dál
 
-Aditivní model a model s interakcí jsou dva kandidátní popisy téhož vztahu. Model s interakcí je pružnější, ale má více parametrů a jeho koeficienty se vykládají složitěji. V následující lekci se budeme ptát, jak mezi několika předem biologicky zdůvodněnými modely vybrat ten, který data popisuje dostatečně dobře bez zbytečné složitosti.
+`r render_glossary_term("aditivni-model", display = "Aditivní model")` a model s `r render_glossary_term("interakce-predikatoru", display = "interakcí")` jsou dva kandidátní popisy téhož vztahu. Model s interakcí je pružnější, ale má více parametrů a jeho koeficienty se vykládají složitěji. V následující lekci se budeme ptát, jak mezi několika předem biologicky zdůvodněnými modely vybrat ten, který data popisuje dostatečně dobře bez zbytečné složitosti.
 
 ## Shrnutí
 
 - `r render_glossary_term("interakce-predikatoru", display = "Interakce prediktorů")` znamená, že vztah jednoho `r render_glossary_term("prediktor", display = "prediktoru")` k `r render_glossary_term("odezva", display = "odezvě")` závisí na hodnotě nebo úrovni druhého; potřebu interakce má podpořit biologická otázka i graf.
-- `x * y` je zkratka pro `x + y + x:y`; interakční člen u číselného a skupinového prediktoru popisuje rozdíl `r render_glossary_term("sklon", display = "sklonů")`.
-- Hlavní koeficienty v modelu s interakcí jsou podmíněné: platí při nulové hodnotě druhého prediktoru nebo v referenční skupině. Skupiny proto porovnáváme pomocí předpovědí při zvolené hodnotě.
-- U dvou skupinových prediktorů je interakce rozdíl dvou rozdílů.
-- U dvou číselných prediktorů interakce znamená, že se sklon jednoho plynule mění s hodnotou druhého; sklon proto uvádíme při zvolených hodnotách uvnitř dat.
+- `x * y` je zkratka pro `x + y + x:y`; interakční člen u numerického a kategoriálního prediktoru popisuje rozdíl `r render_glossary_term("sklon", display = "sklonů")`.
+- Hlavní koeficienty v modelu s interakcí jsou podmíněné: platí při nulové hodnotě druhého prediktoru nebo v `r render_glossary_term("referencni-skupina", display = "referenční skupině")`. Skupiny proto porovnáváme pomocí `r render_glossary_term("predikce", display = "predikcí")` při zvolené hodnotě.
+- U dvou kategoriálních prediktorů je interakce rozdíl dvou rozdílů.
+- U dvou numerických prediktorů interakce znamená, že se sklon jednoho plynule mění s hodnotou druhého; sklon proto uvádíme při zvolených hodnotách uvnitř dat.
 - Závěr omezujeme na pozorovaný rozsah dat, na způsob jejich získání a na souvislost, nikoli příčinu.
 
 ### Závěrečná otázka
@@ -1451,9 +1449,9 @@ Aditivní model a model s interakcí jsou dva kandidátní popisy téhož vztahu
 Uveďte biologickou otázku, u které byste čekali, že vztah dvou znaků závisí na skupině nebo na hodnotě jiného znaku. Jak by vypadal graf?
 
 ::: {.box-result collapse="true" title="Možné odpovědi"}
-Například vztah hmotnosti a délky těla u ryb z teplé a studené vody: v teplejší vodě mohou ryby s rostoucí délkou přibírat rychleji, takže přímky by se rozbíhaly. Nebo vztah dávky hnojiva a výnosu u dvou odrůd plodiny, z nichž jedna na hnojivo reaguje silněji. V obou případech by `r render_glossary_term("bodovy-graf", display = "bodový graf")` ukázal dvě skupiny bodů s různým sklonem a aditivní model s rovnoběžnými přímkami by takový rozdíl nezachytil.
+Například vztah hmotnosti a délky těla u ryb z teplé a studené vody: v teplejší vodě mohou ryby s rostoucí délkou přibírat rychleji, takže přímky by se rozbíhaly. Nebo vztah dávky hnojiva a výnosu u dvou odrůd plodiny, z nichž jedna na hnojivo reaguje silněji. V obou případech by `r render_glossary_term("bodovy-graf", display = "bodový graf")` ukázal dvě skupiny bodů s různým sklonem a `r render_glossary_term("aditivni-model", display = "aditivní model")` s rovnoběžnými přímkami by takový rozdíl nezachytil.
 
-Místo skupiny může vztah měnit i další číselný znak: například růst semenáčků s teplotou může být strmější ve vlhčí půdě. Graf by pak měl několik panelů pro různou vlhkost půdy a přímka růstu proti teplotě by byla s rostoucí vlhkostí strmější.
+Místo skupiny může vztah měnit i další numerický znak: například růst semenáčků s teplotou může být strmější ve vlhčí půdě. Graf by pak měl několik panelů pro různou vlhkost půdy a přímka růstu proti teplotě by byla s rostoucí vlhkostí strmější.
 :::
 
 ## Slovníček pojmů {.unnumbered}

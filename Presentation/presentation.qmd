@@ -200,9 +200,9 @@ Po absolvování této přednášky budete schopni:
 
 ::: {.incremental}
 - rozpoznat biologickou otázku, ve které vztah jednoho prediktoru k odezvě [závisí na druhém prediktoru]{.text-hgl-orange};
-- fitovat model s interakcí a zobrazit jeho [předpovědi]{.text-hgl-indigo_velvet} pro kombinace číselných i skupinových prediktorů;
-- vyložit koeficienty modelu s interakcí jako [podmíněné]{.text-hgl-indigo_velvet} a porovnávat skupiny nebo různé hodnoty prediktoru pomocí předpovědí;
-- vysvětlit interakci dvou skupinových prediktorů jako [rozdíl dvou rozdílů]{.text-hgl-orange};
+- fitovat model s interakcí a zobrazit jeho [predikce]{.text-hgl-indigo_velvet} pro kombinace numerických i kategoriálních prediktorů;
+- vyložit koeficienty modelu s interakcí jako [podmíněné]{.text-hgl-indigo_velvet} a porovnávat skupiny nebo různé hodnoty prediktoru pomocí predikcí;
+- vysvětlit interakci dvou kategoriálních prediktorů jako [rozdíl dvou rozdílů]{.text-hgl-orange};
 - omezit závěr na pozorovaný rozsah dat a na souvislost v pozorovacích datech.
 :::
 
@@ -381,7 +381,7 @@ graf_aditivni
 #| echo: false
 #| fig-width: 7.5
 #| fig-height: 6
-#| fig-alt: "Dvě rovnoběžné modelové přímky mají v celém rozsahu stejnou svislou vzdálenost."
+#| fig-alt: "Dvě rovnoběžné odhadnuté přímky mají v celém rozsahu stejnou svislou vzdálenost."
 graf_aditivni
 ```
 :::
@@ -554,7 +554,7 @@ data_porovnani
 ```
 
 ::: {.notes}
-`predict()` dosadí do modelu stejnou délku pro obě pohlaví; tabulka ukazuje dvě modelové předpovědi, ne dva změřené kraby.
+`predict()` dosadí do modelu stejnou délku pro obě pohlaví; tabulka ukazuje dvě predikce modelu, ne dva změřené kraby.
 :::
 
 ## Samec má při `r delka_porovnani_mm` mm užší zadní část krunýře
@@ -629,7 +629,7 @@ graf_interakce +
 [Co víme]{.panel-title}
 
 - Zadní šířka roste s délkou u obou pohlaví.
-- Samci mají [pomalejší sklon]{.text-hgl-orange}.
+- Samčí přímka [stoupá pomaleji]{.text-hgl-orange}.
 - Při `r delka_porovnani_mm` mm má samec zadní šířku o [`r format_value_cz(abs(rozdil_porovnani), digits = 2)` mm menší]{.text-hgl-indigo_velvet}.
 :::
 :::
@@ -714,7 +714,7 @@ Není to:
 :::
 
 ::: {.fragment}
-**Biologicky smysluplné srovnání získáme z předpovědí uvnitř dat.**
+**Biologicky smysluplné srovnání získáme z predikcí uvnitř dat.**
 :::
 
 ## Interakční koeficient mění sklon samců vůči samicím
@@ -788,15 +788,15 @@ $$
 :::
 
 ::: {.fragment}
-Obecně pro délku $x$, kde $\beta$ označuje koeficient modelu:
+Obecně pro délku $x$, kde $\beta_2$ je řádek `pohlavisamec` a $\beta_3$ řádek `delka_krunyre_mm:pohlavisamec`:
 
 $$
-\text{rozdíl}(x)=\beta_{\text{samec}}+x\,\beta_{\text{délka:samec}}
+\text{rozdíl}(x)=\beta_2+\beta_3\,x
 $$
 :::
 
 ::: {.footer}
-Je to stejný rozdíl, který jsme odečetli z předpovědí.
+Je to stejný rozdíl, který jsme odečetli z predikcí.
 :::
 
 ## Platí koeficient `pohlavisamec` při každé délce?
@@ -909,7 +909,7 @@ Bude rozdíl v zadní šířce mezi stejně dlouhou samicí a samcem stejný u m
 [Co zůstává otevřené]{.panel-title}
 
 - Proč se pohlaví liší: data jsou pozorovací.
-- Platí to i pro kraby mimo tento vzorek?
+- Platí to i pro kraby mimo tento výběr?
 - A pro kraby menší nebo větší, než jsme změřili?
 :::
 :::
@@ -946,7 +946,7 @@ Délka krunýře (mm)
 :::
 
 ::: {.panel-data .fragment}
-[Dva skupinové prediktory]{.panel-title}
+[Dva kategoriální prediktory]{.panel-title}
 
 Barevná forma · pohlaví
 :::
@@ -960,7 +960,7 @@ Mění se rozdíl **samec − samice** mezi barevnými formami?
 :::
 
 ::: {.notes}
-Čtyři krabi ukazují čtyři kombinace dvou skupinových znaků: barva těla je forma, barva odznaku pohlaví (stejné barvy jako v grafech). U mnoha živočichů se velikost samců a samic liší a rozdíl nemusí být u příbuzných forem stejný. Autoři vybrali do každé skupiny stejný počet krabů.
+Čtyři krabi ukazují čtyři kombinace dvou kategoriálních znaků: barva těla je forma, barva odznaku pohlaví (stejné barvy jako v grafech). U mnoha živočichů se velikost samců a samic liší a rozdíl nemusí být u příbuzných forem stejný. Autoři vybrali do každé skupiny stejný počet krabů.
 :::
 
 ## Jaké délky vidíme ve čtyřech skupinách?
@@ -1485,7 +1485,7 @@ plot_tree_panels(
 :::
 
 ::: {.footer}
-Panel = výšková čtvrtina stromů · přímka = model při střední výšce panelu
+Panel = výškové pásmo stromů · přímka = model při střední výšce panelu
 :::
 
 ::: {.notes}
@@ -1527,7 +1527,7 @@ plot_tree_panels(
 :::
 
 ::: {.notes}
-Projeďte prstem po fialových přímkách zleva doprava a porovnejte je se šedou. Stejný centimetr průměru navíc znamená u vyšších stromů víc dřeva: sklon průměru závisí na výšce. To je interakce dvou číselných prediktorů.
+Projeďte prstem po fialových přímkách zleva doprava a porovnejte je se šedou. Stejný centimetr průměru navíc znamená u vyšších stromů víc dřeva: sklon průměru závisí na výšce. To je interakce dvou numerických prediktorů.
 :::
 
 ## `prumer_cm * vyska_m`: sklon průměru závisí na výšce
@@ -1642,14 +1642,14 @@ Přibude vysokému stromu s každým centimetrem průměru víc dřeva?
 [Co zůstává otevřené]{.panel-title}
 
 - `r nrow(data_stromy)` stromů bez popsaného výběru.
-- Rezidua ani vliv jednotlivých stromů jsme nekontrolovali.
+- Residua ani vliv jednotlivých stromů jsme nekontrolovali.
 - Nepopsal by vztah lépe zakřivený model?
 :::
 :::
 :::
 
 ::: {.notes}
-Objem kmene roste zhruba s druhou mocninou průměru krát výšce. Na logaritmickém měřítku se tento součin změní v součet a interakce tam data nedokládají; podrobněji box o měřítku ve skriptech.
+Objem kmene roste zhruba s druhou mocninou průměru krát výšce. Na logaritmické škále se tento součin změní v součet a interakce tam data nedokládají; podrobněji box o škále ve skriptech.
 :::
 
 # Jedna myšlenka, tři obrazy
@@ -1744,9 +1744,9 @@ graf_stromy_vysky <-
 
 cowplot::plot_grid(
   graf_interakce +
-    ggplot2::ggtitle("číselný × skupinový"),
+    ggplot2::ggtitle("numerický × kategoriální"),
   graf_ctyri_prumery +
-    ggplot2::ggtitle("skupinový × skupinový") +
+    ggplot2::ggtitle("kategoriální × kategoriální") +
     ggplot2::labs(colour = "Pohlaví", shape = "Pohlaví") +
     ggplot2::theme(
       legend.position = "bottom",
@@ -1754,7 +1754,7 @@ cowplot::plot_grid(
     ) +
     ggplot2::guides(fill = "none"),
   graf_stromy_vysky +
-    ggplot2::ggtitle("číselný × číselný"),
+    ggplot2::ggtitle("numerický × numerický"),
   nrow = 1,
   labels = c("A", "B", "C"),
   align = "h",
@@ -1824,8 +1824,8 @@ Mění se [vztah nebo rozdíl]{.text-hgl-orange} podle druhého prediktoru?
 :::
 
 ::: {.panel-data .fragment}
-[2. Data a předpovědi]{.panel-title}
-Ukažte body a [předpovědi pro konkrétní kombinace]{.text-hgl-indigo_velvet}.
+[2. Data a predikce]{.panel-title}
+Ukažte body a [predikce pro konkrétní kombinace]{.text-hgl-indigo_velvet}.
 :::
 :::
 ::: {.column width="48%"}
@@ -1847,9 +1847,9 @@ Jen v rozsahu dat a jako souvislost, ne příčina.
 ::: {.incremental}
 - Interakci potřebujeme, když vztah jednoho prediktoru [závisí na druhém]{.text-hgl-orange}; podpořit ji má biologická otázka i graf.
 - `x * y` je zkratka pro `x + y + x:y`.
-- Hlavní koeficienty jsou [podmíněné]{.text-hgl-indigo_velvet}; skupiny porovnáváme pomocí předpovědí při zvolené hodnotě.
-- U dvou skupinových prediktorů je interakce [rozdíl dvou rozdílů]{.text-hgl-orange}.
-- U dvou číselných prediktorů se [sklon jednoho plynule mění]{.text-hgl-orange} s hodnotou druhého.
+- Hlavní koeficienty jsou [podmíněné]{.text-hgl-indigo_velvet}; skupiny porovnáváme pomocí predikcí při zvolené hodnotě.
+- U dvou kategoriálních prediktorů je interakce [rozdíl dvou rozdílů]{.text-hgl-orange}.
+- U dvou numerických prediktorů se [sklon jednoho plynule mění]{.text-hgl-orange} s hodnotou druhého.
 - Závěr omezujeme na pozorovaný rozsah a na souvislost v pozorovacích datech.
 :::
 
@@ -1911,5 +1911,5 @@ Uveďte biologickou otázku, u které byste čekali, že vztah dvou znaků závi
 :::
 
 ::: {.notes}
-Dvojice navrhnou vlastní příklad a načrtnou graf: rovnoběžné, nebo rozbíhající se přímky? Pokud nikoho nenapadne číselný příklad: růst semenáčků s teplotou může být strmější ve vlhčí půdě, takže graf by měl několik panelů pro různou vlhkost. Několik příkladů krátce sdílejte.
+Dvojice navrhnou vlastní příklad a načrtnou graf: rovnoběžné, nebo rozbíhající se přímky? Pokud nikoho nenapadne příklad se dvěma numerickými prediktory: růst semenáčků s teplotou může být strmější ve vlhčí půdě, takže graf by měl několik panelů pro různou vlhkost. Několik příkladů krátce sdílejte.
 :::
