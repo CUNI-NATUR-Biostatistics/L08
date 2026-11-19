@@ -15,6 +15,14 @@ library(here)
 library(quarto)
 library(fs)
 
+# Quarto otherwise knits with the `Rscript` on PATH (the machine default R).
+#   Use the R that runs this script instead, so a project pinned to another
+#   R version renders with that version and its renv library. An explicit
+#   QUARTO_R set by the user is kept.
+if (!nzchar(Sys.getenv("QUARTO_R"))) {
+  Sys.setenv(QUARTO_R = R.home("bin"))
+}
+
 if (!isTRUE(getOption("biostat.theme_sync_complete"))) {
   source(here::here("R", "generate_theme.R"))
 }

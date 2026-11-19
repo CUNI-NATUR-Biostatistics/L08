@@ -126,8 +126,18 @@ Status note (later on 2026-10-15): the title image now exists (T2) and all three
 |---|---|---|---|---|
 | `krabi_titulni_ilustrace.png` | 1 (title) | Connect crab measurement, colour forms and the question of a changing gap on the arrival screen | Dva modří krabi u posuvného měřítka mezi skalami a přílivovými tůněmi; za nimi vede pobřežím zelená a růžovofialová stopa ke dvěma oranžovým krabům. Ilustrace vytvořená pomocí AI. | Portrait T2 generated 2026-10-15, inspired by L10; transparent painterly vignette in the existing title slot |
 | `krabi_mereni.png` | 2 | Ground the two carapace measurements before the data | Skupina modrých krabů u pobřežního měřicího stanoviště; dva krabi obsluhují posuvná měřítka kolem krunýře svého kolegy. | Painterly transparent redraw matching T2, 2026-10-15 |
-| `krabi_ctyri_skupiny.png` | 32 | Make the 2 × 2 structure of form and sex visible before the second example | Čtyři krabi tvoří čtyři kombinace: samice a samec modré formy a samice a samec oranžové formy. | Painterly transparent redraw matching T2, with large painted medallions, 2026-10-15 |
-| `krabi_modely.png` | 49 | Frame the closing choice between a constant and a changing gap | Dva modří krabi porovnávají dvě dvojice stop v písku: první dvojice zůstává rovnoběžná, druhá se postupně rozbíhá. | Painterly transparent redraw matching T2, with green/pink-purple trails, 2026-10-15 |
+| `krabi_ctyri_skupiny.png` | 34 | Make the 2 × 2 structure of form and sex visible before the second example | Čtyři krabi tvoří čtyři kombinace: samice a samec modré formy a samice a samec oranžové formy. | Painterly transparent redraw matching T2, with large painted medallions, 2026-10-15 |
+| `krabi_modely.png` | 61 | Frame the closing choice between a constant and a changing gap | Dva modří krabi porovnávají dvě dvojice stop v písku: první dvojice zůstává rovnoběžná, druhá se postupně rozbíhá. | Painterly transparent redraw matching T2, with green/pink-purple trails, 2026-10-15 |
+
+Slide numbers in this table follow the 63-slide deck after the first human review of 2026-11-18. The four small inline SVG files `ikona_aditivni.svg`, `ikona_interakce.svg`, `symbol_samice.svg` and `symbol_samec.svg` (parallel or diverging lines and the sex symbols in the sex colours) were hand-written on 2026-11-18 and are not AI-generated.
+
+## Photograph (not generated): `krab_leptograpsus_foto.jpg`
+
+- Slide 10 („Jeden bod představuje jednoho kraba“); teaching role: show the real species of the data set next to the data-loading code (requested by O. Mottl, 2026-11-18).
+- Species: *Leptograpsus variegatus* (purple rock crab), the species of `MASS::crabs`; the photo shows a crab of this species, not a specific blue or orange form.
+- Source: Wikimedia Commons, <https://commons.wikimedia.org/wiki/File:Purple_rock_crab_(Leptograpsus_variegatus)_in_rock_pool_close-up.jpg>; author Pseudopanax (English Wikipedia), own work, 10 May 2020, south coast of the North Island of New Zealand.
+- Licence: public domain (released by the author worldwide, any use without conditions). Credit is shown in the slide footer: „foto *Leptograpsus variegatus*: Pseudopanax, Wikimedia Commons, volné dílo“.
+- File: 1280 × 847 px JPEG downloaded 2026-11-18 via `Special:FilePath` (width 1280), unchanged; SHA-256 `b88389d3092b5f9e80af6d7b4994f22b56f389c649786a7272ad9086f52fc121`.
 
 ## `krabi_titulni_ilustrace.png`
 
@@ -163,7 +173,7 @@ Primary request: Keep the coastal measurement station, the paper-cut style and t
 Constraints: crabs stay naturally blue; the only glyphs are one ♀ and one ♂; no text, letters, numbers, formulas, axes, logos or watermark; no human hands; do not imply quantitative results or that one sex is larger
 ```
 
-### `krabi_ctyri_skupiny.png` (slide 32)
+### `krabi_ctyri_skupiny.png` (slide 34)
 
 ```text
 Use case: precise-object-edit
@@ -172,7 +182,7 @@ Primary request: Keep the cheerful 2 by 2 class photo of four crabs: blue female
 Constraints: exactly four crabs; bodies stay naturally blue and orange; the only glyphs are two ♀ and two ♂; no text, numbers, formulas, axes, logos or watermark; do not imply which sex or form is larger
 ```
 
-### `krabi_modely.png` (slide 49)
+### `krabi_modely.png` (slide 62)
 
 ```text
 Use case: precise-object-edit

@@ -21,7 +21,7 @@
         },
         {
           "id": "podminena-otazka",
-          "label": "Koeficient teď platí při stejné max. teplotě; obě teploty silně korelují."
+          "label": "Koeficient teď platí při stejné maximální teplotě; obě teploty silně korelují."
         },
         {
           "id": "mene-populaci",
@@ -38,7 +38,7 @@
     },
     {
       "id": "znamenko-po-pridani-puvodu",
-      "text": "S původem v modelu změnil sklon roční teploty znaménko. Proč?",
+      "text": "Model tloušťky listu křídlatky jen s roční teplotou dal sklon −0,0091 mm/°C. Po přidání původu populace (původní, nebo zavlečená) vyšel sklon +0,0015 mm/°C. Proč se změnilo znaménko?",
       "options": [
         {
           "id": "celkovy-sklon-misil-puvod",
@@ -50,7 +50,7 @@
         },
         {
           "id": "nevyznamny-bez-vlivu",
-          "label": "Podmíněný sklon je nevýznamný, roční teplota tedy na list nemá vliv."
+          "label": "Podmíněný sklon je statisticky nevýznamný, roční teplota tedy na list nemá vliv."
         },
         {
           "id": "puvod-nesouvisi",

@@ -108,6 +108,14 @@ function Div(div)
     return nil
   end
 
+  -- In Typst the callout colour follows the callout type only, so "note"
+  -- would give optional `box-extra` material the same colour as `box-rule`.
+  -- Use the grey "tip" colour instead, so every optional (Doplňující) box
+  -- looks the same as `box-data`. HTML keeps its own `callout-extra` style.
+  if is_typst_output() and div.classes:includes("box-extra") then
+    callout_type = "tip"
+  end
+
   local title = div.attributes["title"]
   if title == nil or title == "" then
     title = title_from_first_block(div.content)
