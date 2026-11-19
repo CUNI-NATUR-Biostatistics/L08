@@ -28,7 +28,8 @@
 # 3. Soubory krabi.csv a stromy.csv uložte do podsložky data. Jejich
 #    jména neměňte.
 # Pokud prohlížeč uloží soubory rovnou do složky Stažené soubory,
-# přesuňte je odtud na uvedená místa.
+# přesuňte je odtud na uvedená místa. Pokud se soubor v prohlížeči zobrazí
+# jako text, uložte ho klávesami Ctrl + S.
 #
 # Jak otevřít projekt v RStudiu:
 # RStudio Project je obyčejná složka, ve které pracujete. RStudio do ní
@@ -51,12 +52,21 @@
 #--------------------------------------------------#
 ## Jak se skriptem pracovat -----
 #--------------------------------------------------#
+# Cílem cvičení je statistika: odhadnout model, přečíst jeho koeficienty
+# a predikce a vyložit je biologicky. Načtení a úpravu dat i většinu
+# grafů proto dostanete připravené.
+#
 # Hlavní úlohy U01–U09 řešte v uvedeném pořadí, protože na sebe navazují.
-# Pozdější úlohy používají tabulku data_krabi z úlohy U01, tabulku
-# data_modri z úlohy U02, model mod_interakce z úlohy U04, tabulky
-# data_samice a data_samci z úlohy U05, model mod_formy z úlohy U07
-# a tabulku data_stromy s modelem mod_stromy z úlohy U09.
-# Úlohy navíc N01–N09 jsou dobrovolné. Slouží k dalšímu procvičování,
+# Tabulky data_krabi, data_modri, data_samice, data_samci a data_stromy
+# vytvoří připravený kód v části Připravená data. Další připravený kód
+# před úlohami vytvoří tabulky data_30 (U05), data_ctyri (U08)
+# a data_porovnani_stromy (U09) a graf před úlohou U07 přidá do data_krabi
+# sloupec skupina a vytvoří vec_prumery_skupin. Pozdější úlohy používají
+# také modely, které sami odhadnete: mod_aditivni z úlohy U03,
+# mod_interakce z úlohy U04, mod_formy z úlohy U07 a mod_stromy z úlohy
+# U09. Úlohy navíc používají i objekt mat_predikce_ctyri a sloupec
+# residuum_mm z úlohy U08.
+# Úlohy navíc N01–N10 jsou dobrovolné. Slouží k dalšímu procvičování,
 # klidně i po praktiku, a nemusíte je stihnout.
 #
 # Spouštění kódu:
@@ -66,21 +76,27 @@
 # - Výsledky se vypisují v panelu Console, grafy v panelu Plots a vytvořené
 #   objekty uvidíte v panelu Environment.
 #
+# Připravený kód:
+# - Připravený kód bez znaku # na začátku řádku stačí označit a spustit.
+#   Psát ho nemusíte a podrobně číst jen tam, kde to text výslovně žádá.
+# - Několik připravených bloků je zakomentovaných, protože potřebují
+#   model, který teprve odhadnete. Po odhadu modelu takový blok zkopírujte
+#   pod "Vaše řešení" a z každého řádku odstraňte úvodní #. Nejrychleji to
+#   uděláte tak, že vložené řádky označíte a zvolíte Code >
+#   Comment/Uncomment Lines (Ctrl + Shift + C).
+#
 # Komentáře a odpovědi:
 # - Řádky začínající znakem # jsou komentáře; R je nespouští.
 # - Kód pište pod řádek "Vaše řešení". Slovní odpovědi pište jako komentáře.
-# - Některé ukázky kódu jsou zakomentované. Zkopírujte je do svého řešení
-#   a z každého řádku odstraňte úvodní #. Nejrychleji to uděláte tak, že
-#   vložené řádky označíte a zvolíte Code > Comment/Uncomment Lines
-#   (Ctrl + Shift + C). Spusťte je až tehdy, když už existují objekty,
-#   které používají.
 # - Nápovědy čtěte postupně. Druhá nápověda je konkrétnější než první.
 # - Kopii skriptu průběžně ukládejte pomocí Ctrl + S.
 #
 # Když se něco pokazí:
 # Pokud objekty v Environmentu neodpovídají skriptu, zvolte Session >
 # Restart R. Restart smaže objekty z paměti, ale uložené soubory zůstanou.
-# Potom znovu spusťte přípravu a své hotové hlavní úlohy shora dolů.
+# Potom znovu spusťte celou Přípravu včetně připravených dat, nezakomentované
+# připravené grafy a tabulky a své hotové hlavní úlohy shora dolů.
+# Zkopírované a odkomentované bloky spusťte také.
 
 #--------------------------------------------------#
 ## Výsledky učení a předpoklady -----
@@ -98,10 +114,13 @@
 # - omezit závěr na pozorovaný rozsah dat a na souvislost v pozorovacích
 #   datech.
 #
-# Navazujeme na předchozí lekce: read.csv(), str(), summary(), is.na(),
-# table(), factor(), lm(), coef(), summary(), confint(), predict(),
-# fitted(), residuals(), plot(), abline(), legend() a aditivní model
-# s rovnoběžnými přímkami. Nové funkce vysvětlujeme vždy u úlohy, kde je
+# Navazujeme na předchozí lekce: str(), table(), is.na(), range(), lm(),
+# coef(), summary(), confint(), predict(), fitted(), resid() neboli
+# residuals(), plot(), hist(), boxplot(), qqnorm(), qqline(), abline(),
+# Cookovu vzdálenost (L07-N05) a aditivní model s rovnoběžnými přímkami.
+# Kontrolu residuí znáte z minulých lekcí: graf proti odhadnutým hodnotám,
+# histogram a Q–Q graf. V této lekci ji uděláme u hlavního modelu v úloze
+# U06. Nové funkce vysvětlujeme vždy u úlohy, kde je
 # poprvé potřebujete.
 
 #--------------------------------------------------#
@@ -156,6 +175,74 @@ if (
 # Data pocházejí z knihy Meyer (1953), Forest Mensuration. Tabulku šíří
 # základní balíček R datasets pod licencí GPL-2 nebo GPL-3.
 
+#--------------------------------------------------#
+## Připravená data -----
+#--------------------------------------------------#
+# Následující kód připraví data pro celé cvičení. Označte ho celý
+# a spusťte Ctrl + Enter. Kód:
+# - načte oba soubory;
+# - dá sloupcům krabů česká jména a kódy převede na faktory s čitelnými
+#   úrovněmi; první úroveň (modrá forma, samice) je referenční skupinou
+#   modelů;
+# - přidá ke každému krabovi barvu a symbol bodu podle pohlaví: samice
+#   zelený kruh, samec růžovofialový trojúhelník (modrou a oranžovou
+#   necháváme barevným formám);
+# - vybere kraby modré formy a zvlášť samice a samce modré formy;
+# - převede stromy na centimetry, metry a krychlové metry.
+data_krabi_raw <-
+  read.csv(file = soubor_krabi)
+
+data_krabi <-
+  data.frame(
+    forma = factor(
+      x = data_krabi_raw$sp,
+      levels = c("B", "O"),
+      labels = c("modrá", "oranžová")
+    ),
+    pohlavi = factor(
+      x = data_krabi_raw$sex,
+      levels = c("F", "M"),
+      labels = c("samice", "samec")
+    ),
+    delka_krunyre_mm = data_krabi_raw$CL,
+    zadni_sirka_mm = data_krabi_raw$RW,
+    hloubka_tela_mm = data_krabi_raw$BD
+  )
+
+vec_barvy_pohlavi <-
+  c(
+    "samice" = "#009E73",
+    "samec" = "#CC79A7"
+  )
+
+vec_symboly_pohlavi <-
+  c(
+    "samice" = 16,
+    "samec" = 17
+  )
+
+data_krabi$barva <-
+  unname(obj = vec_barvy_pohlavi[as.character(x = data_krabi$pohlavi)])
+data_krabi$symbol <-
+  unname(obj = vec_symboly_pohlavi[as.character(x = data_krabi$pohlavi)])
+
+data_modri <-
+  data_krabi[data_krabi$forma == "modrá", ]
+data_samice <-
+  data_modri[data_modri$pohlavi == "samice", ]
+data_samci <-
+  data_modri[data_modri$pohlavi == "samec", ]
+
+data_stromy_raw <-
+  read.csv(file = soubor_stromy)
+
+data_stromy <-
+  data.frame(
+    prumer_cm = data_stromy_raw$Girth * 2.54, # palce na cm
+    vyska_m = data_stromy_raw$Height * 0.3048, # stopy na m
+    objem_m3 = data_stromy_raw$Volume * 0.0283168 # krychlové stopy na m³
+  )
+
 #----------------------------------------------------------#
 # Hlavní úlohy -----
 #----------------------------------------------------------#
@@ -169,122 +256,111 @@ if (
 # potřebují pro snůšku relativně více místa, mohl by se rozdíl mezi
 # pohlavími s velikostí krabů měnit. Tuto biologickou otázku budeme
 # zkoumat.
-#
-# Funkce factor() s argumenty levels a labels převede kódy na kategorie
-# s pevným pořadím a čitelnými názvy. První úroveň bude referenční
-# skupinou modelu. Ukázka na vymyšleném vektoru:
-vec_ukazka <-
-  factor(
-    x = c("M", "F", "F"),
-    levels = c("F", "M"),
-    labels = c("samice", "samec")
-  )
-vec_ukazka
 
 #----------------------------------------#
 ### Úloha | L08-U01 -----
 #----------------------------------------#
 
 # Zadání:
-# 1. Načtěte soubor, jehož cesta je uložena v soubor_krabi, pomocí
-#    read.csv() do data_krabi_raw.
-# 2. Z data_krabi_raw vytvořte data_krabi obsahující právě sloupce sp,
-#    sex, CL, RW a BD. Přejmenujte je v tomto pořadí na forma, pohlavi,
-#    delka_krunyre_mm, zadni_sirka_mm a hloubka_tela_mm.
-# 3. Převeďte forma na faktor s úrovněmi "modrá", "oranžová" a pohlavi
-#    na faktor s úrovněmi "samice", "samec".
-# 4. Zjistěte rozměry tabulky, počet chybějících hodnot a počty krabů
-#    ve čtyřech kombinacích formy a pohlaví.
+# Pracujte s připravenou tabulkou data_krabi.
+# 1. Pomocí str() zjistěte počet krabů a typ sloupců forma, pohlavi
+#    a delka_krunyre_mm.
+# 2. Spočítejte chybějící hodnoty v celé tabulce a pomocí table() počty
+#    krabů ve čtyřech kombinacích formy a pohlaví.
+# 3. Pro otázku z úvodu určete odezvu, numerický prediktor
+#    a kategoriální prediktor.
 
 # Vaše řešení:
 
 
+# Odezva:
+#
+# Numerický prediktor:
+#
+# Kategoriální prediktor:
+#
+
 # Nápověda 1:
-# Sloupce vyberte podle jmen a nová jména přiřaďte celé tabulce najednou.
-# U faktorů rozhoduje pořadí původních kódů v levels; labels jim dají
-# nová jména ve stejném pořadí.
+# Odezva je znak, jehož hodnoty chceme vysvětlit; prediktory jsou znaky,
+# podle kterých se odezva může měnit. Počty krabů ve skupinách prozradí,
+# jak autoři kraby vybírali.
 #
 # Nápověda 2:
-# Použijte data_krabi_raw[, c("sp", "sex", "CL", "RW", "BD")] a names().
-# Původní kódy zapište jako levels = c("B", "O") a c("F", "M"). Pro
-# kontrolu použijte dim(), sum(is.na()) a table() se dvěma sloupci.
+# Chybějící hodnoty spočítá sum() použitá na is.na(data_krabi). Do
+# table() zadejte dva sloupce: data_krabi$forma a data_krabi$pohlavi.
 #
 # Očekávaný výsledek:
-# data_krabi má 200 řádků a 5 sloupců, neobsahuje chybějící hodnoty
-# a každá kombinace formy a pohlaví obsahuje 50 krabů.
+# data_krabi má 200 řádků a 7 sloupců; forma a pohlavi jsou faktory se
+# dvěma úrovněmi, delka_krunyre_mm je číslo. Chybějící hodnoty: 0. Každá
+# kombinace formy a pohlaví obsahuje 50 krabů. Odezvou je zadní šířka
+# krunýře, numerickým prediktorem délka krunýře a kategoriálním
+# prediktorem pohlaví.
 #
 # Interpretace:
-# Co v tomto datovém rámci představuje jeden řádek? Proč není správnou
-# odpovědí "jedno měření"?
+# Co v tabulce představuje jeden řádek? Mohl být některý krab změřen
+# dvakrát, a co by to znamenalo pro nezávislost pozorování? Autoři
+# vybrali do každé skupiny právě 50 krabů: popisují pak průměrné velikosti
+# tento soubor, nebo všechny kraby v přírodě?
 
 #--------------------------------------------------#
 ## Numerický a kategoriální prediktor -----
 #--------------------------------------------------#
-# Nejprve budeme zkoumat pouze kraby modré formy. Biologická otázka
-# zní: liší se vztah délky a zadní šířky krunýře mezi samicemi a samci?
+# Nejprve budeme zkoumat pouze kraby modré formy (data_modri). Biologická
+# otázka zní: liší se vztah délky a zadní šířky krunýře mezi samicemi
+# a samci?
 #
-# V grafech budeme pohlaví rozlišovat barvou i tvarem bodu. Díky tomu
-# zůstane rozlišení čitelné i bez barev. Modrou a oranžovou necháváme
-# barevným formám, proto mají samice zelenou a samci růžovofialovou barvu.
-# Barvy a symboly uložíme do pojmenovaných vektorů:
-vec_barvy_pohlavi <-
-  c(
-    "samice" = "#009E73",
-    "samec" = "#CC79A7"
-  )
+# Připravený graf ukáže kraby modré formy. Barva a symbol bodu rozlišují
+# pohlaví, takže graf zůstane čitelný i bez barev. Označte kód a spusťte
+# ho.
+plot(
+  x = data_modri$delka_krunyre_mm,
+  y = data_modri$zadni_sirka_mm,
+  col = data_modri$barva,
+  pch = data_modri$symbol,
+  xlab = "Délka krunýře (mm)",
+  ylab = "Zadní šířka krunýře (mm)"
+)
 
-vec_symboly_pohlavi <-
-  c(
-    "samice" = 16,
-    "samec" = 17
-  )
-
-# Z pojmenovaného vektoru vybíráme prvky podle jmen. Funkce
-# as.character() převede faktor pohlavi na text "samice" nebo "samec",
-# takže každý krab dostane barvu podle svého pohlaví. Ukázka na třech
-# vymyšlených krabech:
-vec_barvy_pohlavi[as.character(x = vec_ukazka)]
-# Legenda pak použije stejné vektory:
-#
-# legend(
-#   x = "topleft",
-#   legend = names(x = vec_barvy_pohlavi),
-#   col = vec_barvy_pohlavi,
-#   pch = vec_symboly_pohlavi
-# )
+legend(
+  x = "topleft",
+  legend = names(x = vec_barvy_pohlavi),
+  col = vec_barvy_pohlavi,
+  pch = vec_symboly_pohlavi
+)
 
 #----------------------------------------#
 ### Úloha | L08-U02 -----
 #----------------------------------------#
 
 # Zadání:
-# 1. Z data_krabi vyberte do data_modri pouze řádky, kde je forma
-#    "modrá".
-# 2. Nakreslete bodový graf zadni_sirka_mm proti delka_krunyre_mm.
-#    Barvu i symbol každého bodu určete podle pohlaví pomocí vektorů
-#    vec_barvy_pohlavi a vec_symboly_pohlavi.
-# 3. Přidejte české popisky os a legendu.
+# Pracujte s připraveným grafem krabů modré formy.
+# 1. Odečtěte z grafu přibližnou zadní šířku samic a samců s délkou
+#    krunýře 20 mm a 40 mm.
+# 2. Pro obě délky spočítejte rozdíl samec − samice.
+# 3. Rozhodněte, zda graf naznačuje stejný sklon u obou pohlaví.
 
 # Vaše řešení:
 
 
 # Nápověda 1:
-# Každý řádek potřebuje barvu a symbol podle svého pohlaví; vyberete je
-# z pojmenovaných vektorů podle jmen, stejně jako v ukázce.
+# Svislá vzdálenost mezi body samic a samců při stejné délce je rozdíl
+# mezi pohlavími. Pokud se s délkou mění, přímky obou pohlaví nebudou
+# rovnoběžné.
 #
 # Nápověda 2:
-# V plot() použijte col = vec_barvy_pohlavi[as.character(
-# x = data_modri$pohlavi)] a obdobně pch. Popisky os nastaví xlab a ylab;
-# legendu přidá legend() s argumenty z ukázky.
+# Najděte na ose x délky 20 mm a 40 mm a podívejte se, kde leží zelené
+# a růžovofialové body nad nimi. Rozdíl spočítejte v R jako šířku samce
+# minus šířku samice.
 #
 # Očekávaný výsledek:
-# data_modri má 100 řádků. Graf obsahuje 50 zelených kruhů pro samice
-# a 50 růžovofialových trojúhelníků pro samce. U obou pohlaví zadní šířka
-# s délkou roste a oblaky bodů se částečně překrývají.
+# Při 20 mm leží body obou pohlaví podobně vysoko, asi 8–9 mm; rozdíl je
+# menší než 1 mm. Při 40 mm mají samice asi 16–17 mm a samci asi
+# 13–15 mm, rozdíl samec − samice je tedy zhruba −2 až −3 mm. Body samic
+# stoupají strměji.
 #
 # Interpretace:
-# Naznačuje graf přibližně stejný sklon u obou pohlaví, nebo se sklony
-# viditelně liší? Popište také směr vztahu a překryv skupin.
+# Co by znamenalo, kdyby byl rozdíl při obou délkách stejný? Proč odhad
+# z grafu ještě nestačí k závěru?
 
 #--------------------------------------------------#
 ## Co předpokládá model bez interakce? -----
@@ -292,20 +368,31 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Aditivní model dovolí různou výšku přímek, ale vynutí jim stejný sklon.
 # Rozdíl mezi samcem a samicí je proto při každé délce stejný.
 #
-# Následující zakomentovaný vzor šetří opakované psaní grafu. Po odhadnutí
-# modelu jej zkopírujte pod "Vaše řešení" a odkomentujte. Stejný postup
-# použijte u dalších vzorů.
-#
-# vec_koeficienty_aditivni <-
-#   coef(object = mod_aditivni)
+# Připravený graf přímek níže je zakomentovaný, protože potřebuje tři
+# čísla, která spočítáte v úloze. Po kroku 2 jej zkopírujte pod "Vaše
+# řešení", odkomentujte a spusťte.
 #
 # plot(
 #   x = data_modri$delka_krunyre_mm,
 #   y = data_modri$zadni_sirka_mm,
-#   col = vec_barvy_pohlavi[as.character(x = data_modri$pohlavi)],
-#   pch = vec_symboly_pohlavi[as.character(x = data_modri$pohlavi)],
+#   col = data_modri$barva,
+#   pch = data_modri$symbol,
 #   xlab = "Délka krunýře (mm)",
 #   ylab = "Zadní šířka krunýře (mm)"
+# )
+#
+# abline(
+#   a = intercept_samice,
+#   b = sklon_spolecny,
+#   col = vec_barvy_pohlavi[["samice"]],
+#   lwd = 2
+# )
+#
+# abline(
+#   a = intercept_samci,
+#   b = sklon_spolecny,
+#   col = vec_barvy_pohlavi[["samec"]],
+#   lwd = 2
 # )
 
 #----------------------------------------#
@@ -313,11 +400,12 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #----------------------------------------#
 
 # Zadání:
-# 1. Na datech data_modri odhadněte mod_aditivni se zadní šířkou jako
-#    odezvou a délkou krunýře a pohlavím jako prediktory bez interakce.
-# 2. Zobrazte summary(mod_aditivni).
-# 3. Použijte připravený vzor grafu a pomocí abline() přidejte
-#    z koeficientů modelu přímku pro samice a přímku pro samce.
+# Pracujte s data_modri.
+# 1. Odhadněte mod_aditivni se zadní šířkou jako odezvou a délkou krunýře
+#    a pohlavím jako prediktory bez interakce. Zobrazte jeho summary().
+# 2. Z koeficientů spočítejte a uložte intercept_samice, intercept_samci
+#    a sklon_spolecny.
+# 3. Zkopírujte, odkomentujte a spusťte připravený graf přímek.
 
 # Vaše řešení:
 
@@ -327,18 +415,19 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # a sklon. Samčí přímka má stejný sklon a jen posunutý intercept.
 #
 # Nápověda 2:
-# abline(a = ..., b = ..., col = ...) nakreslí přímku s interceptem a
-# a sklonem b. Prvky vybírejte jménem, například
-# vec_koeficienty_aditivni["(Intercept)"]; u samců sečtěte
-# "(Intercept)" a "pohlavisamec".
+# Prediktory spojte ve vzorci pomocí +. Prvky coef(mod_aditivni)
+# vybírejte jménem, například coef(mod_aditivni)[["(Intercept)"]];
+# intercept samců je součet "(Intercept)" a "pohlavisamec", společný
+# sklon je koeficient "delka_krunyre_mm".
 #
 # Očekávaný výsledek:
-# Společný sklon je přibližně 0,3316 mm/mm. Odhadnutý rozdíl
-# samec − samice je přibližně −1,7172 mm a obě přímky jsou rovnoběžné.
+# Intercept samic je přibližně 2,8197 mm, intercept samců 1,1025 mm
+# a společný sklon 0,3316 mm/mm. Odhadnutý rozdíl samec − samice je
+# při každé délce −1,7172 mm a obě přímky jsou rovnoběžné.
 #
 # Interpretace:
-# Jaké biologické omezení vyjadřují rovnoběžné přímky? Odpovídá podle
-# grafu předpoklad stálého rozdílu tomu, co vidíme v datech?
+# Jaké biologické omezení vyjadřují rovnoběžné přímky? Sedí přímky
+# k bodům samic a samců stejně dobře u krátkých i dlouhých krabů?
 
 #--------------------------------------------------#
 ## Interakce dovolí pohlavím různé sklony -----
@@ -358,22 +447,21 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # a sklon. Intercept i rozdíl pohlaví se vztahují k délce 0 mm, která
 # leží mimo pozorované kraby; biologicky čitelnější budou predikce
 # při skutečně pozorované délce.
-#
-# Funkce all.equal() porovná dva R objekty a při shodě vrátí TRUE.
 
 #----------------------------------------#
 ### Úloha | L08-U04 -----
 #----------------------------------------#
 
 # Zadání:
-# 1. Na data_modri odhadněte mod_interakce se stejnou odezvou
-#    a stejnými prediktory jako v U03, spojenými pomocí *.
-# 2. Odhadněte mod_interakce_rozepsany s výslovnými členy + a :.
-# 3. Pomocí all.equal() ověřte shodu koeficientů a odhadnutých hodnot
-#    obou modelů.
-# 4. Zavolejte summary(mod_interakce) a vlastními slovy interpretujte
+# Pracujte s data_modri.
+# 1. Odhadněte mod_interakce se stejnou odezvou a stejnými prediktory jako
+#    v U03, spojenými pomocí *.
+# 2. Zavolejte summary(mod_interakce) a vlastními slovy interpretujte
 #    všechny čtyři odhady ve sloupci Estimate: (Intercept),
 #    delka_krunyre_mm, pohlavisamec a delka_krunyre_mm:pohlavisamec.
+# 3. Z koeficientů spočítejte sklon samců a uložte jej jako sklon_samci.
+# 4. U interakčního koeficientu uveďte jeho Std. Error a pomocí
+#    confint(mod_interakce) jeho 95% interval spolehlivosti.
 
 # Vaše řešení:
 
@@ -387,27 +475,32 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #
 # delka_krunyre_mm:pohlavisamec:
 #
+# Nejistota interakčního koeficientu (Std. Error, 95% interval):
+#
 
 # Nápověda 1:
 # Každý hlavní koeficient čtěte při referenční skupině nebo nulové
 # hodnotě druhého prediktoru. Interakční koeficient je rozdíl sklonů.
 #
 # Nápověda 2:
-# Porovnejte coef() obou modelů a potom fitted() obou modelů. Sklon
-# samců získáte součtem koeficientů delka_krunyre_mm a
-# delka_krunyre_mm:pohlavisamec.
+# Sklon samců je součet koeficientů delka_krunyre_mm
+# a delka_krunyre_mm:pohlavisamec; vybírejte je z coef(mod_interakce)
+# podle jmen. Std. Error najdete ve druhém sloupci tabulky koeficientů;
+# confint() vrací jeden řádek na koeficient.
 #
 # Očekávaný výsledek:
-# Obě kontroly all.equal() vrátí TRUE. Koeficienty jsou přibližně
-# 0,7077; 0,4067; 1,9731 a −0,1245. Jejich význam je postupně:
-# odhad pro samici při 0 mm (mimo pozorovaný rozsah), sklon samic,
-# rozdíl samec − samice při 0 mm a rozdíl sklon samec − sklon samice.
-# Sklon samců je součet sklonu samic a interakčního koeficientu,
-# přibližně 0,2823 mm/mm.
+# Koeficienty jsou přibližně 0,7077; 0,4067; 1,9731 a −0,1245. Jejich
+# význam je postupně: odhad pro samici při 0 mm (mimo pozorovaný rozsah),
+# sklon samic, rozdíl samec − samice při 0 mm a rozdíl sklon samec −
+# sklon samice. Sklon samců je přibližně 0,2823 mm/mm. Std. Error
+# interakčního koeficientu je asi 0,0132 mm/mm a jeho 95% interval
+# spolehlivosti je přibližně −0,151 až −0,098 mm/mm, tedy nezahrnuje
+# nulu.
 #
 # Interpretace:
 # Proč koeficient pohlavisamec není rozdílem mezi samci a samicemi při
-# každé délce? Při které délce tento koeficient platí přímo?
+# každé délce? Při které délce tento koeficient platí přímo? Co říká
+# interval, který nezahrnuje nulu, o rozdílu sklonů?
 
 #--------------------------------------------------#
 ## Predikce při společné pozorované délce -----
@@ -415,18 +508,19 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Pro biologicky smysluplné porovnání zvolíme délku 30 mm. Zda leží
 # v pozorovaném rozsahu obou pohlaví, ověříte v úloze.
 #
-# Nová data pro predict() musí mít stejné názvy proměnných a stejné
-# úrovně faktoru jako data použitá k odhadu modelu. Krátký příklad
-# konstrukce dvou řádků:
-#
-# data.frame(
-#   delka_krunyre_mm = c(30, 30),
-#   pohlavi = factor(
-#     x = c("samice", "samec"),
-#     levels = levels(x = data_modri$pohlavi)
-#   )
-# )
-#
+# predict() potřebuje tabulku nových dat se stejnými názvy sloupců
+# a stejnými úrovněmi faktoru, jaké měla data modelu. Připravená tabulka
+# data_30 má dva řádky: samici a samce o délce 30 mm. Spusťte ji.
+data_30 <-
+  data.frame(
+    delka_krunyre_mm = c(30, 30),
+    pohlavi = factor(
+      x = c("samice", "samec"),
+      levels = levels(x = data_modri$pohlavi)
+    )
+  )
+data_30
+
 # S argumentem interval = "confidence" vrátí predict() matici se třemi
 # sloupci: fit (odhad průměrné zadní šířky), lwr a upr (hranice jeho 95%
 # intervalu spolehlivosti). Sloupec vyberete například
@@ -437,27 +531,29 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #----------------------------------------#
 
 # Zadání:
-# 1. Rozdělte data_modri na data_samice a data_samci. Pomocí range()
-#    ověřte rozsah delka_krunyre_mm v každé tabulce a rozhodněte, zda
-#    30 mm leží v obou rozsazích.
-# 2. Vytvořte data_30 se dvěma řádky pro samici a samce o délce 30 mm.
-# 3. Pomocí predict() s interval = "confidence" odhadněte jejich zadní
-#    šířku a 95% intervaly spolehlivosti.
-# 4. Rozdíl samec − samice spočítejte dvěma cestami:
+# Pracujte s mod_interakce, data_samice, data_samci a data_30.
+# 1. Pomocí range() zjistěte rozsah delka_krunyre_mm u samic a u samců
+#    modré formy a rozhodněte, zda 30 mm leží v obou rozsazích.
+# 2. Pomocí predict() s interval = "confidence" odhadněte pro data_30
+#    zadní šířku samice a samce a 95% intervaly spolehlivosti.
+# 3. Rozdíl samec − samice spočítejte dvěma cestami:
 #    a) odečtením dvou predikcí;
 #    b) z koeficientů jako pohlavisamec +
 #       30 * delka_krunyre_mm:pohlavisamec.
+# 4. Rozhodněte, zda se intervaly spolehlivosti průměrů samic a samců
+#    při 30 mm překrývají.
 
 # Vaše řešení:
 
 
 # Nápověda 1:
-# Nejdříve ověřte, že porovnáváte uvnitř dat. Obě cesty musí dát stejné
+# Predikce pro délku, kterou u jednoho z pohlaví nemáme, by stála na
+# extrapolaci přímky mimo data. Obě cesty výpočtu rozdílu musí dát stejné
 # číslo, protože jde o tentýž model.
 #
 # Nápověda 2:
 # predict() potřebuje object, newdata a interval. Ve výsledné matici
-# použijte sloupec fit a zachovejte pořadí samice, samec. Pro druhou
+# použijte sloupec fit; první řádek patří samici, druhý samci. Pro druhou
 # cestu vyberte dva pojmenované prvky z coef(mod_interakce).
 #
 # Očekávaný výsledek:
@@ -465,7 +561,7 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Odhady zadní šířky při 30 mm jsou přibližně 12,9100 mm pro samici
 # a 11,1495 mm pro samce. Obě cesty dávají rozdíl samec − samice
 # přibližně −1,7605 mm. Intervaly pro odhadované průměry jsou přibližně
-# 12,7849 až 13,0351 mm a 11,0259 až 11,2731 mm.
+# 12,7849 až 13,0351 mm a 11,0259 až 11,2731 mm; nepřekrývají se.
 #
 # Interpretace:
 # Napište jednu větu se směrem rozdílu, jeho velikostí, společnou délkou
@@ -475,9 +571,12 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #--------------------------------------------------#
 ## Celé přímky a residua -----
 #--------------------------------------------------#
-# Pro každou odhadnutou přímku vytvoříme posloupnost délek a doplníme
-# pohlaví. Obě struktury jsou připravené níže. Zkopírujte je do svého
-# řešení, odkomentujte a doplňte predikce pomocí predict().
+# Připravený blok níže nakreslí obě přímky modelu s interakcí s 95% pásy
+# spolehlivosti; každá přímka vede jen přes délky pozorované u daného
+# pohlaví. Pás ukazuje nejistotu odhadnutého průměru zadní šířky, ne
+# rozptyl jednotlivých krabů kolem přímky. Barvy a symboly jsou stejné
+# jako v grafu před úlohou U02. Blok potřebuje mod_interakce, proto je
+# zakomentovaný.
 #
 # data_cara_samice <-
 #   data.frame(
@@ -490,6 +589,12 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #       x = "samice",
 #       levels = levels(x = data_modri$pohlavi)
 #     )
+#   )
+# data_cara_samice[, c("odhad_mm", "dolni_mm", "horni_mm")] <-
+#   predict(
+#     object = mod_interakce,
+#     newdata = data_cara_samice,
+#     interval = "confidence"
 #   )
 #
 # data_cara_samec <-
@@ -504,17 +609,44 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #       levels = levels(x = data_modri$pohlavi)
 #     )
 #   )
-#
-# Pro graf predikcí zkopírujte také tento základ a po vytvoření
-# sloupce odhad_mm doplňte dvě volání lines():
+# data_cara_samec[, c("odhad_mm", "dolni_mm", "horni_mm")] <-
+#   predict(
+#     object = mod_interakce,
+#     newdata = data_cara_samec,
+#     interval = "confidence"
+#   )
 #
 # plot(
 #   x = data_modri$delka_krunyre_mm,
 #   y = data_modri$zadni_sirka_mm,
-#   col = vec_barvy_pohlavi[as.character(x = data_modri$pohlavi)],
-#   pch = vec_symboly_pohlavi[as.character(x = data_modri$pohlavi)],
+#   col = data_modri$barva,
+#   pch = data_modri$symbol,
 #   xlab = "Délka krunýře (mm)",
-#   ylab = "Zadní šířka krunýře (mm)"
+#   ylab = "Zadní šířka krunýře (mm)",
+#   ylim = c(6, 18)
+# )
+#
+# matlines(
+#   x = data_cara_samice$delka_krunyre_mm,
+#   y = data_cara_samice[, c("odhad_mm", "dolni_mm", "horni_mm")],
+#   col = vec_barvy_pohlavi[["samice"]],
+#   lty = c(1, 2, 2),
+#   lwd = c(2, 1, 1)
+# )
+#
+# matlines(
+#   x = data_cara_samec$delka_krunyre_mm,
+#   y = data_cara_samec[, c("odhad_mm", "dolni_mm", "horni_mm")],
+#   col = vec_barvy_pohlavi[["samec"]],
+#   lty = c(1, 2, 2),
+#   lwd = c(2, 1, 1)
+# )
+#
+# legend(
+#   x = "topleft",
+#   legend = names(x = vec_barvy_pohlavi),
+#   col = vec_barvy_pohlavi,
+#   pch = vec_symboly_pohlavi
 # )
 
 #----------------------------------------#
@@ -522,38 +654,41 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #----------------------------------------#
 
 # Zadání:
-# 1. Zkopírujte obě připravené struktury a do každé přidejte sloupec
-#    odhad_mm pomocí predict().
-# 2. Pomocí lines() přidejte do připraveného grafu obě odhadnuté
-#    přímky ve správných barvách.
-# 3. Vytvořte data_diagnostika se sloupci odhad, residuum a pohlavi
-#    z mod_interakce a data_modri.
-# 4. Nakreslete residua proti odhadnutým hodnotám, opět s barvou
-#    a symbolem podle pohlaví, a přidejte vodorovnou přerušovanou čáru
-#    v nule.
+# Pracujte s mod_interakce.
+# 1. Zkopírujte, odkomentujte a spusťte připravený blok s přímkami.
+# 2. Nakreslete residua mod_interakce proti odhadnutým hodnotám
+#    a přidejte vodorovnou přerušovanou čáru v nule.
+# 3. Nakreslete histogram residuí mod_interakce a Q–Q graf residuí
+#    s referenční přímkou, stejně jako v minulých lekcích.
 
 # Vaše řešení:
 
 
 # Nápověda 1:
-# Každá přímka má používat jen rozsah délek skutečně pozorovaný pro dané
-# pohlaví. Diagnostický graf porovnává odhadnuté hodnoty modelu s jeho
-# residui.
+# Residuum je vzdálenost kraba od jeho přímky. U residuí hledáme oblouk
+# nebo rozevírání bodů a u histogramu a Q–Q grafu odchylky od
+# symetrického rozdělení.
 #
 # Nápověda 2:
-# Pro každý ze dvou datových rámců zavolejte predict() se správným
-# newdata; lines() potřebuje x, y a col. Pro diagnostiku použijte
-# fitted() a residuals(); nulovou čáru přidá abline(h = 0, lty = 2).
+# Odhadnuté hodnoty vrátí fitted(), residua residuals(), obě
+# s object = mod_interakce; nakreslete je pomocí plot() s argumenty x
+# a y. Nulovou čáru přidá abline(h = 0, lty = 2). Histogram nakreslí
+# hist(), Q–Q graf qqnorm() a přímku do něj qqline().
 #
 # Očekávaný výsledek:
-# Graf predikcí má dvě rostoucí, nerovnoběžné přímky. Samičí přímka
-# roste rychleji. V grafu residuí jsou body kolem nuly bez oblouku a
-# s podobným rozptylem; jednotliví krabi se přesto od přímek odchylují.
+# Graf predikcí má dvě rostoucí, nerovnoběžné přímky s úzkými pásy
+# intervalů; pás je nejužší uprostřed dat. Samičí přímka roste rychleji.
+# V grafu residuí jsou body kolem nuly bez oblouku a s podobným rozptylem;
+# jednotliví krabi se přesto od přímek odchylují. Residua leží zhruba
+# od −0,92 do +1,23 mm, téměř všechna (98 ze 100) v rozmezí ±1 mm.
+# Histogram je soustředěný kolem nuly a mírně sešikmený doprava. Body
+# Q–Q grafu leží blízko přímky, jen na obou koncích se od ní mírně
+# odklánějí.
 #
 # Interpretace:
-# Co graf residuí říká o popisu těchto dat? Napište také jednu větu
-# vysvětlující, proč tato pozorovací data nedokazují, že rozdíl v zadní
-# šířce způsobuje pohlaví nebo nošení vajíček.
+# Co graf residuí, histogram a Q–Q graf říkají o popisu těchto dat? Napište
+# také jednu větu vysvětlující, proč tato pozorovací data nedokazují, že
+# rozdíl v zadní šířce způsobuje pohlaví nebo nošení vajíček.
 
 #--------------------------------------------------#
 ## Dva kategoriální prediktory -----
@@ -568,88 +703,81 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # délky proto závisejí i na tom, které kraby sesbírali. Výsledek popisuje
 # tento soubor, ne velikost krabů v přírodě.
 #
-# Připravený základ grafu níže zobrazí každého kraba a čtyři skupinové
-# průměry. Funkce v něm dělají toto:
-# - interaction() vytvoří faktor ze všech kombinací dvou faktorů;
-#   lex.order = TRUE seřadí nejprve pohlaví uvnitř modré formy a potom
-#   pohlaví uvnitř oranžové formy;
-# - jitter() body mírně vodorovně rozestoupí, aby se méně překrývaly;
-#   set.seed() zajistí, že náhodné rozestoupení bude při opakování stejné;
-# - xaxt = "n" vynechá číselnou osu x a axis() ji nahradí názvy skupin;
-#   "\n" v popisku zalomí řádek;
-# - tapply() spočítá průměr délky zvlášť pro každou ze čtyř skupin;
-# - points() přidá průměry jako velké kosočtverce;
-# - segments() nakreslí úsečky z bodu (x0, y0) do bodu (x1, y1); zde
-#   spojí průměr samic s průměrem samců uvnitř každé formy.
-#
-# data_krabi$skupina <-
-#   interaction(
-#     data_krabi$forma,
-#     data_krabi$pohlavi,
-#     sep = " – ",
-#     lex.order = TRUE
-#   )
-#
-# set.seed(900723)
-# vec_pozice <-
-#   jitter(
-#     x = as.numeric(x = data_krabi$skupina),
-#     amount = 0.12
-#   )
-#
-# plot(
-#   x = vec_pozice,
-#   y = data_krabi$delka_krunyre_mm,
-#   xaxt = "n",
-#   col = vec_barvy_pohlavi[as.character(x = data_krabi$pohlavi)],
-#   pch = vec_symboly_pohlavi[as.character(x = data_krabi$pohlavi)],
-#   xlab = "Barevná forma a pohlaví",
-#   ylab = "Délka krunýře (mm)"
-# )
-#
-# axis(
-#   side = 1,
-#   at = 1:4,
-#   labels = c(
-#     "modrá\nsamice",
-#     "modrá\nsamec",
-#     "oranžová\nsamice",
-#     "oranžová\nsamec"
-#   )
-# )
-#
-# vec_prumery_skupin <-
-#   tapply(
-#     X = data_krabi$delka_krunyre_mm,
-#     INDEX = data_krabi$skupina,
-#     FUN = mean
-#   )
-#
-# points(
-#   x = 1:4,
-#   y = vec_prumery_skupin,
-#   pch = 23,
-#   cex = 2.5,
-#   bg = "grey20"
-# )
-#
-# segments(
-#   x0 = c(1, 3),
-#   y0 = vec_prumery_skupin[c(1, 3)],
-#   x1 = c(2, 4),
-#   y1 = vec_prumery_skupin[c(2, 4)],
-#   lwd = 2
-# )
+# Připravený graf níže zobrazí každého kraba a čtyři skupinové průměry
+# (velké kosočtverce); úsečky spojují průměr samic a samců v každé formě.
+# Spusťte ho celý. Kód navíc přidá do data_krabi sloupec skupina se
+# čtyřmi kombinacemi formy a pohlaví a uloží čtyři průměry do
+# vec_prumery_skupin v pořadí modrá samice, modrý samec, oranžová samice,
+# oranžový samec.
+data_krabi$skupina <-
+  interaction(
+    data_krabi$forma,
+    data_krabi$pohlavi,
+    sep = " - ",
+    lex.order = TRUE
+  )
+
+set.seed(900723)
+vec_pozice <-
+  jitter(
+    x = as.numeric(x = data_krabi$skupina),
+    amount = 0.12
+  )
+
+plot(
+  x = vec_pozice,
+  y = data_krabi$delka_krunyre_mm,
+  xaxt = "n",
+  col = data_krabi$barva,
+  pch = data_krabi$symbol,
+  xlab = "Barevná forma a pohlaví",
+  ylab = "Délka krunýře (mm)"
+)
+
+axis(
+  side = 1,
+  at = 1:4,
+  labels = c(
+    "modrá\nsamice",
+    "modrá\nsamec",
+    "oranžová\nsamice",
+    "oranžová\nsamec"
+  )
+)
+
+vec_prumery_skupin <-
+  tapply(
+    X = data_krabi$delka_krunyre_mm,
+    INDEX = data_krabi$skupina,
+    FUN = mean
+  )
+
+points(
+  x = 1:4,
+  y = vec_prumery_skupin,
+  pch = 23,
+  cex = 2.5,
+  bg = "grey20"
+)
+
+segments(
+  x0 = c(1, 3),
+  y0 = vec_prumery_skupin[c(1, 3)],
+  x1 = c(2, 4),
+  y1 = vec_prumery_skupin[c(2, 4)],
+  lwd = 2
+)
 
 #----------------------------------------#
 ### Úloha | L08-U07 -----
 #----------------------------------------#
 
 # Zadání:
-# 1. Zkopírujte a spusťte připravený základ grafu. Vypište
-#    vec_prumery_skupin a v grafu najděte čtyři průměry.
-# 2. Odhadněte mod_formy se vzorcem delka_krunyre_mm ~ forma * pohlavi.
-# 3. Z koeficientů modelu spočítejte:
+# Pracujte s data_krabi a s připraveným grafem.
+# 1. Vypište vec_prumery_skupin a v grafu najděte čtyři průměry.
+# 2. Odhadněte mod_formy se vzorcem delka_krunyre_mm ~ forma * pohlavi
+#    a určete, která kombinace formy a pohlaví je jeho referenční skupinou.
+# 3. Z koeficientů spočítejte:
 #    a) rozdíl samec − samice v modré formě;
 #    b) rozdíl samec − samice v oranžové formě;
 #    c) změnu rozdílu jako oranžový rozdíl minus modrý rozdíl.
@@ -659,19 +787,22 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 
 
 # Nápověda 1:
-# Referenční skupinou je modrá samice. Každý další koeficient popisuje
-# posun od ní; interakce říká, o kolik se rozdíl mezi pohlavími změní,
-# když přejdeme do druhé formy.
+# Referenční skupina je ta, která má první úroveň obou faktorů; patří jí
+# intercept. Každý další koeficient popisuje posun od ní; interakce říká,
+# o kolik se rozdíl mezi pohlavími změní, když přejdeme do druhé formy.
 #
 # Nápověda 2:
 # Modrý rozdíl je koeficient pohlavisamec. Oranžový rozdíl je součet
-# koeficientů pohlavisamec a formaoranžová:pohlavisamec. Z průměrů
+# koeficientů pohlavisamec a formaoranžová:pohlavisamec; jména
+# koeficientů zkopírujte z výpisu coef(mod_formy), ať se nespletete
+# v diakritice. Z průměrů
 # odečtěte prvky vec_prumery_skupin[2] − vec_prumery_skupin[1] a
 # vec_prumery_skupin[4] − vec_prumery_skupin[3].
 #
 # Očekávaný výsledek:
-# Graf ukazuje 50 bodů v každé skupině a čtyři průměry: 28,102;
-# 32,014; 34,618 a 33,688 mm v uvedeném pořadí.
+# Referenční skupinou je modrá samice (intercept 28,102 mm). Graf ukazuje
+# 50 bodů v každé skupině a čtyři průměry: 28,102; 32,014; 34,618
+# a 33,688 mm v uvedeném pořadí.
 # Rozdíl samec − samice je u modré formy +3,912 mm a u
 # oranžové formy −0,930 mm. Rozdíl dvou rozdílů je −4,842 mm
 # a shoduje se s interakčním koeficientem.
@@ -689,29 +820,27 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # mezi jeho naměřenou délkou a odhadnutým průměrem jeho skupiny.
 # Funkce confint() vrátí intervaly spolehlivosti koeficientů modelu.
 #
-# Tabulka všech čtyř kombinací pro predict(). Funkce expand.grid()
-# vytvoří řádek pro každou kombinaci zadaných hodnot; první argument
-# se mění nejrychleji, takže pořadí řádků odpovídá pořadí skupin
-# z úlohy U07:
-#
-# data_ctyri <-
-#   expand.grid(
-#     pohlavi = levels(x = data_krabi$pohlavi),
-#     forma = levels(x = data_krabi$forma)
-#   )
+# Připravená tabulka data_ctyri obsahuje všechny čtyři kombinace pohlaví
+# a formy ve stejném pořadí jako skupiny z úlohy U07. Spusťte ji.
+data_ctyri <-
+  expand.grid(
+    pohlavi = levels(x = data_krabi$pohlavi),
+    forma = levels(x = data_krabi$forma)
+  )
+data_ctyri
 
 #----------------------------------------#
 ### Úloha | L08-U08 -----
 #----------------------------------------#
 
 # Zadání:
-# 1. Do data_krabi přidejte sloupec residuum_mm s residui mod_formy.
-# 2. Zkopírujte připravenou tabulku data_ctyri. Pomocí mod_formy
-#    predikujte pro data_ctyri čtyři průměry a jejich 95% intervaly
-#    spolehlivosti a výsledek uložte jako mat_predikce_ctyri.
-# 3. Pomocí tapply() vypište summary() residuí zvlášť pro každou
-#    skupinu ze sloupce skupina.
-# 4. Napište dvě až tři věty, které:
+# Pracujte s mod_formy, data_krabi a data_ctyri.
+# 1. Pomocí predict() s intervalem spolehlivosti odhadněte pro data_ctyri
+#    čtyři průměry a výsledek uložte jako mat_predikce_ctyri.
+# 2. Do data_krabi přidejte sloupec residuum_mm s residui mod_formy
+#    a pomocí boxplot() je zobrazte zvlášť pro čtyři skupiny ze sloupce
+#    skupina.
+# 3. Napište dvě až tři věty, které:
 #    - porovnají pohlaví zvlášť v každé barevné formě;
 #    - uvedou nejistotu změny rozdílu pomocí confint(mod_formy);
 #    - omezí závěr na souvislost v tomto souboru krabů.
@@ -727,18 +856,19 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # rozptýlení jednotlivých krabů kolem těchto průměrů.
 #
 # Nápověda 2:
-# Residua vrátí residuals(mod_formy). V tapply() zadejte
-# X = data_krabi$residuum_mm, INDEX = data_krabi$skupina a FUN = summary.
-# V confint(mod_formy) vyberte řádek interakčního členu.
+# Residua vrátí residuals(mod_formy). V boxplot() použijte vzorec
+# residuum_mm ~ skupina a data = data_krabi. V confint(mod_formy)
+# vyberte řádek interakčního členu.
 #
 # Očekávaný výsledek:
 # Predikce jsou stejné jako čtyři skupinové průměry z L08-U07.
 # Přibližné 95% intervaly jsou: modrá samice 26,229–29,975 mm;
 # modrý samec 30,141–33,887 mm; oranžová samice 32,745–36,491 mm;
 # oranžový samec 31,815–35,561 mm.
-# Residua mají v každé skupině průměr velmi blízký nule, ale ukazují
-# výraznou variabilitu jednotlivých krabů. 95% interval interakčního
-# koeficientu je přibližně −8,589 až −1,095 mm.
+# Krabicové grafy residuí mají ve všech skupinách medián blízko nuly
+# a podobné rozpětí; jednotliví krabi se od průměru své skupiny liší až
+# o 13–17 mm. 95% interval interakčního koeficientu je přibližně −8,589
+# až −1,095 mm.
 #
 # Interpretace:
 # Proč věta "samci jsou delší" není pro tento model úplným závěrem?
@@ -754,34 +884,20 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # dřeva po celé délce kmene, takže u vyššího stromu bychom čekali větší
 # přírůstek objemu.
 #
-# Připravený kód níže má dvě části. První část (od data_stromy_raw po
-# data_porovnani_stromy) načte soubor stromy.csv, převede americké
-# jednotky na centimetry, metry a krychlové metry a vytvoří tabulku čtyř
-# kombinací průměru a výšky, pro které budeme porovnávat predikce.
-# Zvolené průměry i výšky leží uvnitř pozorovaných dat.
-#
-# data_stromy_raw <-
-#   read.csv(file = soubor_stromy)
-#
-# data_stromy <-
-#   data.frame(
-#     prumer_cm = data_stromy_raw$Girth * 2.54, # palce na cm
-#     vyska_m = data_stromy_raw$Height * 0.3048, # stopy na m
-#     objem_m3 = data_stromy_raw$Volume * 0.0283168 # krychlové stopy na m³
-#   )
-#
-# data_porovnani_stromy <-
-#   expand.grid(
-#     prumer_cm = c(28, 36),
-#     vyska_m = c(21, 25)
-#   )
-#
-# Druhá část (od plot() po legend()) je graf. Ukáže stromy a dvě
-# predikované přímky modelu mod_stromy, takže ji spusťte až po odhadu
-# modelu v úloze. Přímka pro 21 m vede jen přes průměry stromů nižších
-# než 22 m, přímka pro 25 m jen přes průměry stromů vyšších než 24 m.
-# Funkce range() vrátí nejmenší a největší hodnotu; dva body stačí
-# k nakreslení přímky pomocí lines().
+# Připravená tabulka data_porovnani_stromy obsahuje čtyři kombinace
+# průměru a výšky, pro které budeme porovnávat predikce. Zvolené průměry
+# i výšky leží uvnitř pozorovaných dat. Spusťte ji.
+data_porovnani_stromy <-
+  expand.grid(
+    prumer_cm = c(28, 38),
+    vyska_m = c(21, 25)
+  )
+data_porovnani_stromy
+
+# Připravený graf níže ukáže stromy a dvě odhadnuté přímky z modelu
+# mod_stromy. Potřebuje model, proto je zakomentovaný. Přímka pro 21 m
+# vede jen přes průměry stromů nižších než 22 m, přímka pro 25 m jen přes
+# průměry stromů vyšších než 24 m.
 #
 # plot(
 #   x = data_stromy$prumer_cm,
@@ -829,19 +945,21 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #----------------------------------------#
 
 # Zadání:
-# 1. Zkopírujte a spusťte první část připraveného kódu (od
-#    data_stromy_raw po data_porovnani_stromy). Ověřte, že data_stromy
-#    má 31 řádků a žádné chybějící hodnoty, a pomocí range() zjistěte
-#    pozorovaný rozsah sloupců prumer_cm a vyska_m.
+# Pracujte s připravenými tabulkami data_stromy a data_porovnani_stromy.
+# 1. Pomocí range() zjistěte pozorovaný rozsah sloupců prumer_cm
+#    a vyska_m. Pak nakreslete plot() objemu objem_m3 proti průměru
+#    prumer_cm a popište tvar vztahu.
 # 2. Odhadněte mod_stromy se vzorcem objem_m3 ~ prumer_cm * vyska_m
 #    a vypište jeho koeficienty.
 # 3. Z koeficientů spočítejte sklon průměru při výškách 21, 23 a 25 m
 #    a uložte jej jako vec_sklony_prumeru.
-# 4. Pomocí mod_stromy predikujte objem pro data_porovnani_stromy.
-#    Pro výšku 21 m i 25 m odečtěte predikci pro 28 cm od predikce
-#    pro 36 cm a rozdíl vydělte 8 (36 − 28 = 8 cm). Výsledky porovnejte
-#    s prvním (21 m) a třetím (25 m) prvkem vec_sklony_prumeru.
-# 5. Zkopírujte a spusťte druhou část připraveného kódu (graf).
+# 4. Pomocí mod_stromy predikujte objem pro čtyři řádky
+#    data_porovnani_stromy: řádky 1 a 2 jsou 28 a 38 cm při 21 m, řádky
+#    3 a 4 totéž při 25 m. Pro každou výšku odečtěte predikci pro 28 cm
+#    od predikce pro 38 cm a rozdíl vydělte 10 (38 − 28 = 10 cm).
+#    Výsledky porovnejte s prvním (21 m) a třetím (25 m) prvkem
+#    vec_sklony_prumeru.
+# 5. Zkopírujte, odkomentujte a spusťte připravený graf přímek.
 #
 # Pokud vám dochází čas, dokončete kroky 1–3 a interpretaci a kroky 4–5
 # dokončete doma. Žádná další hlavní úloha na L08-U09 nenavazuje.
@@ -856,23 +974,26 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Nápověda 2:
 # Sklon při výšce h je koeficient prumer_cm plus koeficient
 # prumer_cm:vyska_m krát h; koeficienty vybírejte z coef() podle jmen
-# a h zadejte jako vektor tří výšek. Predikce uložte jako nový sloupec
-# data_porovnani_stromy; řádky 1 a 2 patří výšce 21 m, řádky 3 a 4
-# výšce 25 m.
+# a h zadejte jako vektor tří výšek. Výsledek predict() uložte do
+# vektoru, například vec_objem_porovnani; rozdíl pro 21 m je jeho druhý
+# prvek minus první, pro 25 m čtvrtý minus třetí.
 #
 # Očekávaný výsledek:
-# data_stromy má 31 řádků a 0 chybějících hodnot. Průměr kmene sahá
-# přibližně od 21,1 do 52,3 cm, výška od 19,2 do 26,5 m. Koeficienty jsou
-# přibližně 1,9651; −0,06528; −0,12050 a 0,00493. Sklon průměru je
-# přibližně 0,038; 0,048 a 0,058 m³ na 1 cm. Predikce jsou přibližně
-# 0,503; 0,808; 0,572 a 1,035 m³. Rozdíl 36 − 28 cm je 0,305 m³ při
-# 21 m a 0,463 m³ při 25 m; po vydělení 8 dostanete sklony 0,038
-# a 0,058. V grafu je přímka pro 25 m strmější než přímka pro 21 m.
+# Průměr kmene sahá přibližně od 21,1 do 52,3 cm, výška od 19,2 do
+# 26,5 m. Objem s průměrem kmene roste a vztah je přibližně přímkový.
+# Koeficienty jsou přibližně 1,9651; −0,06528; −0,12050 a 0,00493.
+# Sklon průměru je přibližně 0,038; 0,048 a 0,058 m³ na 1 cm. Predikce
+# jsou přibližně 0,503; 0,884; 0,572 a 1,151 m³. Rozdíl 38 − 28 cm je
+# 0,381 m³ při 21 m a 0,578 m³ při 25 m; po vydělení 10 dostanete sklony
+# 0,038 a 0,058. V grafu je přímka pro 25 m strmější než přímka pro 21 m.
 #
 # Interpretace:
 # Proč nevykládáme koeficient prumer_cm (−0,065) jako sklon pro změřené
 # stromy? Napište jednu větu o tom, jak se přírůstek objemu na 1 cm
 # průměru mění s výškou, a omezte ji na pozorovaný rozsah dat.
+#
+# Poznámka: kontrolu vlivných pozorování (Cookovu vzdálenost) jsme u 31
+# stromů pro stručnost vynechali; u skutečné analýzy by následovala.
 
 #----------------------------------------------------------#
 # Úlohy navíc -----
@@ -934,7 +1055,7 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Změna reference mění způsob popisu stejné dvojice přímek.
 #
 # Nápověda 2:
-# Referenční úroveň nastaví relevel() s ref = "samec". Potom odhadněte
+# Referenční skupinu nastaví relevel() s ref = "samec". Potom odhadněte
 # nový lm() na upravené kopii dat.
 #
 # Očekávaný výsledek:
@@ -1030,9 +1151,10 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # formu. Sklon samců i rozdíl při 30 mm skládáte ze dvou koeficientů.
 #
 # Nápověda 2:
-# Sklon samců je delka_krunyre_mm +
-# delka_krunyre_mm:pohlavisamec. Rozdíl při 30 mm je pohlavisamec +
-# 30 * delka_krunyre_mm:pohlavisamec.
+# Řádky vyberte stejně jako v připravených datech pro data_modri; barvu
+# a symbol bodu berte ze sloupců barva a symbol. Sklon samců je
+# delka_krunyre_mm + delka_krunyre_mm:pohlavisamec. Rozdíl při 30 mm je
+# pohlavisamec + 30 * delka_krunyre_mm:pohlavisamec.
 #
 # Očekávaný výsledek:
 # data_oranzovi obsahuje 100 krabů. Graf ukazuje rostoucí vztah u obou
@@ -1070,8 +1192,10 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Potom posuďte, zda vypočtená délka patří do tohoto intervalu.
 #
 # Nápověda 2:
-# Z coef(mod_interakce) vyberte pojmenované prvky pohlavisamec a
-# delka_krunyre_mm:pohlavisamec a dosaďte je do připraveného vztahu.
+# Koeficienty vybírejte z coef(mod_interakce) podle jmen. Průnik rozsahů
+# získáte jako max() z obou minim a min() z obou maxim, vypočtených
+# z data_samice a data_samci. Ve vztahu pozor na znaménko minus a na to,
+# že jmenovatelem je koeficient interakce, ne sklon.
 #
 # Očekávaný výsledek:
 # Přímky se protínají přibližně při 15,854 mm. Společný pozorovaný
@@ -1108,9 +1232,10 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # nereferenčních úrovní se přidává také interakční koeficient.
 #
 # Nápověda 2:
-# Uložte coef(mod_formy) do vec_koeficienty_formy a vybírejte jeho
-# prvky podle názvů. Pro porovnání vyberte z mat_predikce_ctyri pouze
-# sloupec "fit" a na obou stranách použijte unname().
+# Pořadí koeficientů ve výpisu coef(mod_formy) je (Intercept),
+# formaoranžová, pohlavisamec a formaoranžová:pohlavisamec. Oranžový samec
+# je součet všech čtyř, takže stačí sum(); řádky mat_predikce_ctyri jsou
+# ve stejném pořadí skupin jako vec_prumery_z_koef.
 #
 # Očekávaný výsledek:
 # Čtyři hodnoty jsou 28,102; 32,014; 34,618 a 33,688 mm.
@@ -1124,19 +1249,18 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 #----------------------------------------#
 
 # Zadání:
-# Zobrazte všech 200 residuí modelu mod_formy ve čtyřech skupinách.
-# Vytvořte stejné pořadí faktoru skupina jako v L08-U07, nastavte
-# set.seed(900723) a vodorovně posuňte číselné pozice pomocí jitter().
-# Nakreslete residuum_mm proti těmto pozicím, pohlaví vyjádřete barvou
-# i symbolem, popište čtyři skupiny na ose x a přidejte vodorovnou
-# přerušovanou čáru v nule.
+# Zobrazte všech 200 residuí modelu mod_formy (sloupec residuum_mm
+# z L08-U08) jako jednotlivé body ve čtyřech skupinách. Vyjděte
+# z připraveného grafu před L08-U07: místo délky krunýře nakreslete na
+# ose y residuum_mm a přidejte vodorovnou přerušovanou čáru v nule.
 
 # Vaše řešení:
 
 
 # Nápověda 1:
-# Použijte strukturu čtyřskupinového grafu z L08-U07. Změní se pouze
-# svislá proměnná a její popisek; přibude nulová čára.
+# Při čtení grafu sledujte, zda se rozptyl residuí liší mezi skupinami a
+# zda jsou kladná a záporná residua v každé skupině zhruba vyrovnaná.
+# Nulová čára je měřítko, ke kterému residua vztahujete.
 #
 # Nápověda 2:
 # Na ose y použijte data_krabi$residuum_mm. Nulovou čáru přidá
@@ -1157,8 +1281,8 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 
 # Zadání:
 # Objem kmene je zhruba úměrný druhé mocnině průměru krát výšce, tedy
-# součinu. Logaritmus mění součin v součet. Pracujte s data_stromy
-# z L08-U09 a odhadněte mod_stromy_log se vzorcem:
+# součinu. Logaritmus mění součin v součet. Pracujte s připravenou
+# tabulkou data_stromy a odhadněte mod_stromy_log se vzorcem:
 #
 # log(objem_m3) ~ log(prumer_cm) * log(vyska_m)
 #
@@ -1187,6 +1311,50 @@ vec_barvy_pohlavi[as.character(x = vec_ukazka)]
 # Interpretace:
 # Proč tvrzení "objem dřeva má interakci průměru a výšky" není úplné,
 # dokud neřekneme, na jaké škále objem modelujeme?
+
+#----------------------------------------#
+### Úloha navíc | L08-N10 -----
+#----------------------------------------#
+
+# Zadání:
+# Pracujte s mod_interakce a data_modri, stejně jako v L07-N05
+# při kontrole vlivných pozorování.
+# 1. Vypočítejte cooks.distance() a nakreslete Cookovy vzdálenosti jako
+#    body.
+# 2. Přidejte vodorovnou čáru v hodnotě 4/n, kde n je počet krabů
+#    v data_modri, a spočítejte, kolik krabů tuto hranici překračuje.
+# 3. Najděte index nejvyšší hodnoty a podle něj vypište tohoto kraba
+#    z data_modri.
+# 4. Fitujte stejný model bez tohoto jednoho kraba a porovnejte jeho
+#    interakční koeficient s mod_interakce. Původní data neměňte.
+# 5. Napište, co byste ověřili před rozhodnutím, zda s tímto krabem něco
+#    dělat. Kraba nemažte.
+
+# Vaše řešení:
+
+
+# Nápověda 1:
+# Hledejte pozorování, jehož vynechání by nejvíce změnilo odhady modelu, a
+# oddělte vliv od datové chyby.
+#
+# Nápověda 2:
+# Použijte cooks.distance(), abline() s argumentem h = 4 / nrow(data_modri),
+# sum() s porovnáním > a which.max(); index použijte pro výběr řádku
+# z data_modri. Pro model bez kraba použijte v lm() argument
+# data = data_modri[-index, ].
+#
+# Očekávaný výsledek:
+# Hranice 4/n je 0,04 a překračuje ji 8 ze 100 krabů. Nejvyšší Cookovu
+# vzdálenost (asi 0,146) má krab na řádku 100 tabulky data_modri, samice
+# s délkou krunýře 40,9 mm, nejdelší samice. Bez ní je interakční koeficient
+# asi −0,1316 místo −0,1245 mm/mm a jeho interval stále nezahrnuje nulu.
+# Samotná vysoká hodnota nedokazuje chybu; je důvodem ověřit zdrojový
+# údaj a zjistit, proč má pozorování vliv, nikoli důvodem k automatickému
+# vyřazení. Neodstraňujeme automaticky.
+#
+# Interpretace:
+# Změnil by vynechání tohoto kraba biologický závěr o rozdílu sklonů?
+# Jak by svévolné odstranění pozorování mohlo změnit vědeckou otázku?
 
 #----------------------------------------------------------#
 # Ohlédnutí a vlastní kontrola -----

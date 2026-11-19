@@ -83,6 +83,7 @@
 // ---------------------------------------------------------------------------
 // Callout blocks (override Quarto defaults with brand colours)
 // Callouts remain breakable so long supplementary sections can flow across pages.
+// The title block is sticky, so a title is never left alone at the foot of a page.
 // Quarto passes these background_color values per type:
 //   note     #dae6fb   tip      #ccf1e3
 //   warning  #fcefdc   caution  #ffe5d0   important  #f7dddc
@@ -119,6 +120,7 @@
       inset: 1pt,
       width: 100%,
       below: 0pt,
+      sticky: true,
       block(
         fill: accent,
         width: 100%,

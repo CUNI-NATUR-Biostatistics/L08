@@ -204,7 +204,7 @@ save_asset(
 # 3. Q2: leaf thickness by temperature and origin -----
 #----------------------------------------------------------#
 
-# Redrawn from the L07 slide "Původ populací mění obraz vztahu"; the slide
+# Redrawn from the L07 slide "Vypadá vztah stejně u obou původů?"; the slide
 #   draws it inline, and the emoji in its axis titles are left out here.
 plot_skupiny <-
   ggplot2::ggplot(

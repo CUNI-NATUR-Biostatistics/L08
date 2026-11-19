@@ -17,6 +17,14 @@ library(here)
 library(quarto)
 library(fs)
 
+# Quarto otherwise knits with the `Rscript` on PATH (the machine default R).
+#   Use the R that runs this script instead, so a project pinned to another
+#   R version renders with that version and its renv library. An explicit
+#   QUARTO_R set by the user is kept.
+if (!nzchar(Sys.getenv("QUARTO_R"))) {
+  Sys.setenv(QUARTO_R = R.home("bin"))
+}
+
 # Synchronize the shared brand before every standalone render. `render_all.R`
 # performs this once for both outputs and sets the temporary option below so
 # its child render scripts do not repeat the work.
